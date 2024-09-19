@@ -6,9 +6,9 @@ const kSignal = Symbol('kSignal')
 
 function abort (self) {
   if (self.abort) {
-    self.abort(self[kSignal]?.reason)
+    self.abort()
   } else {
-    self.onError(self[kSignal]?.reason ?? new RequestAbortedError())
+    self.onError(new RequestAbortedError())
   }
 }
 

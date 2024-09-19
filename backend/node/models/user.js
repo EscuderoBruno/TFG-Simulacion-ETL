@@ -31,8 +31,8 @@ const User = sequelize.define('User', {
 
 // Método para verificar la contraseña
 User.prototype.comparePassword = async function(password) {
-    console.log('Contraseña ingresada:', password);
-    console.log('Contraseña hasheada:', this.password);
+    //console.log('Contraseña ingresada:', password);
+    //console.log('Contraseña hasheada:', this.password);
     return await bcrypt.compare(password, this.password);
 };  
 
