@@ -17,6 +17,7 @@ import { SearchComponent } from 'app/layout/common/search/search.component';
 import { ShortcutsComponent } from 'app/layout/common/shortcuts/shortcuts.component';
 import { UserComponent } from 'app/layout/common/user/user.component';
 import { Subject, takeUntil } from 'rxjs';
+import { FuseNavigationItem } from '@fuse/components/navigation';
 
 @Component({
     selector     : 'modern-layout',
@@ -30,6 +31,31 @@ export class ModernLayoutComponent implements OnInit, OnDestroy
     isScreenSmall: boolean;
     navigation: Navigation;
     private _unsubscribeAll: Subject<any> = new Subject<any>();
+
+    navigationItems: FuseNavigationItem[] = [
+        {
+            id: 'simulaciones',
+            title: 'Simulaciones',
+            type: 'basic',
+            link: '/simulaciones',
+            icon: 'heroicons_outline:adjustments-horizontal'
+        },
+        {
+            id: 'localizaciones',
+            title: 'Localizaciones',
+            type: 'basic',
+            link: '/localizaciones',
+            icon: 'heroicons_outline:map'
+        },
+        {
+            id: 'gestion_usuarios',
+            title: 'Gestión usuarios',
+            type: 'basic',
+            link: '/gestion_usuarios',
+            icon: 'heroicons_outline:users'
+        },
+        // Agrega más elementos según sea necesario
+    ];
 
     /**
      * Constructor

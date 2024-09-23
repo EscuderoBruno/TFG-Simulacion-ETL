@@ -1,5 +1,5 @@
 import { Routes } from '@angular/router';
-import { LandingHomeComponent } from 'app/modules/landing/home/home.component';
+import { LandingHomeComponent } from 'app/modules/pages/home/home.component';
 
 export default [
     {
