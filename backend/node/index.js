@@ -4,12 +4,25 @@ const express = require('express');
 const sequelize = require('./database/connection');  // Conexión a MySQL
 const User = require('./models/user');
 const authRoutes = require('./routes/auth.route');
+const cors = require('cors');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
 // Middlewares
 app.use(express.json());
+
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).send('Something went wrong!');
+});
+
+// Habilitar CORS para todas las rutas
+app.use(cors({
+  origin: 'http://localhost:4200',  // Especifica tu frontend (Angular) como origen permitido
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],  // Cabezeras permitidas
+}));
 
 // Sincronizar la base de datos
 sequelize.sync({ force: false })  // `force: false` para evitar recrear tablas cada vez

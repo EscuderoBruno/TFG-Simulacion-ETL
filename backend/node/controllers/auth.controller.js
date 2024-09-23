@@ -14,10 +14,14 @@ const register = async (req, res) => {
         // Hashear la contraseña antes de crear el usuario
         const hashedPassword = await bcrypt.hash(password, 10);
 
+        // Log para verificar el hash generado
+        console.log('Contraseña ingresada (texto plano):', password);
+        console.log('Contraseña hasheada:', hashedPassword);
+
         // Crear el nuevo usuario
         const user = await User.create({ username, password: hashedPassword, rol });
 
-        // Generar un token JWT para el usuario recién creado
+        // Generar un token JWT
         const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, { expiresIn: '1h' });
 
         res.status(201).json({ message: 'Usuario registrado con éxito', token });
@@ -28,22 +32,31 @@ const register = async (req, res) => {
 
 // Método para iniciar sesión (login)
 const login = async (req, res) => {
-    const { username, password } = req.body;
+    const { username, password } = req.body;  // La contraseña aquí debe estar en texto plano
 
     try {
         // Verificar si el usuario existe
         const user = await User.findOne({ where: { username } });
         if (!user) return res.status(400).json({ message: 'Usuario no encontrado' });
 
-        // Verificar si la contraseña es correcta
+        // Verificar si la contraseña en texto plano coincide con el hash almacenado
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) return res.status(400).json({ message: 'Contraseña incorrecta' });
 
         // Generar un token JWT
         const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, { expiresIn: '1h' });
 
-        res.json({ token });
+        // Responder con el token y otros datos del usuario
+        res.json({
+            token,
+            user: {
+                id: user.id,
+                username: user.username,
+                role: user.rol,  // Asegúrate de que este campo exista en el modelo
+            },
+        });
     } catch (error) {
+        console.error('Error al iniciar sesión:', error); // Para depurar errores
         res.status(500).json({ message: 'Error al iniciar sesión', error });
     }
 };

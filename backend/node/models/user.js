@@ -18,15 +18,7 @@ const User = sequelize.define('User', {
     type: DataTypes.INTEGER,
     allowNull: false,
     defaultValue: 0,  // 0 para user, 1 para admin
-  },
-}, {
-    hooks: {
-        beforeCreate: async (user) => {
-          console.log('Antes de crear, password en texto plano:', user.password);
-          user.password = await bcrypt.hash(user.password, 10);
-          console.log('Después de hashear, password encriptada:', user.password);
-        }
-    }         
+  },       
 });
 
 // Método para verificar la contraseña

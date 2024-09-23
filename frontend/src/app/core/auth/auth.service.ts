@@ -1,23 +1,23 @@
 import { HttpClient } from '@angular/common/http';
-import { inject, Injectable } from '@angular/core';
+import { CSP_NONCE, inject, Injectable } from '@angular/core';
 import { AuthUtils } from 'app/core/auth/auth.utils';
-import { UserService } from 'app/core/user/user.service';
 import { catchError, Observable, of, switchMap, throwError } from 'rxjs';
+import { environment } from '../../../environment/environment';
 
 @Injectable({providedIn: 'root'})
-export class AuthService
-{
+
+export class AuthService {
+
     private _authenticated: boolean = false;
     private _httpClient = inject(HttpClient);
-    private _userService = inject(UserService);
 
-    // -----------------------------------------------------------------------------------------------------
-    // @ Accessors
-    // -----------------------------------------------------------------------------------------------------
+    // Datos
+    idUser: number = 0;
+    user: string = '';
+    token: string = '';
+    role: number = -1;
+    //roleSub = new BehaviorSubject(0);
 
-    /**
-     * Setter & getter for access token
-     */
     set accessToken(token: string)
     {
         localStorage.setItem('accessToken', token);
@@ -57,31 +57,34 @@ export class AuthService
      *
      * @param credentials
      */
-    signIn(credentials: { email: string; password: string }): Observable<any>
-    {
-        // Throw error, if the user is already logged in
-        if ( this._authenticated )
-        {
+    signIn(credentials: { username: string; password: string }): Observable<any> {
+        if (this._authenticated) {
             return throwError('User is already logged in.');
         }
+    
+        console.log('Credenciales enviadas:', credentials);
+    
+        return this._httpClient.post(`${environment.apiBaseUrl}/auth/login`, credentials).pipe(
+            switchMap((response: any) => {
+    
+            // Almacena los datos del usuario
+            this.idUser = response.user.id;
+            this.user = response.user.username;
+            this.token = response.token;
+            this.role = response.user.role;
 
-        return this._httpClient.post('api/auth/sign-in', credentials).pipe(
-            switchMap((response: any) =>
-            {
-                // Store the access token in the local storage
-                this.accessToken = response.accessToken;
+            localStorage.setItem('accessToken', this.token);
+            this._authenticated = true;
 
-                // Set the authenticated flag to true
-                this._authenticated = true;
-
-                // Store the user on the user service
-                this._userService.user = response.user;
-
-                // Return a new observable with the response
-                return of(response);
+            return of(response);
             }),
+            catchError(error => {
+                // Agrega aquí más información del error
+                console.error('Error al iniciar sesión:', error);
+                return throwError('Error al iniciar sesión: ' + (error.error.message || 'Unknown error'));
+            })
         );
-    }
+    }    
 
     /**
      * Sign in using the access token
@@ -113,9 +116,6 @@ export class AuthService
 
                 // Set the authenticated flag to true
                 this._authenticated = true;
-
-                // Store the user on the user service
-                this._userService.user = response.user;
 
                 // Return true
                 return of(true);
