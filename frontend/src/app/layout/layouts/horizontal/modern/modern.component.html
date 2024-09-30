@@ -15,7 +15,7 @@
             <div class="flex items-center h-20 pt-6 px-8">
                 <img
                     class="w-24"
-                    src="assets/images/logo/logo-text-on-dark.svg"
+                    src="assets/images/GENESIS/ICONO/96X96/96 96.png"
                     alt="Logo image">
             </div>
         </ng-container>
@@ -41,16 +41,22 @@
             </div>
             <!-- Horizontal navigation -->
             <fuse-horizontal-navigation
-                class="mr-2"
+                class="mr-4"
                 [name]="'mainNavigation'"
                 [navigation]="navigationItems"></fuse-horizontal-navigation>
         </ng-container>
+        <!-- Profile on the right -->
+        <div class="ml-auto flex items-center">
+            <a [routerLink]="'/perfil'" class="flex items-center">
+                <mat-icon
+                class="icon-size-7"
+                [svgIcon]="'heroicons_outline:user-circle'"></mat-icon>
+            </a>
+        </div>
     </div>
 
     <!-- Content -->
     <div class="flex flex-col flex-auto w-full overflow-auto"> <!-- Añadido overflow-auto para manejar el desbordamiento de contenido -->
-        <!-- *ngIf="true" hack is required here for router-outlet to work correctly.
-             Otherwise, layout changes won't be registered and the view won't be updated! -->
         <router-outlet *ngIf="true"></router-outlet>
     </div>
 

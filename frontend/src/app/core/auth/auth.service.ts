@@ -182,4 +182,18 @@ export class AuthService {
         // If the access token exists, and it didn't expire, sign in using it
         return this.signInUsingToken();
     }
+
+    /**
+     * Obtener todos los usuarios
+     */
+    getAllUsers(): Observable<any> {
+        return this._httpClient.get(`${environment.apiBaseUrl}/auth/users`);
+    }
+
+    /**
+     * Obtener todos los usuarios
+     */
+    deleteUser(userId: number): Observable<any> {
+        return this._httpClient.delete(`${environment.apiBaseUrl}/auth/delete/${userId}`);
+    }
 }

@@ -39,17 +39,8 @@ export class AuthSignInComponent implements OnInit
         private _authService: AuthService,
         private _formBuilder: UntypedFormBuilder,
         private _router: Router,
-    )
-    {
-    }
+    ) {}
 
-    // -----------------------------------------------------------------------------------------------------
-    // @ Lifecycle hooks
-    // -----------------------------------------------------------------------------------------------------
-
-    /**
-     * On init
-     */
     ngOnInit(): void
     {
         // Create the form
@@ -63,9 +54,6 @@ export class AuthSignInComponent implements OnInit
     // @ Public methods
     // -----------------------------------------------------------------------------------------------------
 
-    /**
-     * Sign in
-     */
     signIn(): void {
         this.signInForm.disable();
         this.showAlert = false;

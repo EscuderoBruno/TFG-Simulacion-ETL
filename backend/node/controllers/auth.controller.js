@@ -4,7 +4,7 @@ const jwt = require('jsonwebtoken');
 
 // Método para crear usuario (registro)
 const register = async (req, res) => {
-    const { username, password, rol } = req.body;
+    const { username, password, rol, estado } = req.body;
 
     try {
         // Verificar si el usuario ya existe
@@ -19,7 +19,7 @@ const register = async (req, res) => {
         console.log('Contraseña hasheada:', hashedPassword);
 
         // Crear el nuevo usuario
-        const user = await User.create({ username, password: hashedPassword, rol });
+        const user = await User.create({ username, password: hashedPassword, rol, estado });
 
         // Generar un token JWT
         const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, { expiresIn: '1h' });
@@ -79,7 +79,7 @@ const deleteUser = async (req, res) => {
 // Método para actualizar un usuario
 const updateUser = async (req, res) => {
     const { id } = req.params;
-    const { username, password, rol } = req.body;
+    const { username, password, rol, estado } = req.body;
 
     try {
         const user = await User.findByPk(id);
@@ -89,6 +89,7 @@ const updateUser = async (req, res) => {
         if (username) user.username = username;
         if (password) user.password = await bcrypt.hash(password, 10); // Rehash new password
         if (rol) user.rol = rol;
+        if (estado) user.estado = estado;
 
         await user.save();
         res.status(200).json({ message: 'Usuario actualizado con éxito', user });
@@ -98,4 +99,29 @@ const updateUser = async (req, res) => {
     }
 };
 
-module.exports = { register, login, deleteUser, updateUser };
+// Método para obtener todos los usuarios
+const getAllUsers = async (req, res) => {
+    try {
+        // Obtener todos los usuarios
+        const users = await User.findAll({
+        });
+
+        res.status(200).json(users);
+    } catch (error) {
+        res.status(500).json({ message: 'Error al obtener los usuarios', error });
+    }
+};
+
+// Método para obtener un usuario por id
+const getUserById = async (req, res) => {
+    const { id } = req.params;
+    try {
+        // Obtener todos los usuarios
+        const user = await User.findByPk(id);
+        res.status(200).json(user);
+    } catch (error) {
+        res.status(500).json({ message: 'Error al obtener los usuarios', error });
+    }
+};
+
+module.exports = { register, login, deleteUser, updateUser, getAllUsers, getUserById };

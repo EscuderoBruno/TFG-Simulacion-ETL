@@ -1,1 +1,114 @@
-Hola
+<div class="flex flex-col flex-auto min-w-0">
+
+    <!-- Header -->
+    <div class="flex flex-col sm:flex-row flex-0 sm:items-center sm:justify-between p-6 sm:py-8 sm:px-10 border-b bg-card dark:bg-transparent">
+        <div class="flex-1 min-w-0">
+            <!-- Breadcrumbs -->
+            <div>
+                <div class="hidden sm:flex flex-wrap items-center font-medium">
+                    <div>
+                        <a class="whitespace-nowrap text-primary-500">Inicio</a>
+                    </div>
+                    <div class="flex items-center ml-1 whitespace-nowrap">
+                        <mat-icon
+                            class="icon-size-5 text-secondary"
+                            [svgIcon]="'heroicons_mini:chevron-right'"></mat-icon>
+                        <span class="ml-1 text-secondary">Gestión usuarios</span>
+                    </div>
+                </div>
+                <div class="flex sm:hidden">
+                    <a
+                        class="inline-flex items-center -ml-1.5 text-secondary font-medium"
+                        [routerLink]="'./..'">
+                        <mat-icon
+                            class="icon-size-5 text-secondary"
+                            [svgIcon]="'heroicons_solid:chevron-left'"></mat-icon>
+                        <span class="ml-1">Back</span>
+                    </a>
+                </div>
+            </div>
+            <!-- Title -->
+            <div class="mt-4">
+                <h2 class="text-3xl md:text-4xl font-extrabold tracking-tight leading-7 sm:leading-10 truncate">
+                    Gestión usuarios
+                </h2>
+            </div>
+        </div>
+        <!-- Actions -->
+        <div class="relative mr-4">
+            <input 
+                type="text"
+                placeholder="Buscar..."
+                class="bg-white-200 border border-gray-300 text-gray-900 rounded-lg py-2 px-4 focus:outline-none focus:ring-1 focus:ring-sky-500"
+            />
+            <mat-icon 
+                class="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-500"
+                [svgIcon]="'heroicons_mini:magnifying-glass'"></mat-icon>
+        </div>
+        <div class="flex shrink-0 items-center mt-6 sm:mt-0 sm:ml-4">
+            <button
+                class="ml-3 bg-green-400 hover:bg-green-500 text-white"
+                mat-flat-button>
+                <mat-icon
+                    class="icon-size-4"
+                    [svgIcon]="'heroicons_mini:plus'"></mat-icon>
+                <span class="ml-2">Nueva</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Main -->
+    <div class="flex-auto p-6 sm:p-10">
+
+        <!-- CONTENT GOES HERE -->
+        <div class="max-h-400 rounded-2xl">
+
+            <div class="grid grid-cols-1 gap-8 w-full mt-2">
+                <!-- Recent transactions table -->
+                <div class="xl:col-span-2 flex flex-col flex-auto bg-card shadow rounded-2xl overflow-hidden p-4">
+                    <div class="p-6">
+                        <div class="mr-4 text-lg font-large tracking-tight leading-6 truncate">Lista usuarios</div>
+                    </div>
+                    <div class="overflow-x-auto mx-6 mb-4">
+                        <table class="w-full table-auto bg-transparent">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-s font-medium text-gray-500 uppercase tracking-wider w-1/4">Id</th>
+                                    <th class="px-6 py-3 text-left text-s font-medium text-gray-500 uppercase tracking-wider w-1/4">Usuario</th>
+                                    <th class="px-6 py-3 text-left text-s font-medium text-gray-500 uppercase tracking-wider w-1/4">Rol</th>
+                                    <th class="px-6 py-3 text-left text-s font-medium text-gray-500 uppercase tracking-wider w-1/4">Estado</th>
+                                    <th class="px-6 py-3 text-left text-s font-medium text-gray-500 uppercase tracking-wider w-1/4">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Iterar sobre los usuarios -->
+                                <tr *ngFor="let user of users">
+                                    <td class="px-6 py-4 whitespace-nowrap text-s font-medium text-gray-600">{{ user.id }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-s font-medium text-gray-600">{{ user.username }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-s text-gray-600">{{ user.rol }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-s">
+                                        <span [ngClass]="user.estado === 1 ? 'text-green-500' : 'text-red-500'">
+                                            {{ user.estado === 1 ? 'Activo' : 'Inactivo' }}
+                                        </span>
+                                    </td>                                    
+                                    <td class="px-6 py-4 whitespace-nowrap text-s text-gray-600 flex space-x-2">
+                                        <!-- Botón de Editar -->
+                                        <button class="bg-yellow-400 hover:bg-yellow-500 text-white" mat-flat-button>
+                                            <mat-icon class="icon-size-4" [svgIcon]="'heroicons_mini:pencil-square'"></mat-icon>
+                                        </button>
+                                        <!-- Botón de Eliminar -->
+                                        <button class="bg-red-400 hover:bg-red-500 text-white" (click)="deleteUser(user.id)" mat-flat-button>
+                                            <mat-icon class="icon-size-4" [svgIcon]="'heroicons_mini:trash'"></mat-icon>
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>            
+        </div>
+
+    </div>
+
+</div>
