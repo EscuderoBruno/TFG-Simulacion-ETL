@@ -1,0 +1,85 @@
+<div class="flex flex-col flex-auto min-w-0">
+
+    <!-- Header -->
+    <div class="flex flex-col sm:flex-row flex-0 sm:items-center sm:justify-between p-6 sm:py-5 sm:px-10 border-b bg-card dark:bg-transparent">
+        <div class="flex-1 min-w-0">
+            <!-- Breadcrumbs -->
+            <div class="flex flex-col">
+                <div class="hidden sm:flex font-medium">
+                    <!-- Título "Crear usuario" -->
+                    <div class="mr-8">
+                        <a class="whitespace-nowrap text-secondary-500 md:text-3xl">Crear usuario</a>
+                    </div>
+                    <div class="flex items-end pb-1">
+                        <a class="whitespace-nowrap text-primary-500">Inicio</a>
+                        <mat-icon class="icon-size-5 text-secondary mx-1" [svgIcon]="'heroicons_mini:chevron-right'"></mat-icon>
+                        <span class="whitespace-nowrap text-primary-500">Gestión de usuarios</span>
+                        <mat-icon class="icon-size-5 text-secondary mx-1" [svgIcon]="'heroicons_mini:chevron-right'"></mat-icon>
+                        <span class="text-secondary">Crear</span>
+                    </div>
+                </div>
+            </div>                                
+        </div>
+    </div>
+
+    <!-- Main -->
+    <div class="flex-auto p-6 sm:p-10">
+
+        <!-- CONTENT GOES HERE -->
+        <div class="max-h-400 rounded-2xl w-2/3">
+
+            <form class="flex flex-col p-8 pb-0 bg-card rounded-2xl shadow overflow-hidden">
+                <div class="flex flex-col gt-xs:flex-row">
+                    <mat-form-field
+                        [ngClass]="formFieldHelpers"
+                        class="flex-auto gt-xs:pr-3">
+                        <mat-label>Nombre de usuario</mat-label>
+                        <input matInput>
+                    </mat-form-field>
+                    <mat-form-field
+                        [ngClass]="formFieldHelpers"
+                        class="flex-auto gt-xs:pl-3">
+                        <mat-label>Contraseña</mat-label>
+                        <input matInput>
+                    </mat-form-field>
+                    <mat-form-field class="flex-auto">
+                        <mat-label>Rol</mat-label>
+                        <mat-select>
+                            <mat-option value="admin">
+                                <mat-icon class="mr-2">admin_panel_settings</mat-icon> Administrador
+                            </mat-option>
+                            <mat-option value="basic">
+                                <mat-icon class="mr-2">person</mat-icon> Básico
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                    <mat-form-field class="flex-auto">
+                        <mat-label>Estado</mat-label>
+                        <mat-select>
+                            <mat-option value="active">
+                                <mat-icon class="mr-2 text-green-500">check_circle</mat-icon> Activo
+                            </mat-option>
+                            <mat-option value="inactive">
+                                <mat-icon class="mr-2 text-red-500">cancel</mat-icon> Inactivo
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>              
+                </div>
+                <div class="flex items-center justify-end border-t -mx-8 mt-4 px-8 py-5 bg-gray-50 dark:bg-gray-700">
+                    <button mat-button>
+                        Cancelar
+                    </button>
+                    <button
+                        class="px-6 ml-3 text-white"
+                        mat-flat-button
+                        [color]="'primary'">
+                        Crear
+                    </button>
+                </div>                
+
+            </form>       
+        </div>
+
+    </div>
+
+</div>

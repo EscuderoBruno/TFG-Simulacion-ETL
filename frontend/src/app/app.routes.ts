@@ -63,7 +63,7 @@ export const appRoutes: Route[] = [
             initialData: initialDataResolver
         },
         children: [
-            {path: 'home', loadChildren: () => import('app/modules/pages/home/home.routes')},
+            {path: 'gestion_usuarios', loadChildren: () => import('app/modules/pages/usuarios/home.routes')},
             {path: 'example', loadChildren: () => import('app/modules/pages/example/example.routes')},
         ]
     }
