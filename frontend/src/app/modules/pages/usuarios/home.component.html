@@ -1,38 +1,22 @@
 <div class="flex flex-col flex-auto min-w-0">
 
     <!-- Header -->
-    <div class="flex flex-col sm:flex-row flex-0 sm:items-center sm:justify-between p-6 sm:py-5 sm:px-10 border-b bg-card dark:bg-transparent">
+    <div class="flex flex-col sm:flex-row flex-0 sm:items-center sm:justify-between p-6 sm:py-5 sm:px-10 border-b bg-card dark:bg-transparent min-h-[80.8px]">
         <div class="flex-1 min-w-0">
             <!-- Breadcrumbs -->
-            <div>
-                <div class="hidden sm:flex flex-wrap items-center font-medium">
-                    <div>
+            <div class="flex flex-col">
+                <div class="hidden sm:flex font-medium">
+                    <!-- Título "Crear usuario" -->
+                    <div class="mr-8">
+                        <a class="whitespace-nowrap text-secondary-500 md:text-3xl">Gestión usuarios</a>
+                    </div>
+                    <div class="flex items-end pb-1">
                         <a class="whitespace-nowrap text-primary-500">Inicio</a>
-                    </div>
-                    <div class="flex items-center ml-1 whitespace-nowrap">
-                        <mat-icon
-                            class="icon-size-5 text-secondary"
-                            [svgIcon]="'heroicons_mini:chevron-right'"></mat-icon>
-                        <span class="ml-1 text-secondary">Gestión usuarios</span>
+                        <mat-icon class="icon-size-5 text-secondary mx-1" [svgIcon]="'heroicons_mini:chevron-right'"></mat-icon>
+                        <span class="text-secondary">Gestión de usuarios</span>
                     </div>
                 </div>
-                <div class="flex sm:hidden">
-                    <a
-                        class="inline-flex items-center -ml-1.5 text-secondary font-medium"
-                        [routerLink]="'./..'">
-                        <mat-icon
-                            class="icon-size-5 text-secondary"
-                            [svgIcon]="'heroicons_solid:chevron-left'"></mat-icon>
-                        <span class="ml-1">Back</span>
-                    </a>
-                </div>
-            </div>
-            <!-- Title -->
-            <div class="mt-4">
-                <h2 class="text-3xl md:text-4xl font-bold tracking-tight leading-7 sm:leading-10 truncate">
-                    Gestión usuarios
-                </h2>
-            </div>
+            </div>                                
         </div>
         <!-- Actions -->
         <div class="relative mr-4">
@@ -48,7 +32,7 @@
         <div class="flex shrink-0 items-center mt-6 sm:mt-0 sm:ml-4">
             <button
                 class="ml-3 bg-sky-400 hover:bg-sky-500 text-white"
-                mat-flat-button>
+                mat-flat-button [routerLink]="['crear']">
                 <mat-icon
                     class="icon-size-4"
                     [svgIcon]="'heroicons_mini:plus'"></mat-icon>
@@ -63,7 +47,7 @@
         <!-- CONTENT GOES HERE -->
         <div class="max-h-400 rounded-2xl">
 
-            <div class="grid grid-cols-1 gap-8 w-full mt-2">
+            <div class="grid grid-cols-1 gap-8 w-full">
                 <!-- Recent transactions table -->
                 <div class="xl:col-span-2 flex flex-col flex-auto bg-card shadow rounded-2xl overflow-hidden p-4">
                     <div class="p-6">

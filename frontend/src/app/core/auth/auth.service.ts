@@ -15,7 +15,8 @@ export class AuthService {
     idUser: number = 0;
     user: string = '';
     token: string = '';
-    role: number = -1;
+    rol: number = -1;
+    estado: number = -1;
     //roleSub = new BehaviorSubject(0);
 
     set accessToken(token: string)
@@ -69,7 +70,8 @@ export class AuthService {
             this.idUser = response.user.id;
             this.user = response.user.username;
             this.token = response.token;
-            this.role = response.user.role;
+            this.rol = response.user.rol;
+            this.estado = response.user.estado;
 
             localStorage.setItem('accessToken', this.token);
             this._authenticated = true;
@@ -83,43 +85,6 @@ export class AuthService {
             })
         );
     }    
-
-    /**
-     * Sign in using the access token
-     */
-    signInUsingToken(): Observable<any>
-    {
-        // Sign in using the token
-        return this._httpClient.post('api/auth/sign-in-with-token', {
-            accessToken: this.accessToken,
-        }).pipe(
-            catchError(() =>
-
-                // Return false
-                of(false),
-            ),
-            switchMap((response: any) =>
-            {
-                // Replace the access token with the new one if it's available on
-                // the response object.
-                //
-                // This is an added optional step for better security. Once you sign
-                // in using the token, you should generate a new one on the server
-                // side and attach it to the response object. Then the following
-                // piece of code can replace the token with the refreshed one.
-                if ( response.accessToken )
-                {
-                    this.accessToken = response.accessToken;
-                }
-
-                // Set the authenticated flag to true
-                this._authenticated = true;
-
-                // Return true
-                return of(true);
-            }),
-        );
-    }
 
     /**
      * Sign out
@@ -141,46 +106,9 @@ export class AuthService {
      *
      * @param user
      */
-    signUp(user: { name: string; email: string; password: string; company: string }): Observable<any>
+    signUp(user: { username: string; password: string; rol: number; estado: number }): Observable<any>
     {
-        return this._httpClient.post('api/auth/sign-up', user);
-    }
-
-    /**
-     * Unlock session
-     *
-     * @param credentials
-     */
-    unlockSession(credentials: { email: string; password: string }): Observable<any>
-    {
-        return this._httpClient.post('api/auth/unlock-session', credentials);
-    }
-
-    /**
-     * Check the authentication status
-     */
-    check(): Observable<boolean>
-    {
-        // Check if the user is logged in
-        if ( this._authenticated )
-        {
-            return of(true);
-        }
-
-        // Check the access token availability
-        if ( !this.accessToken )
-        {
-            return of(false);
-        }
-
-        // Check the access token expire date
-        if ( AuthUtils.isTokenExpired(this.accessToken) )
-        {
-            return of(false);
-        }
-
-        // If the access token exists, and it didn't expire, sign in using it
-        return this.signInUsingToken();
+        return this._httpClient.post(`${environment.apiBaseUrl}/auth/register`, user);
     }
 
     /**

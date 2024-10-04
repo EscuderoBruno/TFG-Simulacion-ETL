@@ -1,7 +1,7 @@
 <div class="flex flex-col flex-auto min-w-0">
 
     <!-- Header -->
-    <div class="flex flex-col sm:flex-row flex-0 sm:items-center sm:justify-between p-6 sm:py-5 sm:px-10 border-b bg-card dark:bg-transparent">
+    <div class="flex flex-col sm:flex-row flex-0 sm:items-center sm:justify-between p-6 sm:py-5 sm:px-10 border-b bg-card dark:bg-transparent min-h-[80.8px]">
         <div class="flex-1 min-w-0">
             <!-- Breadcrumbs -->
             <div class="flex flex-col">
@@ -27,58 +27,47 @@
 
         <!-- CONTENT GOES HERE -->
         <div class="max-h-400 rounded-2xl w-2/3">
-
-            <form class="flex flex-col p-8 pb-0 bg-card rounded-2xl shadow overflow-hidden">
+            <form [formGroup]="signInForm" (ngSubmit)="onSubmit()" class="flex flex-col p-8 pb-0 bg-card rounded-2xl shadow overflow-hidden">
                 <div class="flex flex-col gt-xs:flex-row">
-                    <mat-form-field
-                        [ngClass]="formFieldHelpers"
-                        class="flex-auto gt-xs:pr-3">
-                        <mat-label>Nombre de usuario</mat-label>
-                        <input matInput>
+                    <mat-label class="block mb-2">Nombre de usuario</mat-label>
+                    <mat-form-field [ngClass]="formFieldHelpers" class="flex-auto gt-xs:pr-3">
+                        <input matInput formControlName="username"> <!-- Vinculado a formControlName -->
                     </mat-form-field>
-                    <mat-form-field
-                        [ngClass]="formFieldHelpers"
-                        class="flex-auto gt-xs:pl-3">
-                        <mat-label>Contraseña</mat-label>
-                        <input matInput>
+                    <mat-label class="block mb-2">Contraseña</mat-label>
+                    <mat-form-field [ngClass]="formFieldHelpers" class="flex-auto gt-xs:pl-3">
+                        <input matInput formControlName="password"> <!-- Vinculado a formControlName -->
                     </mat-form-field>
-                    <mat-form-field class="flex-auto">
-                        <mat-label>Rol</mat-label>
-                        <mat-select>
-                            <mat-option value="admin">
+                    <div class="flex-auto gt-xs:pr-3">
+                        <mat-label class="block mb-2">Rol</mat-label>
+                        <mat-button-toggle-group formControlName="rol" aria-label="Rol">
+                            <mat-button-toggle value="0">
                                 <mat-icon class="mr-2">admin_panel_settings</mat-icon> Administrador
-                            </mat-option>
-                            <mat-option value="basic">
+                            </mat-button-toggle>
+                            <mat-button-toggle value="1">
                                 <mat-icon class="mr-2">person</mat-icon> Básico
-                            </mat-option>
-                        </mat-select>
-                    </mat-form-field>
-                    <mat-form-field class="flex-auto">
-                        <mat-label>Estado</mat-label>
-                        <mat-select>
-                            <mat-option value="active">
+                            </mat-button-toggle>
+                        </mat-button-toggle-group>
+                    </div>
+                    <div class="flex-auto gt-xs:pl-3 gt-xs:mt-0 mt-4">
+                        <mat-label class="block mb-2">Estado</mat-label>
+                        <mat-button-toggle-group formControlName="estado" aria-label="Estado">
+                            <mat-button-toggle value="0">
                                 <mat-icon class="mr-2 text-green-500">check_circle</mat-icon> Activo
-                            </mat-option>
-                            <mat-option value="inactive">
+                            </mat-button-toggle>
+                            <mat-button-toggle value="1">
                                 <mat-icon class="mr-2 text-red-500">cancel</mat-icon> Inactivo
-                            </mat-option>
-                        </mat-select>
-                    </mat-form-field>              
+                            </mat-button-toggle>
+                        </mat-button-toggle-group>
+                    </div>
                 </div>
                 <div class="flex items-center justify-end border-t -mx-8 mt-4 px-8 py-5 bg-gray-50 dark:bg-gray-700">
-                    <button mat-button>
-                        Cancelar
-                    </button>
-                    <button
-                        class="px-6 ml-3 text-white"
-                        mat-flat-button
-                        [color]="'primary'">
+                    <button mat-button type="button" (click)="cancel()">Cancelar</button> <!-- Cambiado a type="button" y onClick -->
+                    <button class="px-6 ml-3 text-white" mat-flat-button [color]="'primary'" type="submit"> <!-- El botón Crear -->
                         Crear
                     </button>
-                </div>                
-
-            </form>       
-        </div>
+                </div>
+            </form>
+        </div>                     
 
     </div>
 
