@@ -1,52 +1,49 @@
 import { HttpErrorResponse, HttpEvent, HttpHandlerFn, HttpRequest } from '@angular/common/http';
 import { inject } from '@angular/core';
-import { AuthService } from 'app/core/auth/auth.service';
-import { AuthUtils } from 'app/core/auth/auth.utils';
+import { AuthService } from 'app/core/auth/auth.service'; // Tu servicio de autenticación
+import { AuthUtils } from 'app/core/auth/auth.utils';     // Utilidades para manejar tokens
 import { catchError, Observable, throwError } from 'rxjs';
 
 /**
- * Intercept
+ * Interceptador de autenticación
  *
- * @param req
- * @param next
+ * @param req - Solicitud HTTP
+ * @param next - Función para pasar la solicitud al siguiente manejador
  */
 export const authInterceptor = (req: HttpRequest<unknown>, next: HttpHandlerFn): Observable<HttpEvent<unknown>> =>
 {
+    // Inyectar el servicio de autenticación
     const authService = inject(AuthService);
 
-    // Clone the request object
+    // Clonar la solicitud HTTP original
     let newReq = req.clone();
 
-    // Request
-    //
-    // If the access token didn't expire, add the Authorization header.
-    // We won't add the Authorization header if the access token expired.
-    // This will force the server to return a "401 Unauthorized" response
-    // for the protected API routes which our response interceptor will
-    // catch and delete the access token from the local storage while logging
-    // the user out from the app.
-    if ( authService.accessToken && !AuthUtils.isTokenExpired(authService.accessToken) )
+    // Verificar si hay un token de acceso válido y si no ha expirado
+    if (authService.accessToken && !AuthUtils.isTokenExpired(authService.accessToken))
     {
+        // Clonar la solicitud agregando el encabezado de autorización
         newReq = req.clone({
             headers: req.headers.set('Authorization', 'Bearer ' + authService.accessToken),
         });
     }
 
-    // Response
+    // Pasar la solicitud clonada y manejar la respuesta
     return next(newReq).pipe(
         catchError((error) =>
         {
-            // Catch "401 Unauthorized" responses
-            if ( error instanceof HttpErrorResponse && error.status === 401 )
+            // Manejar el error 401 (no autorizado)
+            if (error instanceof HttpErrorResponse && error.status === 401)
             {
-                // Sign out
+                // Cerrar la sesión
                 authService.signOut();
 
-                // Reload the app
+                // Recargar la aplicación (opcional)
                 location.reload();
             }
 
+            // Lanzar el error para que otros manejadores puedan capturarlo
             return throwError(error);
         }),
     );
 };
+

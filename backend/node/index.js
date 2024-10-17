@@ -4,6 +4,8 @@ const express = require('express');
 const sequelize = require('./database/connection');  // Conexión a MySQL
 const User = require('./models/user');
 const authRoutes = require('./routes/auth.route');
+const locationsRoutes = require('./routes/locations.route');
+const simulationsRoutes = require('./routes/simulations.route');
 const cors = require('cors');
 
 const app = express();
@@ -31,6 +33,11 @@ sequelize.sync({ force: false })  // `force: false` para evitar recrear tablas c
 
 // Rutas de autenticación
 app.use('/auth', authRoutes);
+// Rutas de localización
+app.use('/locations', locationsRoutes);
+// Rutas de simulación
+app.use('/simulations', simulationsRoutes);
+
 
 // Iniciar servidor
 app.listen(PORT, () => {

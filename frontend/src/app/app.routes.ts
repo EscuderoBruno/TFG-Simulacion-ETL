@@ -1,6 +1,8 @@
 import { Route } from '@angular/router';
 import { initialDataResolver } from 'app/app.resolvers';
 import { LayoutComponent } from 'app/layout/layout.component';
+import { AdminGuard } from './core/auth/admin.guard';
+import { AuthGuard } from './core/auth/auth.guards';
 
 // @formatter:off
 /* eslint-disable max-len */
@@ -8,7 +10,7 @@ import { LayoutComponent } from 'app/layout/layout.component';
 export const appRoutes: Route[] = [
 
     // Redirect empty path to '/example'
-    {path: '', pathMatch : 'full', redirectTo: 'home'},
+    {path: '', pathMatch : 'full', redirectTo: 'simulaciones'},
 
     // Redirect signed-in user to the '/example'
     //
@@ -55,9 +57,12 @@ export const appRoutes: Route[] = [
         resolve: {
             initialData: initialDataResolver
         },
+        canActivate: [AuthGuard],
         children: [
-            {path: 'gestion_usuarios', loadChildren: () => import('app/modules/pages/usuarios/home.routes')},
+            {path: 'gestion_usuarios', loadChildren: () => import('app/modules/pages/usuarios/home.routes'), canActivate: [AdminGuard]},
             {path: 'example', loadChildren: () => import('app/modules/pages/example/example.routes')},
+            {path: 'localizaciones', loadChildren: () => import('app/modules/pages/localizaciones/localizaciones.routes')},
+            {path: 'simulaciones', loadChildren: () => import('app/modules/pages/simulaciones/simulaciones.routes')},
         ]
     }
 ];

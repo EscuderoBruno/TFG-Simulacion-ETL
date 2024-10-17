@@ -1,0 +1,109 @@
+<div class="flex flex-col flex-auto min-w-0">
+
+    <!-- Header -->
+    <div class="flex flex-col sm:flex-row flex-0 sm:items-center sm:justify-between p-6 sm:px-10 sm:py-2 border-b bg-card dark:bg-transparent min-h-[72.8px]">
+        <div class="flex-1 min-w-0">
+            <!-- Breadcrumbs -->
+            <div class="flex flex-col">
+                <div class="hidden sm:flex font-medium">
+                    <!-- Título "Crear usuario" -->
+                    <div class="mr-8">
+                        <a class="whitespace-nowrap text-secondary-500 md:text-2xl">Crear simulación</a>
+                    </div>
+                    <div class="flex items-end pb-1">
+                        <a class="whitespace-nowrap text-primary-500">Inicio</a>
+                        <mat-icon class="icon-size-5 text-secondary mx-1" [svgIcon]="'heroicons_mini:chevron-right'"></mat-icon>
+                        <span class="whitespace-nowrap text-primary-500">Simulaciones</span>
+                        <mat-icon class="icon-size-5 text-secondary mx-1" [svgIcon]="'heroicons_mini:chevron-right'"></mat-icon>
+                        <span class="text-secondary">Crear</span>
+                    </div>
+                </div>
+            </div>                                
+        </div>
+    </div>
+
+    <!-- Main -->
+    <div class="flex-auto p-6 sm:px-10">
+        <div class="flex w-full">
+            <!-- Primer formulario que ocupa 2/3 -->
+            <div class="max-h-400 rounded-2xl w-2/3">
+                <form [formGroup]="simulationForm" (ngSubmit)="onSubmit()" class="flex flex-col p-8 pb-0 bg-card rounded-2xl shadow overflow-hidden">
+                    <div class="flex flex-col gt-xs:flex-row">
+                        <mat-label class="block mb-1">Nombre</mat-label>
+                        <mat-form-field [ngClass]="formFieldHelpers" class="flex-auto gt-xs:pr-3">
+                            <input matInput formControlName="name">
+                        </mat-form-field>
+    
+                        <mat-label class="block mb-1">Localización</mat-label>
+                        <mat-form-field [ngClass]="formFieldHelpers" class="flex-auto gt-xs:pr-3">
+                            <mat-select formControlName="locationId">
+                                <mat-option *ngFor="let location of locations" [value]="location.id">
+                                    {{ location.name }}
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+    
+                        <mat-label class="block mb-1 flex items-center"> Parámetros 
+                            <div class="flex items-center relative">
+                                <!-- Botón de información con ícono -->
+                                <button mat-icon-button (click)="showTooltip = !showTooltip" type="button">
+                                    <mat-icon class="icon-size-5" [svgIcon]="'heroicons_outline:information-circle'"></mat-icon>
+                                </button>
+                                <!-- Div flotante que muestra el formato JSON -->
+                                <div *ngIf="showTooltip" 
+                                    class="bg-gray-50 absolute left-10 z-50 bg-white border border-gray-300 shadow-lg p-4 min-w-[400px] max-w-[600px] max-h-[450px] overflow-y-auto">
+                                    <div class="flex justify-between items-start pb-4">
+                                        <h4 class="text-base font-semibold">Formato JSON</h4>
+                                        <!-- Botón de cerrar (X) -->
+                                        <button class="icon-size-3" mat-icon-button (click)="showTooltip = false" aria-label="Cerrar" type="button">
+                                            <mat-icon class="text-gray-500 icon-size-4">close</mat-icon>
+                                        </button>
+                                    </div>
+                                    <div [innerHTML]="formattedFormatJson"></div>
+                                </div>
+                            </div>                                                                                                                           
+                        </mat-label>                        
+                        <mat-form-field [ngClass]="formFieldHelpers" class="flex-auto gt-xs:pr-3">
+                            <textarea matInput formControlName="parameters" class="h-40"></textarea>
+                        </mat-form-field>                        
+                    </div>
+    
+                    <div class="flex items-center justify-between border-t -mx-8 px-8 py-4 bg-gray-50 dark:bg-gray-700 rounded-b-lg">
+                        <!-- Botón para generar la simulación al principio -->
+                        <div class="flex">
+                            <button mat-stroked-button color="accent" (click)="testSimulation()" class="bg-white" type="button">
+                                <span class="material-icons" style="vertical-align: middle; margin-right: 4px;">play_arrow</span>
+                                Generar Simulación
+                            </button>
+                        </div>
+                        <!-- Botones "Cancelar" y "Crear" alineados a la derecha -->
+                        <div class="flex items-center">
+                            <button mat-button type="button" (click)="cancel()" class="ml-3">Cancelar</button>
+                            <button class="px-6 ml-3 text-white" mat-flat-button [color]="'primary'" type="submit">
+                                Crear
+                            </button>
+                        </div>
+                    </div>                                                    
+                </form>
+            </div>
+            <!-- Segundo formulario que ocupa 1/3 -->
+            <div class="max-h-400 rounded-2xl w-1/3 ml-4">
+                <div class="flex flex-col p-8 bg-card rounded-2xl shadow overflow-hidden">
+                    <mat-label class="block mb-4 text-lg">Simulación generada</mat-label>
+                    <div class="flex flex-col p-4 bg-card rounded-2xl shadow overflow-hidden bg-gray-50">
+                        <div *ngIf="generatedSimulation; else noSimulation">
+                            <div [innerHTML]="formattedSimulationJson"></div>
+                        </div>
+                        <ng-template #noSimulation>
+                            <!-- Muestra un mensaje o JSON vacío si no hay simulación generada -->
+                            <pre>{{ '{ ' }}{{ '}' }}</pre>
+                        </ng-template>
+                    </div>
+                </div>
+                <div *ngIf="showAlert" class="flex items-center p-4 mt-4 bg-red-100 border border-red-400 text-red-700 rounded-lg" role="alert">
+                    <div> Genera simulación antes de crear. </div>
+                </div>                                 
+            </div>                        
+        </div>                             
+    </div>
+</div>

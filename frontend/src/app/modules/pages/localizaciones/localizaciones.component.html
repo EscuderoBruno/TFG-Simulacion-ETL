@@ -8,12 +8,12 @@
                 <div class="hidden sm:flex font-medium">
                     <!-- Título "Crear usuario" -->
                     <div class="mr-8">
-                             <a class="whitespace-nowrap text-secondary-500 md:text-2xl">Gestión usuarios</a>
+                             <a class="whitespace-nowrap text-secondary-500 md:text-2xl">Localizaciones</a>
                     </div>
                     <div class="flex items-end pb-1">
                         <a class="whitespace-nowrap text-primary-500">Inicio</a>
                         <mat-icon class="icon-size-5 text-secondary mx-1" [svgIcon]="'heroicons_mini:chevron-right'"></mat-icon>
-                        <span class="text-secondary">Gestión de usuarios</span>
+                        <span class="text-secondary">Localizaciones</span>
                     </div>
                 </div>
             </div>                                
@@ -51,37 +51,31 @@
                 <!-- Recent transactions table -->
                 <div class="xl:col-span-2 flex flex-col flex-auto bg-card shadow rounded-2xl overflow-hidden p-4">
                     <div class="p-6">
-                        <div class="mr-4 text-lg font-large tracking-tight leading-6 truncate">Lista usuarios</div>
+                        <div class="mr-4 text-lg font-large tracking-tight leading-6 truncate">Lista localizaciones</div>
                     </div>
                     <div class="overflow-x-auto mx-6 mb-4">
                         <table class="w-full table-auto bg-transparent">
                             <thead class="bg-gray-50">
                                 <tr>
                                     <th class="px-6 py-3 text-left text-s font-medium text-gray-500 uppercase tracking-wider w-1/4">Id</th>
-                                    <th class="px-6 py-3 text-left text-s font-medium text-gray-500 uppercase tracking-wider w-1/4">Usuario</th>
-                                    <th class="px-6 py-3 text-left text-s font-medium text-gray-500 uppercase tracking-wider w-1/4">Rol</th>
-                                    <th class="px-6 py-3 text-left text-s font-medium text-gray-500 uppercase tracking-wider w-1/4">Estado</th>
+                                    <th class="px-6 py-3 text-left text-s font-medium text-gray-500 uppercase tracking-wider w-1/4">Nombre</th>
+                                    <th class="px-6 py-3 text-left text-s font-medium text-gray-500 uppercase tracking-wider w-1/4">Número coordenadas</th>
                                     <th class="px-6 py-3 text-left text-s font-medium text-gray-500 uppercase tracking-wider w-1/4">Acciones</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <!-- Iterar sobre los usuarios -->
-                                <tr *ngFor="let user of users">
-                                    <td class="px-6 py-4 whitespace-nowrap text-s font-medium text-gray-600">{{ user.id }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-s font-medium text-gray-600">{{ user.username }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-s text-gray-600">{{ user.rol }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-s">
-                                        <span [ngClass]="user.estado === 1 ? 'text-green-500' : 'text-red-500'">
-                                            {{ user.estado === 1 ? 'Activo' : 'Inactivo' }}
-                                        </span>
-                                    </td>                                    
+                                <tr *ngFor="let location of locations">
+                                    <td class="px-6 py-4 whitespace-nowrap text-s font-medium text-gray-600">{{ location.id }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-s font-medium text-gray-600">{{ location.name }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-s text-gray-600">{{ location.coordinates.length }}</td>                                 
                                     <td class="px-6 py-4 whitespace-nowrap text-s text-gray-600 flex space-x-2">
                                         <!-- Botón de Editar -->
                                         <button class="bg-yellow-400 hover:bg-yellow-500 text-white" mat-flat-button>
                                             <mat-icon class="icon-size-4" [svgIcon]="'heroicons_mini:pencil-square'"></mat-icon>
                                         </button>
                                         <!-- Botón de Eliminar -->
-                                        <button class="bg-red-400 hover:bg-red-500 text-white" (click)="deleteUser(user.id)" mat-flat-button>
+                                        <button class="bg-red-400 hover:bg-red-500 text-white" (click)="deleteLocation(location.id)" mat-flat-button>
                                             <mat-icon class="icon-size-4" [svgIcon]="'heroicons_mini:trash'"></mat-icon>
                                         </button>
                                     </td>
@@ -96,3 +90,4 @@
     </div>
 
 </div>
+

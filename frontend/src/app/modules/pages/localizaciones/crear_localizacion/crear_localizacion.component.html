@@ -1,0 +1,88 @@
+<div class="flex flex-col flex-auto min-w-0">
+
+    <!-- Header -->
+    <div class="flex flex-col sm:flex-row flex-0 sm:items-center sm:justify-between p-6 sm:px-10 sm:py-2 border-b bg-card dark:bg-transparent min-h-[72.8px]">
+        <div class="flex-1 min-w-0">
+            <!-- Breadcrumbs -->
+            <div class="flex flex-col">
+                <div class="hidden sm:flex font-medium">
+                    <!-- Título "Crear usuario" -->
+                    <div class="mr-8">
+                             <a class="whitespace-nowrap text-secondary-500 md:text-2xl">Crear colección</a>
+                    </div>
+                    <div class="flex items-end pb-1">
+                        <a class="whitespace-nowrap text-primary-500">Inicio</a>
+                        <mat-icon class="icon-size-5 text-secondary mx-1" [svgIcon]="'heroicons_mini:chevron-right'"></mat-icon>
+                        <span class="whitespace-nowrap text-primary-500">Localizaciones</span>
+                        <mat-icon class="icon-size-5 text-secondary mx-1" [svgIcon]="'heroicons_mini:chevron-right'"></mat-icon>
+                        <span class="text-secondary">Crear</span>
+                    </div>
+                </div>
+            </div>                                
+        </div>
+    </div>
+
+    <!-- Main -->
+        <div class="flex-auto p-6 sm:px-10">
+
+        <div class="max-h-400 rounded-2xl w-2/3">
+            <form [formGroup]="locationForm" (ngSubmit)="onSubmit()" class="flex flex-col p-8 pb-0 bg-card rounded-2xl shadow overflow-hidden">
+                <div class="flex flex-col gt-xs:flex-row mb-4">
+                    <mat-label class="block mb-2">Nombre</mat-label>
+                    <mat-form-field [ngClass]="formFieldHelpers" class="flex-auto gt-xs:pr-3">
+                        <input matInput formControlName="name"> <!-- Vinculado a formControlName -->
+                    </mat-form-field>
+                </div>
+                <!-- Sección de Localizaciones -->
+                <div class="flex flex-col w-full space-y-4" formArrayName="coordinates">
+                    <mat-label class="block mb-2">Coordenadas</mat-label>
+                    <div class="overflow-x-auto bg-white rounded-lg border border-gray-200">
+                        <table class="min-w-full table-auto border-collapse rounded-t-lg overflow-hidden">
+                            <thead>
+                                <tr class="bg-gray-50">
+                                    <th class="px-4 py-3 text-left border-r" style="font-weight: normal;">Latitud</th>
+                                    <th class="px-4 py-3 text-left border-r" style="font-weight: normal;">Longitud</th>
+                                    <th class="px-4 py-3 text-left border-r" style="font-weight: normal;">Altura</th>
+                                    <th class="px-4 py-3 text-left border-r" style="font-weight: normal;">Alias</th>
+                                    <th class="px-4 py-3 text-left" style="font-weight: normal;"></th>
+                                </tr>
+                            </thead>                            
+                            <tbody>
+                                <tr *ngFor="let cor of coordinates.controls; let i = index" [formGroupName]="i">
+                                    <td class="px-4 py-2 border-r border-t">
+                                        <input matInput formControlName="lat" class="w-full px-2 py-1" type="number">
+                                    </td>
+                                    <td class="px-4 py-2 border-r border-t">
+                                        <input matInput formControlName="long" class="w-full px-2 py-1" type="number">
+                                    </td>
+                                    <td class="px-4 py-2 border-r border-t">
+                                        <input matInput formControlName="height" class="w-full px-2 py-1" type="number">
+                                    </td>
+                                    <td class="px-4 py-2 border-r border-t">
+                                        <input matInput formControlName="alias" class="w-full px-2 py-1">
+                                    </td>
+                                    <td class="px-4 py-2 text-center border-t">
+                                        <button mat-icon-button color="warn" (click)="eliminarCoordenada(i)">
+                                            <mat-icon>delete</mat-icon>
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <button mat-stroked-button color="accent" class="self-start mt-4" (click)="agregarCoordenada()">
+                        + Agregar Coordenada
+                    </button>
+                </div>
+                <div class="flex items-center justify-end border-t -mx-8 mt-4 px-8 py-5 bg-gray-50 dark:bg-gray-700 rounded-b-lg">
+                    <button mat-button type="button" (click)="cancel()">Cancelar</button>
+                    <button class="px-6 ml-3 text-white" mat-flat-button [color]="'primary'" type="submit">
+                        Crear
+                    </button>
+                </div>
+            </form>
+        </div>                     
+
+    </div>
+
+</div>

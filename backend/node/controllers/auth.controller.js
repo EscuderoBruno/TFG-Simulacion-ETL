@@ -52,7 +52,8 @@ const login = async (req, res) => {
             user: {
                 id: user.id,
                 username: user.username,
-                role: user.rol,  // Asegúrate de que este campo exista en el modelo
+                rol: user.rol,  // Asegúrate de que este campo exista en el modelo
+                estado: user.estado,  // Asegúrate de que este campo exista en el modelo
             },
         });
     } catch (error) {
@@ -120,7 +121,7 @@ const getUserById = async (req, res) => {
         const user = await User.findByPk(id);
         res.status(200).json(user);
     } catch (error) {
-        res.status(500).json({ message: 'Error al obtener los usuarios', error });
+        res.status(500).json({ message: 'Error al obtener el usuario', error });
     }
 };
 
