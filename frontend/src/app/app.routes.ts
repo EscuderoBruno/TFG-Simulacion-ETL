@@ -45,10 +45,10 @@ export const appRoutes: Route[] = [
         ]
     },
 
-    // Admin routes
+    // Auth routes
     {
         path: '',
-        //canActivate: [AuthGuard],
+        canActivate: [AuthGuard], // AuthGuard
         //canActivateChild: [AuthGuard],
         component: LayoutComponent,
         data: {
@@ -57,9 +57,8 @@ export const appRoutes: Route[] = [
         resolve: {
             initialData: initialDataResolver
         },
-        canActivate: [AuthGuard],
         children: [
-            {path: 'gestion_usuarios', loadChildren: () => import('app/modules/pages/usuarios/home.routes'), canActivate: [AdminGuard]},
+            {path: 'gestion_usuarios', loadChildren: () => import('app/modules/pages/usuarios/home.routes'), canActivate: [AdminGuard]}, // AdminGuard
             {path: 'example', loadChildren: () => import('app/modules/pages/example/example.routes')},
             {path: 'localizaciones', loadChildren: () => import('app/modules/pages/localizaciones/localizaciones.routes')},
             {path: 'simulaciones', loadChildren: () => import('app/modules/pages/simulaciones/simulaciones.routes')},

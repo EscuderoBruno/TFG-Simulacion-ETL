@@ -32,6 +32,7 @@ export class ModernLayoutComponent implements OnInit, OnDestroy
 {
     isScreenSmall: boolean;
     navigation: Navigation;
+    currentUser: any;  // Propiedad para almacenar los datos del usuario
     private _unsubscribeAll: Subject<any> = new Subject<any>();
     
     navigationItems: FuseNavigationItem[] = [];
@@ -102,7 +103,7 @@ export class ModernLayoutComponent implements OnInit, OnDestroy
      * On init
      */
     ngOnInit(): void
-    {
+    {   
         // Subscribe to navigation data
         this._navigationService.navigation$
             .pipe(takeUntil(this._unsubscribeAll))
@@ -119,6 +120,10 @@ export class ModernLayoutComponent implements OnInit, OnDestroy
                 // Check if the screen is small
                 this.isScreenSmall = !matchingAliases.includes('md');
             });
+
+        // Obtener el usuario actualmente autenticado
+        this.currentUser = this._authService.getCurrentUser();  // Llama al método para obtener el usuario
+        console.log('Usuario actual:', this.currentUser);  // Imprime el usuario en la consola
     }
 
     /**

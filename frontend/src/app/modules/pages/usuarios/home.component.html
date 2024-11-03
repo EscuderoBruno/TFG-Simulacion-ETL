@@ -50,18 +50,15 @@
             <div class="grid grid-cols-1 gap-8 w-full">
                 <!-- Recent transactions table -->
                 <div class="xl:col-span-2 flex flex-col flex-auto bg-card shadow rounded-2xl overflow-hidden p-4">
-                    <div class="p-6">
-                        <div class="mr-4 text-lg font-large tracking-tight leading-6 truncate">Lista usuarios</div>
-                    </div>
-                    <div class="overflow-x-auto mx-6 mb-4">
+                    <div class="overflow-x-auto mx-6 mb-4 mt-5">
                         <table class="w-full table-auto bg-transparent">
                             <thead class="bg-gray-50">
                                 <tr>
-                                    <th class="px-6 py-3 text-left text-s font-medium text-gray-500 uppercase tracking-wider w-1/4">Id</th>
-                                    <th class="px-6 py-3 text-left text-s font-medium text-gray-500 uppercase tracking-wider w-1/4">Usuario</th>
-                                    <th class="px-6 py-3 text-left text-s font-medium text-gray-500 uppercase tracking-wider w-1/4">Rol</th>
-                                    <th class="px-6 py-3 text-left text-s font-medium text-gray-500 uppercase tracking-wider w-1/4">Estado</th>
-                                    <th class="px-6 py-3 text-left text-s font-medium text-gray-500 uppercase tracking-wider w-1/4">Acciones</th>
+                                    <th class="px-6 py-3 text-left text-s font-medium text-gray-500 tracking-wider">ID</th>
+                                    <th class="px-6 py-3 text-left text-s font-medium text-gray-500 tracking-wider w-2/6">Usuario</th>
+                                    <th class="px-6 py-3 text-left text-s font-medium text-gray-500 tracking-wider">Rol</th>
+                                    <th class="px-6 py-3 text-left text-s font-medium text-gray-500 tracking-wider">Estado</th>
+                                    <th class="px-6 py-3 text-left text-s font-medium text-gray-500 tracking-wider flex justify-end"></th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -69,21 +66,43 @@
                                 <tr *ngFor="let user of users">
                                     <td class="px-6 py-4 whitespace-nowrap text-s font-medium text-gray-600">{{ user.id }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-s font-medium text-gray-600">{{ user.username }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-s text-gray-600">{{ user.rol }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-s">
+                                        <span class="text-gray-600 flex items-center">
+                                            <!-- Mostrar si el rol es Administrador (1) -->
+                                            <ng-container *ngIf="user.rol === 1">
+                                                <mat-icon class="mr-2 align-middle">admin_panel_settings</mat-icon> 
+                                                <span class="align-middle">Administrador</span>
+                                            </ng-container>
+                                    
+                                            <!-- Mostrar si el rol es Básico (otro valor, como 0) -->
+                                            <ng-container *ngIf="user.rol !== 1">
+                                                <mat-icon class="mr-2 align-middle">person</mat-icon> 
+                                                <span class="align-middle">Básico</span>
+                                            </ng-container>
+                                        </span>
+                                    </td>                                                                                                 
                                     <td class="px-6 py-4 whitespace-nowrap text-s">
                                         <span [ngClass]="user.estado === 1 ? 'text-green-500' : 'text-red-500'">
                                             {{ user.estado === 1 ? 'Activo' : 'Inactivo' }}
                                         </span>
                                     </td>                                    
-                                    <td class="px-6 py-4 whitespace-nowrap text-s text-gray-600 flex space-x-2">
-                                        <!-- Botón de Editar -->
-                                        <button class="bg-yellow-400 hover:bg-yellow-500 text-white" mat-flat-button>
-                                            <mat-icon class="icon-size-4" [svgIcon]="'heroicons_mini:pencil-square'"></mat-icon>
+                                    <td class="px-6 py-4 whitespace-nowrap text-s text-gray-600 space-x-2 flex justify-end">
+                                        <!-- Ícono de tres puntos para el menú desplegable -->
+                                        <button mat-icon-button [matMenuTriggerFor]="menu">
+                                            <mat-icon>more_vert</mat-icon>
                                         </button>
-                                        <!-- Botón de Eliminar -->
-                                        <button class="bg-red-400 hover:bg-red-500 text-white" (click)="deleteUser(user.id)" mat-flat-button>
-                                            <mat-icon class="icon-size-4" [svgIcon]="'heroicons_mini:trash'"></mat-icon>
-                                        </button>
+                                        <!-- Menú desplegable -->
+                                        <mat-menu #menu="matMenu">
+                                            <!-- Botón de Editar -->
+                                            <button mat-menu-item>
+                                                Editar
+                                            </button>
+
+                                            <!-- Botón de Eliminar -->
+                                            <button mat-menu-item (click)="deleteUser(user.id)" class="text-red-500">
+                                                Eliminar
+                                            </button>
+                                        </mat-menu> 
                                     </td>
                                 </tr>
                             </tbody>

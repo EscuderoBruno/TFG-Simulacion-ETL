@@ -50,17 +50,14 @@
             <div class="grid grid-cols-1 gap-8 w-full">
                 <!-- Recent transactions table -->
                 <div class="xl:col-span-2 flex flex-col flex-auto bg-card shadow rounded-2xl overflow-hidden p-4">
-                    <div class="p-6">
-                        <div class="mr-4 text-lg font-large tracking-tight leading-6 truncate">Lista localizaciones</div>
-                    </div>
-                    <div class="overflow-x-auto mx-6 mb-4">
+                    <div class="overflow-x-auto mx-6 mb-4 mt-5">
                         <table class="w-full table-auto bg-transparent">
                             <thead class="bg-gray-50">
                                 <tr>
-                                    <th class="px-6 py-3 text-left text-s font-medium text-gray-500 uppercase tracking-wider w-1/4">Id</th>
-                                    <th class="px-6 py-3 text-left text-s font-medium text-gray-500 uppercase tracking-wider w-1/4">Nombre</th>
-                                    <th class="px-6 py-3 text-left text-s font-medium text-gray-500 uppercase tracking-wider w-1/4">Número coordenadas</th>
-                                    <th class="px-6 py-3 text-left text-s font-medium text-gray-500 uppercase tracking-wider w-1/4">Acciones</th>
+                                    <th class="px-6 py-3 text-left text-s font-medium text-gray-500 tracking-wider">ID</th>
+                                    <th class="px-6 py-3 text-left text-s font-medium text-gray-500 tracking-wider w-2/6">Nombre</th>
+                                    <th class="px-6 py-3 text-left text-s font-medium text-gray-500 tracking-wider">Nº coordenadas</th>
+                                    <th class="px-6 py-3 text-left text-s font-medium text-gray-500 tracking-wider flex justify-end"></th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -69,15 +66,23 @@
                                     <td class="px-6 py-4 whitespace-nowrap text-s font-medium text-gray-600">{{ location.id }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-s font-medium text-gray-600">{{ location.name }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-s text-gray-600">{{ location.coordinates.length }}</td>                                 
-                                    <td class="px-6 py-4 whitespace-nowrap text-s text-gray-600 flex space-x-2">
-                                        <!-- Botón de Editar -->
-                                        <button class="bg-yellow-400 hover:bg-yellow-500 text-white" mat-flat-button>
-                                            <mat-icon class="icon-size-4" [svgIcon]="'heroicons_mini:pencil-square'"></mat-icon>
+                                    <td class="px-6 py-4 whitespace-nowrap text-s text-gray-600 space-x-2 flex justify-end">
+                                        <!-- Ícono de tres puntos para el menú desplegable -->
+                                        <button mat-icon-button [matMenuTriggerFor]="menu">
+                                            <mat-icon>more_vert</mat-icon>
                                         </button>
-                                        <!-- Botón de Eliminar -->
-                                        <button class="bg-red-400 hover:bg-red-500 text-white" (click)="deleteLocation(location.id)" mat-flat-button>
-                                            <mat-icon class="icon-size-4" [svgIcon]="'heroicons_mini:trash'"></mat-icon>
-                                        </button>
+                                        <!-- Menú desplegable -->
+                                        <mat-menu #menu="matMenu">
+                                            <!-- Botón de Editar -->
+                                            <button mat-menu-item>
+                                                Editar
+                                            </button>
+
+                                            <!-- Botón de Eliminar -->
+                                            <button mat-menu-item (click)="deleteLocation(location.id)" class="text-red-500">
+                                                Eliminar
+                                            </button>
+                                        </mat-menu> 
                                     </td>
                                 </tr>
                             </tbody>

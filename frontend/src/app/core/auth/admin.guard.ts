@@ -15,8 +15,8 @@ export class AdminGuard implements CanActivate {
       return true;
     }
 
-    // Si no es admin, redirigir a una página de acceso denegado o home
-    this.router.navigate(['']); // O la página que prefieras
+    // Si no es admin, redirigir a la página principal
+    this.router.navigate(['']);
     return false;
   }
 }

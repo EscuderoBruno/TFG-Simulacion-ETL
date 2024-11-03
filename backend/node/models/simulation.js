@@ -1,8 +1,7 @@
-// src/models/Simulation.js
-
 const { DataTypes } = require('sequelize');
 const sequelize = require('../database/connection');
-const Locations = require('./locations'); // Asegúrate de importar el modelo de Locations
+const Locations = require('./locations');
+const User = require('./user'); 
 
 // Definición del modelo Simulation
 const Simulation = sequelize.define('Simulation', {
@@ -10,24 +9,56 @@ const Simulation = sequelize.define('Simulation', {
     type: DataTypes.STRING,
     allowNull: false,
   },
-  locationId: { // Agrega una clave foránea
+  locationId: { 
     type: DataTypes.INTEGER,
     allowNull: false,
     references: {
-      model: Locations, // Referencia al modelo Locations
-      key: 'id', // Asumiendo que el modelo Locations tiene un campo 'id'
+      model: Locations,
+      key: 'id',
     },
   },
   parameters: {
-    type: DataTypes.JSON, // Definimos 'parametros' como tipo JSON
-    allowNull: false, // Este campo puede ser nulo, dependiendo de tu caso de uso
+    type: DataTypes.JSON,
+    allowNull: true,
     defaultValue: {},
   },
+  userId: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    references: {
+      model: User,
+      key: 'id',
+    },
+  },
+  // Nuevos campos agregados según el FormGroup de Angular
+  minRegistrosPorInstante: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+  },
+  maxRegistrosPorInstante: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+  },
+  minIntervaloEntreRegistros: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+  },
+  maxIntervaloEntreRegistros: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+  },
+  numElementosASimular: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+  },
+  noRepetirCheckbox: {
+    type: DataTypes.INTEGER,
+    defaultValue: 0,
+  }
 });
 
-// Establecer la relación
-Simulation.belongsTo(Locations, {
-  foreignKey: 'locationId', // Clave foránea en Simulation
-});
+// Relaciones
+Simulation.belongsTo(User, { foreignKey: 'userId', as: 'user' });
+Simulation.belongsTo(Locations, { foreignKey: 'locationId' });
 
 module.exports = Simulation;

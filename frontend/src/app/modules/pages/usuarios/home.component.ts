@@ -4,13 +4,15 @@ import { MatIconModule } from '@angular/material/icon';
 import { RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common'; // Importar CommonModule aquí
 import { AuthService } from 'app/core/auth/auth.service';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 @Component({
     selector     : 'landing-home',
     templateUrl  : './home.component.html',
     encapsulation: ViewEncapsulation.None,
     standalone   : true,
-    imports      : [MatButtonModule, RouterLink, MatIconModule, CommonModule],
+    imports      : [MatButtonModule, RouterLink, MatIconModule, CommonModule, MatMenuModule, MatTooltipModule],
 })
 export class LandingHomeComponent
 {

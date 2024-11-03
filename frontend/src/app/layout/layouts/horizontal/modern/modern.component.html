@@ -53,6 +53,9 @@
                 [svgIcon]="'heroicons_outline:user-circle'"></mat-icon>
             </a>
         </div>
+        <div *ngIf="currentUser">
+            <h1 class="ml-4">{{ currentUser.username }}</h1>  <!-- Mostrar el nombre de usuario -->
+        </div>        
     </div>
 
     <!-- Content -->

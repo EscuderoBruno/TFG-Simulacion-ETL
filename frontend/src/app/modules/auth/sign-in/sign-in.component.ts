@@ -66,7 +66,7 @@ export class AuthSignInComponent implements OnInit
                 },
                 (error) => {
                     // Imprime el error completo en la consola
-                    console.error('Error durante el inicio de sesión:', error);
+                    console.error(error);
                     this.signInForm.enable();
                     this.signInNgForm.resetForm();
                     this.alert = {

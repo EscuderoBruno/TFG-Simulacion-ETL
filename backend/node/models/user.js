@@ -23,7 +23,7 @@ const User = sequelize.define('User', {
     type: DataTypes.INTEGER,
     allowNull: false,
     defaultValue: 1,  // 0 para inactivo, 1 para activo
-  },   
+  },
 });
 
 // Método para verificar la contraseña

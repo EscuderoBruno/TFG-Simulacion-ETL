@@ -1,26 +1,39 @@
 const Simulation = require('../models/simulation');
-const Locations  = require('../models/locations');
+const Locations = require('../models/locations');
 
 // Método para crear Simulación
 const newSimulation = async (req, res) => {
-    const { name, locationId, parameters } = req.body; // Asumiendo que recibes 'name' y 'locationId'
+    const { name, locationId, parameters, minRegistrosPorInstante, maxRegistrosPorInstante, minIntervaloEntreRegistros, maxIntervaloEntreRegistros, numElementosASimular, noRepetirCheckbox } = req.body;
+    const userId = req.user.id;
 
     try {
-    
         // Verifica si la ubicación existe
         const location = await Locations.findByPk(locationId);
         if (!location) {
-          return res.status(404).json({ message: 'Localización no encontrada' });
+            return res.status(404).json({ message: 'Localización no encontrada' });
         }
-    
-        const simulation = await Simulation.create({ name, locationId, parameters });
+
+        // Crear simulación con todas las propiedades del modelo
+        const simulation = await Simulation.create({
+            name,
+            locationId,
+            parameters,
+            userId,
+            minRegistrosPorInstante,
+            maxRegistrosPorInstante,
+            minIntervaloEntreRegistros,
+            maxIntervaloEntreRegistros,
+            numElementosASimular,
+            noRepetirCheckbox
+        });
+        
         return res.status(201).json(simulation);
     } catch (error) {
         return res.status(500).json({ error: error.message });
     }
 };
 
-// Método para eliminar un usuario
+// Método para eliminar una simulación
 const deleteSimulation = async (req, res) => {
     const { id } = req.params;
 
@@ -29,65 +42,85 @@ const deleteSimulation = async (req, res) => {
         if (!simulation) return res.status(404).json({ message: 'Simulación no encontrada' });
 
         await simulation.destroy();
-        res.status(200).json({ message: 'simulación eliminada con éxito' });
+        res.status(200).json({ message: 'Simulación eliminada con éxito' });
     } catch (error) {
         res.status(500).json({ message: 'Error al eliminar simulación', error });
     }
 };
 
-// Método para obtener todos los usuarios
+// Método para obtener todas las simulaciones
 const getAllSimulations = async (req, res) => {
     try {
-        const simulations = await Simulation.findAll({
-          include: Locations, // Incluir información de la ubicación
-        });
+        const userId = req.user?.id;
+        const userRol = req.user?.rol;
+
+        let simulations;
+
+        if (userRol === 1) {
+            simulations = await Simulation.findAll();
+        } else {
+            simulations = await Simulation.findAll({
+                where: { userId }
+            });
+        }
+
         return res.status(200).json(simulations);
     } catch (error) {
         return res.status(500).json({ error: error.message });
     }
 };
 
-// Método para obtener un usuario por id
+// Método para obtener una simulación por id
 const getSimulationById = async (req, res) => {
     try {
-      const { id } = req.params;
-      const simulation = await Simulation.findByPk(id, {
-        include: Locations, // Incluir información de la ubicación
-      });
-  
-      if (!simulation) {
-        return res.status(404).json({ message: 'Simulation not found' });
-      }
-  
-      return res.status(200).json(simulation);
+        const { id } = req.params;
+        const simulation = await Simulation.findByPk(id, {
+            include: Locations
+        });
+
+        if (!simulation) {
+            return res.status(404).json({ message: 'Simulación no encontrada' });
+        }
+
+        return res.status(200).json(simulation);
     } catch (error) {
-      return res.status(500).json({ error: error.message });
+        return res.status(500).json({ error: error.message });
     }
-  };
+};
 
 // Método para actualizar una simulación
 const updateSimulation = async (req, res) => {
     try {
-      const { id } = req.params;
-      const { name, locationId, parameters} = req.body;
-  
-      // Verifica si la ubicación existe
-      const location = await Locations.findByPk(locationId);
-      if (!location) {
-        return res.status(404).json({ message: 'Location not found' });
-      }
-  
-      const [updated] = await Simulation.update({ name, locationId, parameters }, {
-        where: { id }
-      });
-  
-      if (!updated) {
-        return res.status(404).json({ message: 'Simulation not found' });
-      }
-  
-      return res.status(200).json({ message: 'Simulation updated successfully' });
+        const { id } = req.params;
+        const { name, locationId, parameters, minRegistrosPorInstante, maxRegistrosPorInstante, minIntervaloEntreRegistros, maxIntervaloEntreRegistros, numElementosASimular, noRepetirCheckbox } = req.body;
+
+        // Verifica si la ubicación existe
+        const location = await Locations.findByPk(locationId);
+        if (!location) {
+            return res.status(404).json({ message: 'Localización no encontrada' });
+        }
+
+        const [updated] = await Simulation.update({
+            name,
+            locationId,
+            parameters,
+            minRegistrosPorInstante,
+            maxRegistrosPorInstante,
+            minIntervaloEntreRegistros,
+            maxIntervaloEntreRegistros,
+            numElementosASimular,
+            noRepetirCheckbox
+        }, {
+            where: { id }
+        });
+
+        if (!updated) {
+            return res.status(404).json({ message: 'Simulación no encontrada' });
+        }
+
+        return res.status(200).json({ message: 'Simulación actualizada con éxito' });
     } catch (error) {
-      return res.status(500).json({ error: error.message });
+        return res.status(500).json({ error: error.message });
     }
 };
 

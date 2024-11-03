@@ -1,7 +1,7 @@
 <div class="flex flex-col flex-auto min-w-0">
 
     <!-- Header -->
-    <div class="flex flex-col sm:flex-row flex-0 sm:items-center sm:justify-between p-6 sm:py-4 sm:px-10 border-b bg-card dark:bg-transparent min-h-[72.8px]">
+    <div class="flex flex-col sm:flex-row flex-0 sm:items-center sm:justify-between p-6 sm:py-4 sm:px-10 border-b bg-card dark:bg-transparent ">
         <div class="flex-1 min-w-0">
             <!-- Breadcrumbs -->
             <div class="flex flex-col">
@@ -42,55 +42,101 @@
     </div>
 
     <!-- Main -->
-        <div class="flex-auto p-6 sm:px-10">
-
+    <div class="flex-auto p-6 sm:px-10">
         <!-- CONTENT GOES HERE -->
         <div class="max-h-400 rounded-2xl">
-
+            <!-- Simulaciones en ejecución -->
+            <div *ngIf="activeSimulations.length > 0" class="p-4 mb-6 bg-white rounded-lg text-white">
+                <div class="overflow-x-auto">
+                    <table class="w-full table-auto bg-transparent">
+                        <tbody>
+                            <tr *ngFor="let activeSimulation of activeSimulations; let i = index" class="border-b">
+                                <td class="px-6 py-2 whitespace-nowrap text-s text-gray-600">
+                                    {{ activeSimulation.simulation.name }}
+                                </td>
+                                <td class="px-6 py-2 whitespace-nowrap text-s text-gray-600 flex justify-end items-center">
+                                    <div class="flex items-center">
+                                        <h class="mr-4">
+                                            <span>Elementos generados: {{ getSimulationProgress(activeSimulation.simulation.id) }} </span>
+                                        </h>
+                                        <mat-progress-bar 
+                                            mode="determinate" 
+                                            [value]="getSimulationPercentage(activeSimulation.simulation.id)"
+                                            style="width: 200px; height: 20px;"
+                                            [color]="getSimulationPercentage(activeSimulation.simulation.id) === 100 ? 'primary' : 'warn'">
+                                        </mat-progress-bar>
+                                        <!-- <h class="ml-4">
+                                            <span>{{ getSimulationPercentage(activeSimulation.simulation.id) }} %</span>
+                                        </h> -->
+                                    </div>
+                                    <!-- <h class="ml-12 text-s text-gray-600">
+                                        {{ formatElapsedTime(activeSimulation.elapsedTime) }}
+                                    </h> -->
+                                    <button (click)="toggleSimulation(activeSimulation.simulation.id)" class="bg-red-500 text-white px-4 py-2 rounded ml-12">Detener</button>
+                                </td>
+                            </tr>                                                     
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
             <div class="grid grid-cols-1 gap-8 w-full">
                 <!-- Recent transactions table -->
                 <div class="xl:col-span-2 flex flex-col flex-auto bg-card shadow rounded-2xl overflow-hidden p-4">
-                    <div class="p-6">
-                        <div class="mr-4 text-lg font-large tracking-tight leading-6 truncate">Lista simulaciones</div>
-                    </div>
-                    <div class="overflow-x-auto mx-6 mb-4">
+                    <div class="overflow-x-auto mx-6 mb-4 mt-5">
                         <table class="w-full table-auto bg-transparent">
                             <thead class="bg-gray-50">
                                 <tr>
-                                    <th class="px-6 py-3 text-left text-s font-medium text-gray-500 uppercase tracking-wider w-1/4">Id</th>
-                                    <th class="px-6 py-3 text-left text-s font-medium text-gray-500 uppercase tracking-wider w-1/4">Nombre</th>
-                                    <th class="px-6 py-3 text-left text-s font-medium text-gray-500 uppercase tracking-wider w-1/4">Localizaciones</th>
-                                    <th class="px-6 py-3 text-left text-s font-medium text-gray-500 uppercase tracking-wider w-1/4">Acciones</th>
+                                    <th class="px-6 py-3 text-left text-s font-medium text-gray-500 tracking-wider">ID</th>
+                                    <th class="px-6 py-3 text-left text-s font-medium text-gray-500 tracking-wider w-2/6">Nombre</th>
+                                    <th class="px-6 py-3 text-left text-s font-medium text-gray-500 tracking-wider">Localización</th>
+                                    <th class="px-6 py-3 text-left text-s font-medium text-gray-500 tracking-wider" matTooltip="Número de elementos a simular" matTooltipPosition="above">Nº Elem</th>
+                                    <th class="px-6 py-3 text-left text-s font-medium text-gray-500 tracking-wider" matTooltip="Registros por instante" matTooltipPosition="above">Reg. Inst.</th>
+                                    <th class="px-6 py-3 text-left text-s font-medium text-gray-500 tracking-wider" matTooltip="Intervalo entre registros" matTooltipPosition="above">Int. Reg.</th>
+                                    <th class="px-6 py-3 text-left text-s font-medium text-gray-500 tracking-wider flex justify-end"></th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <!-- Iterar sobre los usuarios -->
+                                <!-- Iterar sobre las simulaciones -->
                                 <tr *ngFor="let simulation of simulations">
                                     <td class="px-6 py-4 whitespace-nowrap text-s font-medium text-gray-600">{{ simulation.id }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-s font-medium text-gray-600">{{ simulation.name }}</td>         
-                                    <td class="px-6 py-4 whitespace-nowrap text-s font-medium text-gray-600">{{ simulation.locationId }}</td>                        
-                                    <td class="px-6 py-4 whitespace-nowrap text-s text-gray-600 flex space-x-2">
-                                        <!-- Botón de Editar -->
-                                        <button class="bg-yellow-400 hover:bg-yellow-500 text-white" mat-flat-button>
-                                            <mat-icon class="icon-size-4" [svgIcon]="'heroicons_mini:pencil-square'"></mat-icon>
+                                    <td class="px-6 py-4 whitespace-nowrap text-s font-medium text-gray-600">{{ simulation.name }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-s font-medium text-gray-600">{{ getLocationName(simulation.locationId) }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-s font-medium text-gray-600">{{ simulation.numElementosASimular }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-s font-medium text-gray-600">{{ simulation.minRegistrosPorInstante }}-{{ simulation.maxRegistrosPorInstante }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-s font-medium text-gray-600">{{ simulation.minIntervaloEntreRegistros }}-{{ simulation.maxIntervaloEntreRegistros }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-s text-gray-600 space-x-2 flex justify-end">
+                                        <!-- Botón de Ejecutar -->
+                                        <button mat-icon-button (click)="simularInstantaneamente(simulation.id)">
+                                            <mat-icon svgIcon="heroicons_mini:rocket-launch"></mat-icon>
                                         </button>
-                                        <!-- Botón de Eliminar -->
-                                        <button class="bg-red-400 hover:bg-red-500 text-white" (click)="deleteSimulation(simulation.id)" mat-flat-button>
-                                            <mat-icon class="icon-size-4" [svgIcon]="'heroicons_mini:trash'"></mat-icon>
+                                        <!-- Botón de Ejecutar -->
+                                        <button mat-icon-button (click)="toggleSimulation(simulation.id)">
+                                            <mat-icon>play_arrow</mat-icon>
                                         </button>
-                                        <!-- Botón de Eliminar -->
-                                        <button class="bg-gray-400 hover:bg-gray-500 text-white" (click)="deleteSimulation(simulation.id)" mat-flat-button>
-                                            <mat-icon class="icon-size-4" [svgIcon]="'heroicons_mini:play'"></mat-icon>
+                                        <!-- Ícono de tres puntos para el menú desplegable -->
+                                        <button mat-icon-button [matMenuTriggerFor]="menu">
+                                            <mat-icon>more_vert</mat-icon>
                                         </button>
+                                        <!-- Menú desplegable -->
+                                        <mat-menu #menu="matMenu">
+                                            <!-- Botón de Editar -->
+                                            <button mat-menu-item (click)="editSimulation(simulation.id)">
+                                                Editar
+                                            </button>
+                                            <!-- Botón de Eliminar -->
+                                            <button mat-menu-item (click)="deleteSimulation(simulation.id)" class="text-red-500">
+                                                Eliminar
+                                            </button>
+                                        </mat-menu>
                                     </td>
                                 </tr>
                             </tbody>
                         </table>
                     </div>
                 </div>
-            </div>            
+            </div>
         </div>
-
     </div>
 
 </div>

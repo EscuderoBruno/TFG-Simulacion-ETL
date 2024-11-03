@@ -38,13 +38,22 @@ const login = async (req, res) => {
         // Verificar si el usuario existe
         const user = await User.findOne({ where: { username } });
         if (!user) return res.status(400).json({ message: 'Usuario no encontrado' });
+        if (user.estado == 0) return res.status(400).json({ message: 'Usuario inactivo. Contacte con el administrador.'});
 
         // Verificar si la contraseña en texto plano coincide con el hash almacenado
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) return res.status(400).json({ message: 'Contraseña incorrecta' });
 
-        // Generar un token JWT
-        const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+        // Generar un token JWT incluyendo el rol y el estado
+        const token = jwt.sign(
+            {
+                id: user.id,
+                rol: user.rol,      // Incluyendo el rol en el token
+                estado: user.estado, // Incluyendo el estado en el token
+            },
+            process.env.JWT_SECRET,
+            { expiresIn: '2h' }
+        );
 
         // Responder con el token y otros datos del usuario
         res.json({

@@ -39,15 +39,16 @@ export class LocalizacionesService {
     }
 
     // Método para obtener las coordenadas por ID
-    getCoordinatesById(locationId: number): Observable<{ lat: number; long: number; height: number }> {
+    getCoordinatesById(locationId: number, numArray: number): Observable<{ lat: number; long: number; height: number, alias: string }> {
         return this.getLocationById(locationId).pipe(
             map((location) => {
                 // Asumiendo que las coordenadas están en la primera posición del array
-                const coord = location.coordinates[0];
+                const coord = location.coordinates[numArray];
                 return {
                     lat: coord.lat,
                     long: coord.long,
                     height: coord.height,
+                    alias: coord.alias
                 };
             })
         );

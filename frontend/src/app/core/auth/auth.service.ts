@@ -22,6 +22,7 @@ export class AuthService {
 
     constructor() {
         this.loadUserRole();  // Carga el rol del usuario al iniciar el servicio
+        this.loadAuthenticationStatus(); // Cargar estado de autenticación
     }
 
     private loadUserRole(): void {
@@ -46,18 +47,41 @@ export class AuthService {
         return this._authenticated;
     }
 
+    private loadAuthenticationStatus(): void {
+        const storedAuthStatus = localStorage.getItem('authenticated');
+        this._authenticated = storedAuthStatus === 'true'; // Establecer el estado de autenticación
+    }
+
     isTokenExpired(): boolean {
         const token = this.accessToken;
         if (!token) {
-        return true;
+          this._authenticated = false; // Si no hay token, no está autenticado
+          return true;
         }
-        return AuthUtils.isTokenExpired(token); // Lógica para verificar si el token ha expirado
+    
+        const expired = AuthUtils.isTokenExpired(token); // Verifica si el token ha expirado
+        if (expired) {
+          this._authenticated = false; // Si ha expirado, marca como no autenticado
+        }
+        return expired;
     }
 
     // Verificar si el usuario es Admin (rol == 1 o el valor que uses para Admin)
     isAdmin(): boolean {
         console.log(this.rol)
         return this.rol === 1; // Cambia '1' por el valor que representa a "admin" en tu sistema
+    }
+
+    getUserInfo(): { id: number; username: string; rol: number; estado: number } | null {
+        const userInfo = localStorage.getItem('userInfo');
+        if (userInfo) {
+            return JSON.parse(userInfo); // Devuelve el objeto parseado
+        }
+        return null; // Si no hay información, retorna null
+    }
+
+    getCurrentUser(): { id: number; username: string; rol: number; estado: number } | null {
+        return this.getUserInfo(); // Devuelve la información del usuario desde localStorage
     }
 
     // -----------------------------------------------------------------------------------------------------
@@ -90,13 +114,13 @@ export class AuthService {
      * @param credentials
      */
     signIn(credentials: { username: string; password: string }): Observable<any> {
+        this.isTokenExpired();
         if (this._authenticated) {
             return throwError('User is already logged in.');
         }
     
         return this._httpClient.post(`${environment.apiBaseUrl}/auth/login`, credentials).pipe(
             switchMap((response: any) => {
-    
                 // Almacena los datos del usuario
                 this.idUser = response.user.id;
                 this.user = response.user.username;
@@ -104,11 +128,18 @@ export class AuthService {
                 this.rol = response.user.rol;  
                 this.estado = response.user.estado;
     
-                // Almacena el rol en localStorage
-                localStorage.setItem('userRole', this.rol.toString());  // Convertir a string para almacenarlo
+                // Almacena la información del usuario en localStorage
+                localStorage.setItem('userInfo', JSON.stringify({
+                    id: this.idUser,
+                    username: this.user,
+                    rol: this.rol,
+                    estado: this.estado
+                }));
     
+                localStorage.setItem('userRole', this.rol.toString());  // Convertir a string para almacenarlo
                 localStorage.setItem('accessToken', this.token);
                 this._authenticated = true;
+                localStorage.setItem('authenticated', 'true');  // Persistir autenticación
     
                 return of(response);
             }),
@@ -117,7 +148,7 @@ export class AuthService {
                 return throwError('Error al iniciar sesión: ' + (error.error.message || 'Unknown error'));
             })
         );
-    }    
+    }      
 
     /**
      * Sign out

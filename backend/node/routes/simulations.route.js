@@ -1,14 +1,15 @@
 const express = require('express');
 const { getAllSimulations, newSimulation, getSimulationById, deleteSimulation, updateSimulation } = require('../controllers/simulations.controller');
 const router = express.Router();
+const authenticate = require('../middlewares/auth.middleware');
 
 // Ruta para nueva localización
-router.post('/create', newSimulation);
+router.post('/create', authenticate, newSimulation);
 // Ruta para eliminar localización
-router.delete('/delete/:id', deleteSimulation);
+router.delete('/delete/:id', authenticate, deleteSimulation);
 // Ruta para obtener todas las localizaciones
-router.get('/', getAllSimulations);
+router.get('/', authenticate, getAllSimulations);
 // Ruta para obtener una localización por id
-router.get('/:id', getSimulationById);
+router.get('/:id', authenticate, getSimulationById);
 
 module.exports = router;
