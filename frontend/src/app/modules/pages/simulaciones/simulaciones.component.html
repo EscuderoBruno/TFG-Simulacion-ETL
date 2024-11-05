@@ -104,7 +104,7 @@
                                     <td class="px-6 py-4 whitespace-nowrap text-s font-medium text-gray-600">{{ getLocationName(simulation.locationId) }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-s font-medium text-gray-600">{{ simulation.numElementosASimular }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-s font-medium text-gray-600">{{ simulation.minRegistrosPorInstante }}-{{ simulation.maxRegistrosPorInstante }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-s font-medium text-gray-600">{{ simulation.minIntervaloEntreRegistros }}-{{ simulation.maxIntervaloEntreRegistros }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-s font-medium text-gray-600">{{ simulation.minIntervaloEntreRegistros }}-{{ simulation.maxIntervaloEntreRegistros }} s</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-s text-gray-600 space-x-2 flex justify-end">
                                         <!-- Botón de Ejecutar -->
                                         <button mat-icon-button (click)="simularInstantaneamente(simulation.id)">

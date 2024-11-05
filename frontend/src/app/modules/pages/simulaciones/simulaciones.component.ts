@@ -9,7 +9,6 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { ChangeDetectorRef } from '@angular/core';
-import { AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
 
 
 @Component({
@@ -156,27 +155,5 @@ export class SimulacionesComponent implements OnInit, OnDestroy {
         this.activeSimulations.forEach((sim, index) => {
             this.stopSimulation(index);
         });
-    }
-
-    // Validador personalizado para verificar el número de registros por instante
-    registrosPorInstanteValidator(): ValidatorFn {
-        return (control: AbstractControl): ValidationErrors | null => {
-        const minRegistros = control.get('minRegistrosPorInstante')?.value;
-        const maxRegistros = control.get('maxRegistrosPorInstante')?.value;
-        const noRepetir = control.get('noRepetirCheckbox')?.value;
-        const locationId = control.get('locationId')?.value;
-        const locations = this.locations; // Asumiendo que `locations` es una lista de localizaciones disponible en el componente
-    
-        if (noRepetir && locationId) {
-            const location = locations.find((loc) => loc.id === locationId);
-            const maxCoordinates = location?.coordinates.length || 0;
-    
-            if (minRegistros > maxCoordinates || maxRegistros > maxCoordinates) {
-            return { registrosExcedenCoordenadas: true };
-            }
-        }
-    
-        return null;
-        };
     }
 }
