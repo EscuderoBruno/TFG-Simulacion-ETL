@@ -1,6 +1,6 @@
-const { DataTypes } = require('sequelize');
+const { DataTypes, Sequelize } = require('sequelize');
 const sequelize = require('../database/connection');
-const Locations = require('./locations');
+const Sensors = require('./sensor');
 const User = require('./user'); 
 
 // Definición del modelo Simulation
@@ -9,11 +9,11 @@ const Simulation = sequelize.define('Simulation', {
     type: DataTypes.STRING,
     allowNull: false,
   },
-  locationId: { 
+  sensorId: { 
     type: DataTypes.INTEGER,
     allowNull: false,
     references: {
-      model: Locations,
+      model: Sensors,
       key: 'id',
     },
   },
@@ -54,11 +54,15 @@ const Simulation = sequelize.define('Simulation', {
   noRepetirCheckbox: {
     type: DataTypes.INTEGER,
     defaultValue: 0,
+  },
+  date: {
+    type: DataTypes.DATE,
+    allowNull: false,
   }
 });
 
 // Relaciones
 Simulation.belongsTo(User, { foreignKey: 'userId', as: 'user' });
-Simulation.belongsTo(Locations, { foreignKey: 'locationId' });
+Simulation.belongsTo(Sensors, { foreignKey: 'sensorId' });
 
 module.exports = Simulation;

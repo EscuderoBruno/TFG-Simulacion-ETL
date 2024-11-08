@@ -3,7 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { SimulacionesService } from '../simulaciones.service';
-import { LocalizacionesService } from '../../localizaciones/localizaciones.service';
+import { SensoresService } from '../../sensores/sensores.service';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -14,11 +14,13 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatCheckboxModule } from '@angular/material/checkbox'; // Importar el módulo de Checkbox
 import { MatMenuModule } from '@angular/material/menu';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
+import { MatDatepickerModule } from '@angular/material/datepicker';
 import { RouterModule } from '@angular/router';
 import { ReactiveFormsModule } from '@angular/forms';
 import { DomSanitizer } from '@angular/platform-browser';
 import mqtt from 'mqtt';  // Importa la librería MQTT
 import { AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
+import { DatePipe } from '@angular/common';
 
 
 @Component({
@@ -39,15 +41,17 @@ import { AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
         MatMenuModule,
         ReactiveFormsModule,
         RouterModule,
-        MatCheckboxModule
+        MatCheckboxModule,
+        MatDatepickerModule
     ],
+    providers: [DatePipe]  // Proveedor de DatePipe
 })
 
 export class CrearSimulacionComponent implements OnInit {
   
     simulationForm: UntypedFormGroup;
     formFieldHelpers = '';
-    locations: any[] = [];
+    sensors: any[] = [];
     generatedSimulation: string = ''; // Propiedad para almacenar la simulación generada
     jsonFormat: any; // Propiedad para almacenar el formato JSON
     showTooltip = false;
@@ -57,6 +61,8 @@ export class CrearSimulacionComponent implements OnInit {
     private mqttClient: any; // Cliente MQTT
     numArrayLocalizacion: 0;
     simulacionesGeneradas: any[] = [];
+    minDate: Date;
+    placeholderText: string = 'Fecha'; // Valor inicial del placeholder
 
     jsonData = {
         campo2: "^int[0,10]",
@@ -98,53 +104,79 @@ export class CrearSimulacionComponent implements OnInit {
 
     constructor(
         private _simulationService: SimulacionesService,
-        private _locationsService: LocalizacionesService,
+        private _sensoresService: SensoresService,
         private _formBuilder: UntypedFormBuilder,
         private _activatedRoute: ActivatedRoute,
         private _router: Router,
         private sanitizer: DomSanitizer,
+        private datePipe: DatePipe
     ) {}
 
     ngOnInit(): void {
-        this._locationsService.getAllLocations().subscribe(
-            (response) => {
-              this.locations = response;  // Guardar la lista de localizaciones
-            },
-            (error) => {
-              console.error('Error al obtener las localizaciones', error);
-            }
-        );
-        
+        // Obtenemos la fecha y hora actuales y la formateamos
+        const formattedDate = this.datePipe.transform(new Date(), 'dd/MM/yyyy 00:00:00');
+
         // Configuración del formulario principal
         this.simulationForm = this._formBuilder.group({
             name: ['', Validators.required],
-            locationId: [null, Validators.required],
-            minRegistrosPorInstante: [0, [Validators.required, Validators.min(0)]],
-            maxRegistrosPorInstante: [0, [Validators.required, Validators.min(0)]],
-            minIntervaloEntreRegistros: [0, [Validators.required, Validators.min(0)]],
-            maxIntervaloEntreRegistros: [0, [Validators.required, Validators.min(0)]],
-            numElementosASimular: [0, [Validators.required, Validators.min(0)]],
+            sensorId: [null, Validators.required],
+            minRegistrosPorInstante: ["", [Validators.required, Validators.min(0)]],
+            maxRegistrosPorInstante: ["", [Validators.required, Validators.min(0)]],
+            minIntervaloEntreRegistros: ["", [Validators.required, Validators.min(0)]],
+            maxIntervaloEntreRegistros: ["", [Validators.required, Validators.min(0)]],
+            numElementosASimular: ["", [Validators.required, Validators.min(0)]],
             noRepetirCheckbox: [0],
-            parameters: ['']
-        }, { validators: this.registrosPorInstanteValidator() });
+            parameters: [''],
+            // Campo fecha con el valor formateado
+            date: [formattedDate, Validators.required],
+        });
 
-        // Escuchar cambios en 'noRepetirCheckbox' y 'locationId' para disparar la validación
-        this.simulationForm.get('noRepetirCheckbox')?.valueChanges.subscribe(() => this.simulationForm.updateValueAndValidity());
-        this.simulationForm.get('locationId')?.valueChanges.subscribe(() => this.simulationForm.updateValueAndValidity());
+        // Obtener las ubicaciones de los sensores
+        this._sensoresService.getAllSensors().subscribe(
+            (response) => {
+                this.sensors = response;
+            },
+            (error) => {
+                console.error('Error al obtener los sensores', error);
+            }
+        );
     }
+
+    // Método para convertir la fecha en formato string a Date
+    getFechaAsDate(fechaString: string): Date {
+        const [datePart, timePart] = fechaString.split(' ');  // Separar la fecha y la hora
+        const [day, month, year] = datePart.split('/');      // Separar la fecha en día, mes y año
+        const [hours, minutes, seconds] = timePart.split(':'); // Separar la hora en horas, minutos y segundos
+        return new Date(+year, +month - 1, +day, +hours, +minutes, +seconds); // Retorna un objeto Date
+    }
+    
     
     get formattedFormatJson(): any {
         const jsonString = JSON.stringify(this.jsonData, null, 2).trim();
         return this.sanitizer.bypassSecurityTrustHtml('<pre>' + jsonString + '</pre>');
     }
     
-    // Método para enviar el formulario
     onSubmit(): void {
         if (this.simulationForm.valid) {
             if (this.simulacionGenerada == true) {
                 const formValue = this.simulationForm.value;
     
-                // Genera la simulación y la asigna a parameters
+                // Convertir el valor del campo 'fecha' en string a un objeto Date
+                let fechaDate: Date;
+    
+                // Si la fecha es 'now', usamos la fecha actual
+                if (formValue.date === 'now') {
+                    fechaDate = new Date();
+                } else {
+                    // Si la fecha no es 'now', la convertimos de string a Date
+                    fechaDate = this.getFechaAsDate(formValue.date);
+                }
+    
+                // Luego formateamos la fecha al formato de MySQL (YYYY-MM-DD HH:mm:ss)
+                formValue.date = this.getFormattedDate(fechaDate);
+                console.log(formValue.date)
+    
+                // Verificar y convertir los parámetros si son una cadena
                 if (typeof formValue.parameters === 'string') {
                     try {
                         formValue.parameters = JSON.parse(formValue.parameters);
@@ -153,50 +185,56 @@ export class CrearSimulacionComponent implements OnInit {
                         return;
                     }
                 }
-
-                this.simulationForm.disable(); // Desactiva el formulario para evitar múltiples envíos
-        
+    
+                // Desactivar el formulario para evitar múltiples envíos
+                this.simulationForm.disable();
+    
+                // Enviar el formulario
                 this._simulationService.create(formValue).subscribe(
                     () => {
-                        const redirectURL = this._activatedRoute.snapshot.queryParamMap.get('redirectURL') || '/simulaciones';
-                        this._router.navigateByUrl(redirectURL);
+                        console.log('Simulación creada exitosamente');
                     },
                     (error) => {
                         console.error('Error durante el registro:', error);
-                        this.simulationForm.enable(); // Habilita de nuevo el formulario si hay un error
+                        this.simulationForm.enable(); // Habilita el formulario si ocurre un error
                     }
                 );
             } else {
                 console.log("Genera antes la simulación");
                 this.showAlert = true;
-                this.showAdvise = false;
             }
         } else {
             console.log('Formulario no válido');
         }
+    }    
+    
+    getFormattedDate(date: Date): string {
+        // Cambia el formato de la fecha a MySQL (YYYY-MM-DD HH:mm:ss)
+        return this.datePipe.transform(date, 'yyyy-MM-dd HH:mm:ss')!;
     }
+    
 
     // Método para probar simulación
     testSimulation(): void {
         const formValue = this.simulationForm.value;
 
-        // Verificar si hay un locationId válido antes de hacer la solicitud
-        if (!formValue.locationId) {
-            console.error("Se necesita un locationId válido.");
+        // Verificar si hay un sensorId válido antes de hacer la solicitud
+        if (!formValue.sensorId) {
+            console.error("Se necesita un sensorId válido.");
             return;
         }
 
         // Suscribirse al Observable para obtener la localización
-        this._locationsService.getLocationById(formValue.locationId).subscribe(
-            (location) => {
+        this._sensoresService.getSensorById(formValue.sensorId).subscribe(
+            (sensor) => {
                 // Verificar que las coordenadas existen
-                if (!location.coordinates || location.coordinates.length === 0) {
-                    console.error('No se encontraron coordenadas para la localización', location);
+                if (!sensor.coordinates || sensor.coordinates.length === 0) {
+                    console.error('No se encontraron coordenadas para la localización', sensor);
                     return;
                 }
 
                 // Generar un índice aleatorio basado en el número de coordenadas
-                const randomIndex = Math.floor(Math.random() * location.coordinates.length);
+                const randomIndex = Math.floor(Math.random() * sensor.coordinates.length);
 
                 // Intentar parsear los parámetros si son una cadena
                 if (typeof formValue.parameters === 'string') {
@@ -208,10 +246,21 @@ export class CrearSimulacionComponent implements OnInit {
                     }
                 }
 
+                // Convertir el valor del campo 'fecha' en string a un objeto Date
+                let fechaDate: Date;
+
+                // Si la fecha es 'now', usamos la fecha actual
+                if (formValue.date === 'now') {
+                    fechaDate = new Date();
+                } else {
+                    // Si la fecha no es 'now', la convertimos de string a Date
+                    fechaDate = this.getFechaAsDate(formValue.date);
+                }
+
                 // Verificar si hay parámetros válidos para generar un nuevo JSON
                 if (formValue.parameters) {
                     // Generar el nuevo JSON
-                    this.generatedSimulation = this._simulationService.generateNewJson(formValue.parameters, formValue.locationId, randomIndex, new Date());
+                    this.generatedSimulation = this._simulationService.generateNewJson(formValue.parameters, formValue.sensorId, randomIndex, fechaDate);
                     console.log("Resultado generado:", formValue.parameters); // Imprimir el nuevo JSON generado
 
                     // Asignar los resultados generados a las variables de estado
@@ -271,12 +320,12 @@ export class CrearSimulacionComponent implements OnInit {
             const minRegistros = control.get('minRegistrosPorInstante')?.value;
             const maxRegistros = control.get('maxRegistrosPorInstante')?.value;
             const noRepetir = control.get('noRepetirCheckbox')?.value;
-            const locationId = control.get('locationId')?.value;
+            const sensorId = control.get('sensorId')?.value;
 
-            if (noRepetir && locationId) {
+            if (noRepetir && sensorId) {
                 // Buscar localización por ID
-                const location = this.locations.find(loc => loc.id === locationId);
-                const maxCoordinates = location?.coordinates.length || 0;
+                const sensor = this.sensors.find(loc => loc.id === sensorId);
+                const maxCoordinates = sensor?.coordinates.length || 0;
 
                 // Verificar que los registros no excedan las coordenadas disponibles
                 if ((minRegistros > maxCoordinates) || (maxRegistros > maxCoordinates)) {
@@ -285,6 +334,12 @@ export class CrearSimulacionComponent implements OnInit {
             }
             return null;
         };
+    }
+
+    // Método para cambiar el placeholder al hacer clic
+    setPlaceholderToNow() {
+        this.placeholderText = 'now'; // Cambiar el texto del placeholder
+        this.simulationForm.get('date')?.setValue(this.placeholderText); // Establecer la fecha actual
     }
 
 }

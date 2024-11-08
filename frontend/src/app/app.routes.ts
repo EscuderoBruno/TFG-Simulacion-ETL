@@ -60,7 +60,7 @@ export const appRoutes: Route[] = [
         children: [
             {path: 'gestion_usuarios', loadChildren: () => import('app/modules/pages/usuarios/home.routes'), canActivate: [AdminGuard]}, // AdminGuard
             {path: 'example', loadChildren: () => import('app/modules/pages/example/example.routes')},
-            {path: 'localizaciones', loadChildren: () => import('app/modules/pages/localizaciones/localizaciones.routes')},
+            {path: 'sensores', loadChildren: () => import('app/modules/pages/sensores/sensores.routes')},
             {path: 'simulaciones', loadChildren: () => import('app/modules/pages/simulaciones/simulaciones.routes')},
         ]
     }

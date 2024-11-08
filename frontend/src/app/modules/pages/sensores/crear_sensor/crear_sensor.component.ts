@@ -2,7 +2,7 @@ import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { UntypedFormBuilder, UntypedFormGroup, Validators, FormArray } from '@angular/forms';
-import { LocalizacionesService } from '../localizaciones.service';
+import { SensoresService } from '../sensores.service';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -13,8 +13,8 @@ import { RouterModule } from '@angular/router';
 import { ReactiveFormsModule } from '@angular/forms';
 
 @Component({
-    selector: 'crear-localizacion',
-    templateUrl: './crear_localizacion.component.html',
+    selector: 'crear-sensor',
+    templateUrl: './crear_sensor.component.html',
     encapsulation: ViewEncapsulation.None,
     standalone: true,
     imports: [
@@ -30,14 +30,14 @@ import { ReactiveFormsModule } from '@angular/forms';
     ],
 })
 
-export class CrearLocalizacionComponent implements OnInit {
+export class CrearSensorComponent implements OnInit {
   
     isActive: boolean = true;
     locationForm: UntypedFormGroup;
     formFieldHelpers = ''; // Define la propiedad o ajusta el valor necesario
 
     constructor(
-        private _locationService: LocalizacionesService,
+        private _sensoresService: SensoresService,
         private _formBuilder: UntypedFormBuilder,
         private _activatedRoute: ActivatedRoute,
         private _router: Router
@@ -61,14 +61,14 @@ export class CrearLocalizacionComponent implements OnInit {
 
     // Método para agregar una nueva coordenada
     agregarCoordenada(): void {
-        const localizacionForm = this._formBuilder.group({
+        const sensorForm = this._formBuilder.group({
             lat: ['', Validators.required],
             long: ['', Validators.required],
             height: ['', Validators.required],
             alias: ['', Validators.required]
         });
 
-        this.coordinates.push(localizacionForm);
+        this.coordinates.push(sensorForm);
     }
 
     // Método para eliminar una coordenada específica
@@ -84,9 +84,9 @@ export class CrearLocalizacionComponent implements OnInit {
           
           this.locationForm.disable(); // Desactiva el formulario para evitar múltiples envíos
 
-          this._locationService.create(this.locationForm.value).subscribe(
+          this._sensoresService.create(this.locationForm.value).subscribe(
               () => {
-                  const redirectURL = this._activatedRoute.snapshot.queryParamMap.get('redirectURL') || '/localizaciones';
+                  const redirectURL = this._activatedRoute.snapshot.queryParamMap.get('redirectURL') || '/sensores';
                   this._router.navigateByUrl(redirectURL);
               },
               (error) => {
@@ -102,7 +102,7 @@ export class CrearLocalizacionComponent implements OnInit {
 
     // Método para cancelar y redirigir a otra ruta
     cancel(): void {
-        this._router.navigate(['/localizaciones']);
+        this._router.navigate(['/sensores']);
     }
 }
 

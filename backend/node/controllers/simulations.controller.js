@@ -1,22 +1,22 @@
 const Simulation = require('../models/simulation');
-const Locations = require('../models/locations');
+const Sensor = require('../models/sensor');
 
 // Método para crear Simulación
 const newSimulation = async (req, res) => {
-    const { name, locationId, parameters, minRegistrosPorInstante, maxRegistrosPorInstante, minIntervaloEntreRegistros, maxIntervaloEntreRegistros, numElementosASimular, noRepetirCheckbox } = req.body;
+    const { name, sensorId, parameters, minRegistrosPorInstante, maxRegistrosPorInstante, minIntervaloEntreRegistros, maxIntervaloEntreRegistros, numElementosASimular, noRepetirCheckbox, date } = req.body;
     const userId = req.user.id;
 
     try {
         // Verifica si la ubicación existe
-        const location = await Locations.findByPk(locationId);
-        if (!location) {
-            return res.status(404).json({ message: 'Localización no encontrada' });
+        const sensor = await Sensor.findByPk(sensorId);
+        if (!sensor) {
+            return res.status(404).json({ message: 'Sensor no encontrado' });
         }
 
         // Crear simulación con todas las propiedades del modelo
         const simulation = await Simulation.create({
             name,
-            locationId,
+            sensorId,
             parameters,
             userId,
             minRegistrosPorInstante,
@@ -24,7 +24,8 @@ const newSimulation = async (req, res) => {
             minIntervaloEntreRegistros,
             maxIntervaloEntreRegistros,
             numElementosASimular,
-            noRepetirCheckbox
+            noRepetirCheckbox,
+            date
         });
         
         return res.status(201).json(simulation);
@@ -75,7 +76,7 @@ const getSimulationById = async (req, res) => {
     try {
         const { id } = req.params;
         const simulation = await Simulation.findByPk(id, {
-            include: Locations
+            include: Sensor
         });
 
         if (!simulation) {
@@ -92,24 +93,25 @@ const getSimulationById = async (req, res) => {
 const updateSimulation = async (req, res) => {
     try {
         const { id } = req.params;
-        const { name, locationId, parameters, minRegistrosPorInstante, maxRegistrosPorInstante, minIntervaloEntreRegistros, maxIntervaloEntreRegistros, numElementosASimular, noRepetirCheckbox } = req.body;
+        const { name, sensorId, parameters, minRegistrosPorInstante, maxRegistrosPorInstante, minIntervaloEntreRegistros, maxIntervaloEntreRegistros, numElementosASimular, noRepetirCheckbox, date } = req.body;
 
         // Verifica si la ubicación existe
-        const location = await Locations.findByPk(locationId);
-        if (!location) {
+        const sensor = await Sensor.findByPk(sensorId);
+        if (!sensor) {
             return res.status(404).json({ message: 'Localización no encontrada' });
         }
 
         const [updated] = await Simulation.update({
             name,
-            locationId,
+            sensorId,
             parameters,
             minRegistrosPorInstante,
             maxRegistrosPorInstante,
             minIntervaloEntreRegistros,
             maxIntervaloEntreRegistros,
             numElementosASimular,
-            noRepetirCheckbox
+            noRepetirCheckbox,
+            date
         }, {
             where: { id }
         });

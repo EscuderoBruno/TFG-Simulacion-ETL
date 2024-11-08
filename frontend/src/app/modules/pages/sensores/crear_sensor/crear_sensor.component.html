@@ -13,7 +13,7 @@
                     <div class="flex items-end pb-1">
                         <a class="whitespace-nowrap text-primary-500">Inicio</a>
                         <mat-icon class="icon-size-5 text-secondary mx-1" [svgIcon]="'heroicons_mini:chevron-right'"></mat-icon>
-                        <span class="whitespace-nowrap text-primary-500">Localizaciones</span>
+                        <span class="whitespace-nowrap text-primary-500">Sensores</span>
                         <mat-icon class="icon-size-5 text-secondary mx-1" [svgIcon]="'heroicons_mini:chevron-right'"></mat-icon>
                         <span class="text-secondary">Crear</span>
                     </div>
@@ -35,7 +35,7 @@
                 </div>
                 <!-- Sección de Localizaciones -->
                 <div class="flex flex-col w-full space-y-4" formArrayName="coordinates">
-                    <mat-label class="block mb-2">Coordenadas</mat-label>
+                    <mat-label class="block mb-2">Sensores</mat-label>
                     <div class="overflow-x-auto bg-white rounded-lg border border-gray-200">
                         <table class="min-w-full table-auto border-collapse rounded-t-lg overflow-hidden">
                             <thead>
@@ -71,7 +71,7 @@
                         </table>
                     </div>
                     <button mat-stroked-button color="accent" class="self-start mt-4" (click)="agregarCoordenada()">
-                        + Agregar Coordenada
+                        + Agregar sensor
                     </button>
                 </div>
                 <div class="flex items-center justify-end border-t -mx-8 mt-4 px-8 py-5 bg-gray-50 dark:bg-gray-700 rounded-b-lg">

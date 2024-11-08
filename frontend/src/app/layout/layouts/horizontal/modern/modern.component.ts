@@ -63,10 +63,10 @@ export class ModernLayoutComponent implements OnInit, OnDestroy
                 icon: 'heroicons_outline:adjustments-horizontal'
             },
             {
-                id: 'localizaciones',
-                title: 'Localizaciones',
+                id: 'sensores',
+                title: 'Sensores',
                 type: 'basic',
-                link: '/localizaciones',
+                link: '/sensores',
                 icon: 'heroicons_outline:map'
             },
         ];

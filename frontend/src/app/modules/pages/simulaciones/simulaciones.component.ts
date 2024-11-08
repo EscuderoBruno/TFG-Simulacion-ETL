@@ -4,7 +4,8 @@ import { MatIconModule } from '@angular/material/icon';
 import { RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { SimulacionesService } from './simulaciones.service';
-import { LocalizacionesService } from '../localizaciones/localizaciones.service';
+import { SensoresService } from '../sensores/sensores.service';
+import { AuthService } from 'app/core/auth/auth.service';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
@@ -21,12 +22,14 @@ import { ChangeDetectorRef } from '@angular/core';
 export class SimulacionesComponent implements OnInit, OnDestroy {
     isActive: boolean = true;
     simulations: any[] = [];
-    locations: any[] = [];
+    sensors: any[] = [];
+    users: any[] = [];
     activeSimulations: { simulation: any; elapsedTime: number; interval: any }[] = []; // Simulaciones en ejecución
 
     constructor(
         private _simulationsService: SimulacionesService,
-        private _locationsService: LocalizacionesService,
+        private _sensoresService: SensoresService,
+        private _userService: AuthService,
         private cdr: ChangeDetectorRef
     ) {}
 
@@ -46,12 +49,20 @@ export class SimulacionesComponent implements OnInit, OnDestroy {
                 console.error('Error al obtener las simulaciones', error);
             }
         );
-        this._locationsService.getAllLocations().subscribe(
+        this._sensoresService.getAllSensors().subscribe(
             (response) => {
-                this.locations = response;  // Guardar la lista de usuarios
+                this.sensors = response;  // Guardar la lista de sensores
             },
             (error) => {
                 console.error('Error al obtener las localizaciones', error);
+            }
+        );
+        this._userService.getAllUsers().subscribe(
+            (response) => {
+                this.users = response;  // Guardar la lista de sensores
+            },
+            (error) => {
+                console.error('Error al obtener los usuarios', error);
             }
         );
     }
@@ -114,9 +125,9 @@ export class SimulacionesComponent implements OnInit, OnDestroy {
         this.activeSimulations.splice(index, 1); // Eliminar la simulación de la lista de simulaciones activas
     }
 
-    getLocationName(locationId: number): string {
-        const location = this.locations.find(loc => loc.id === locationId);
-        return location ? location.name : 'Ubicación no encontrada'; // Manejar el caso en que no se encuentre la localización
+    getSensorName(sensorId: number): string {
+        const sensor = this.sensors.find(se => se.id === sensorId);
+        return sensor ? sensor.name : 'Ubicación no encontrada'; // Manejar el caso en que no se encuentre la localización
     }
 
     formatElapsedTime(seconds: number): string {
@@ -146,7 +157,18 @@ export class SimulacionesComponent implements OnInit, OnDestroy {
         const totalGenerados = this._simulationsService.getTotalGenerados(simulationId);
         const numElementosASimular = this.simulations.find(sim => sim.id === simulationId)?.numElementosASimular || 0;
     
+        // Si `numElementosASimular` es 0, devolver solo el total generado
+        if (numElementosASimular === 0) {
+            return `${totalGenerados} / ∞`;
+        }
+    
+        // En caso contrario, devolver el progreso en el formato `totalGenerados / numElementosASimular`
         return `${totalGenerados} / ${numElementosASimular}`;
+    }    
+
+    getUserName(userId: number): string {
+        const user = this.users.find(us => us.id === userId);
+        return user ? user.username : 'Usuario no encontrado'; // Manejar el caso en que no se encuentre la localización
     }
 
     // Implementación de OnDestroy

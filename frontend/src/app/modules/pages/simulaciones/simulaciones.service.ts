@@ -2,13 +2,13 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, timer } from 'rxjs';
 import { environment } from 'environment/environment';
-import { LocalizacionesService } from '../localizaciones/localizaciones.service';
+import { SensoresService } from '../sensores/sensores.service';
 
 @Injectable({ providedIn: 'root' })
 export class SimulacionesService {
 
     constructor(private _httpClient: HttpClient,
-                private _locationsService: LocalizacionesService,
+                private _sensoresService: SensoresService,
     ) {}
 
     // Datos
@@ -23,7 +23,7 @@ export class SimulacionesService {
     // Método para crear una nueva simulación
     create(simulation: {
         name: string;
-        locationId: number;
+        sensorId: number;
         parameters: object;
         minRegistrosPorInstante: number;
         maxRegistrosPorInstante: number;
@@ -31,6 +31,7 @@ export class SimulacionesService {
         maxIntervaloEntreRegistros: number;
         numElementosASimular: number;
         noRepetirCheckbox: boolean;
+        date: Date
     }): Observable<any> {
         return this._httpClient.post(`${environment.apiBaseUrl}/simulations/create`, simulation);
     }
@@ -45,6 +46,23 @@ export class SimulacionesService {
         return this._httpClient.get(`${environment.apiBaseUrl}/simulations/${simulationId}`);
     }
 
+    // Método para actualizar una simulación
+    updateSimulation(simulation: {
+        id: number;
+        name: string;
+        sensorId: number;
+        parameters: object;
+        minRegistrosPorInstante: number;
+        maxRegistrosPorInstante: number;
+        minIntervaloEntreRegistros: number;
+        maxIntervaloEntreRegistros: number;
+        numElementosASimular: number;
+        noRepetirCheckbox: boolean;
+        date: Date;
+    }): Observable<any> {
+        return this._httpClient.put(`${environment.apiBaseUrl}/simulations/update/${simulation.id}`, simulation);
+    }
+
     // Método para eliminar una simulación por su ID
     deleteSimulation(simulationId: number): Observable<any> {
         return this._httpClient.delete(`${environment.apiBaseUrl}/simulations/delete/${simulationId}`);
@@ -53,11 +71,11 @@ export class SimulacionesService {
     // -------------------------------------------------------- GENERAR SIMULACIÓN ------------------------------------------------------------ //
 
     // Método para generar un nuevo JSON basado en los parámetros
-    generateNewJson(params: any, locationId: number, numArrayLocalizaciones: number, time: Date): any {
+    generateNewJson(params: any, sensorId: number, numArrayLocalizaciones: number, time: Date): any {
         const newJson: any = {};
 
         // Llamar a getCoordinatesById y suscribirse para obtener las coordenadas
-        this._locationsService.getCoordinatesById(locationId, numArrayLocalizaciones).subscribe(coord => {
+        this._sensoresService.getCoordinatesById(sensorId, numArrayLocalizaciones).subscribe(coord => {
             // Una vez que tenemos las coordenadas, llenamos el newJson
             for (const key in params) {
                 if (params.hasOwnProperty(key)) {
@@ -117,7 +135,7 @@ export class SimulacionesService {
                             newJson[key] = coord.alias; // Aquí asignamos la altura
                         }
                     } else if (typeof value === 'object' && !Array.isArray(value)) {
-                        newJson[key] = this.generateNewJson(value, locationId, numArrayLocalizaciones, time);
+                        newJson[key] = this.generateNewJson(value, sensorId, numArrayLocalizaciones, time);
                     } else {
                         newJson[key] = value; // Copiar otros valores como están
                     }
@@ -179,10 +197,13 @@ export class SimulacionesService {
             (simulacion) => {
                 let totalGenerados = 0;
                 let usedIndices: Set<number> = new Set(); // Set para rastrear índices ya usados
-                let time = new Date();
+                // Convertir la cadena de fecha a un objeto Date
+                let time = new Date(simulacion.date);
 
                 const executeSimulationStep = () => {
-                    if (totalGenerados >= simulacion.numElementosASimular) {
+                    // Comprobar si se ha alcanzado el límite de elementos a simular
+                    // Solo detener si `numElementosASimular` es mayor que 0
+                    if (simulacion.numElementosASimular > 0 && totalGenerados >= simulacion.numElementosASimular) {
                         console.log("Resultado generado:", this.simulacionesGeneradas); // Imprimir el resultado final
                         this.isRunning[simulationId] = false; // Cambia el estado a inactivo al finalizar
                         return; // Termina la simulación
@@ -191,30 +212,30 @@ export class SimulacionesService {
                     // Generar un número aleatorio dentro del rango de registros por instante
                     let random = Math.floor(Math.random() * (simulacion.maxRegistrosPorInstante - simulacion.minRegistrosPorInstante + 1)) + simulacion.minRegistrosPorInstante;
 
-                    // Ajustar si el total generado excede el número deseado
-                    if (totalGenerados + random > simulacion.numElementosASimular) {
+                    // Ajustar si el total generado excede el número deseado (solo si no es ilimitado)
+                    if (simulacion.numElementosASimular > 0 && totalGenerados + random > simulacion.numElementosASimular) {
                         random = simulacion.numElementosASimular - totalGenerados;
                     }
 
                     // Generar los registros para esta instancia
                     for (let j = 0; j < random; j++) {
-                        if (!simulacion.locationId) {
-                            console.error("Se necesita un locationId válido.");
+                        if (!simulacion.sensorId) {
+                            console.error("Se necesita un sensorId válido.");
                             return;
                         }
 
-                        this._locationsService.getLocationById(simulacion.locationId).subscribe(
-                            (location) => {
+                        this._sensoresService.getSensorById(simulacion.sensorId).subscribe(
+                            (sensor) => {
                                 // Verificar que las coordenadas existen
-                                if (!location.coordinates || location.coordinates.length === 0) {
-                                    console.error('No se encontraron coordenadas para la localización', location);
+                                if (!sensor.coordinates || sensor.coordinates.length === 0) {
+                                    console.error('No se encontraron coordenadas para la localización', sensor);
                                     return;
                                 }
 
                                 // Selección de índice sin repetir, si el checkbox está activo
                                 let randomIndex: number;
                                 if (simulacion.noRepetirCheckbox === 1) {
-                                    const availableIndices = location.coordinates.map((_, idx) => idx).filter(idx => !usedIndices.has(idx));
+                                    const availableIndices = sensor.coordinates.map((_, idx) => idx).filter(idx => !usedIndices.has(idx));
                                     
                                     if (availableIndices.length === 0) {
                                         console.warn("No quedan localizaciones únicas disponibles.");
@@ -224,7 +245,7 @@ export class SimulacionesService {
                                     randomIndex = availableIndices[Math.floor(Math.random() * availableIndices.length)];
                                     usedIndices.add(randomIndex);
                                 } else {
-                                    randomIndex = Math.floor(Math.random() * location.coordinates.length);
+                                    randomIndex = Math.floor(Math.random() * sensor.coordinates.length);
                                 }
 
                                 // Intentar parsear los parámetros si son una cadena
@@ -240,7 +261,7 @@ export class SimulacionesService {
 
                                 if (parameters) {
                                     // Generar el nuevo JSON
-                                    this.simulacionesGeneradas.push(this.generateNewJson(parameters, simulacion.locationId, randomIndex, time));
+                                    this.simulacionesGeneradas.push(this.generateNewJson(parameters, simulacion.sensorId, randomIndex, time));
                                 } else {
                                     console.error("No se encontraron parámetros válidos.");
                                 }
@@ -281,7 +302,7 @@ export class SimulacionesService {
         this.getSimulationById(simulationId).subscribe(
             (simulacion) => {
                 let totalGenerados = 0;
-                let time = new Date(); // Hora inicial de simulación
+                let time = new Date(simulacion.date);
 
                 const executeSimulationStep = () => {
                     if (totalGenerados >= simulacion.numElementosASimular) {
@@ -304,25 +325,25 @@ export class SimulacionesService {
                     let usedIndices: Set<number> = new Set(); // Resetear índices para este instante
 
                     for (let j = 0; j < registrosEnEsteInstante; j++) {
-                        if (!simulacion.locationId) {
-                            console.error("Se necesita un locationId válido.");
+                        if (!simulacion.sensorId) {
+                            console.error("Se necesita un sensorId válido.");
                             return;
                         }
 
                         const currentRecordTime = new Date(time); // Capturar tiempo actual para este registro específico
 
-                        this._locationsService.getLocationById(simulacion.locationId).subscribe(
-                            (location) => {
+                        this._sensoresService.getSensorById(simulacion.sensorId).subscribe(
+                            (sensor) => {
                                 // Verificar que las coordenadas existen
-                                if (!location.coordinates || location.coordinates.length === 0) {
-                                    console.error("No se encontraron coordenadas para la localización", location);
+                                if (!sensor.coordinates || sensor.coordinates.length === 0) {
+                                    console.error("No se encontraron coordenadas para la localización", sensor);
                                     return;
                                 }
 
                                 // Selección de índice sin repetir en este instante
                                 let randomIndex: number;
                                 if (simulacion.noRepetirCheckbox === 1) {
-                                    const availableIndices = location.coordinates
+                                    const availableIndices = sensor.coordinates
                                         .map((_, idx) => idx)
                                         .filter((idx) => !usedIndices.has(idx));
 
@@ -334,7 +355,7 @@ export class SimulacionesService {
                                     randomIndex = availableIndices[Math.floor(Math.random() * availableIndices.length)];
                                     usedIndices.add(randomIndex);
                                 } else {
-                                    randomIndex = Math.floor(Math.random() * location.coordinates.length);
+                                    randomIndex = Math.floor(Math.random() * sensor.coordinates.length);
                                 }
 
                                 // Intentar parsear los parámetros si son una cadena
@@ -351,7 +372,7 @@ export class SimulacionesService {
                                 if (parameters) {
                                     // Generar el nuevo JSON con el tiempo específico para este registro
                                     this.simulacionesGeneradas.push(
-                                        this.generateNewJson(parameters, simulacion.locationId, randomIndex, currentRecordTime)
+                                        this.generateNewJson(parameters, simulacion.sensorId, randomIndex, currentRecordTime)
                                     );
                                 } else {
                                     console.error("No se encontraron parámetros válidos.");

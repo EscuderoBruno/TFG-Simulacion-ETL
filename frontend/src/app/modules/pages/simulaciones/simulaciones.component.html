@@ -87,6 +87,7 @@
                         <table class="w-full table-auto bg-transparent">
                             <thead class="bg-gray-50">
                                 <tr>
+                                    <th class="px-6 py-3 text-left text-s font-medium text-gray-500 tracking-wider">Usuario</th>
                                     <th class="px-6 py-3 text-left text-s font-medium text-gray-500 tracking-wider">ID</th>
                                     <th class="px-6 py-3 text-left text-s font-medium text-gray-500 tracking-wider w-2/6">Nombre</th>
                                     <th class="px-6 py-3 text-left text-s font-medium text-gray-500 tracking-wider">Localización</th>
@@ -99,10 +100,11 @@
                             <tbody>
                                 <!-- Iterar sobre las simulaciones -->
                                 <tr *ngFor="let simulation of simulations">
+                                    <td class="px-6 py-4 whitespace-nowrap text-s font-medium text-gray-600">{{ getUserName(simulation.userId) }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-s font-medium text-gray-600">{{ simulation.id }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-s font-medium text-gray-600">{{ simulation.name }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-s font-medium text-gray-600">{{ getLocationName(simulation.locationId) }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-s font-medium text-gray-600">{{ simulation.numElementosASimular }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-s font-medium text-gray-600">{{ getSensorName(simulation.sensorId) }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-s font-medium text-gray-600">{{ simulation.numElementosASimular === 0 ? '∞' : simulation.numElementosASimular }} </td>                                    
                                     <td class="px-6 py-4 whitespace-nowrap text-s font-medium text-gray-600">{{ simulation.minRegistrosPorInstante }}-{{ simulation.maxRegistrosPorInstante }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-s font-medium text-gray-600">{{ simulation.minIntervaloEntreRegistros }}-{{ simulation.maxIntervaloEntreRegistros }} s</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-s text-gray-600 space-x-2 flex justify-end">
@@ -138,6 +140,5 @@
             </div>
         </div>
     </div>
-
 </div>
 

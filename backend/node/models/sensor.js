@@ -1,11 +1,11 @@
-// src/models/Location.js
+// src/models/Sensor.js
 
 const { DataTypes } = require('sequelize');
 const sequelize = require('../database/connection');
 const User = require('./user');  // Importamos el modelo User
 
-// Definición del modelo Location
-const Locations = sequelize.define('Location', {
+// Definición del modelo Sensor
+const Sensor = sequelize.define('Sensor', {
   name: {
     type: DataTypes.STRING,
     allowNull: false,
@@ -32,6 +32,6 @@ const Locations = sequelize.define('Location', {
 });
 
 // Relacionamos Localización con Usuario
-Locations.belongsTo(User, { foreignKey: 'userId', as: 'user' });
+Sensor.belongsTo(User, { foreignKey: 'userId', as: 'user' });
 
-module.exports = Locations;
+module.exports = Sensor;
