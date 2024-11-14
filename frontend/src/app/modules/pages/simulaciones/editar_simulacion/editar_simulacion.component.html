@@ -1,41 +1,19 @@
 <div class="flex flex-col flex-auto min-w-0">
 
-    <!-- Header -->
-    <div class="flex flex-col sm:flex-row flex-0 sm:items-center sm:justify-between p-6 sm:px-10 sm:py-2 border-b bg-card dark:bg-transparent min-h-[72.8px]">
-        <div class="flex-1 min-w-0">
-            <!-- Breadcrumbs -->
-            <div class="flex flex-col">
-                <div class="hidden sm:flex font-medium">
-                    <!-- Título "Editar usuario" -->
-                    <div class="mr-8">
-                        <a class="whitespace-nowrap text-secondary-500 md:text-2xl">{{ simulation?.name }}</a>
-                    </div>
-                    <div class="flex items-end pb-1">
-                        <a class="whitespace-nowrap text-primary-500">Inicio</a>
-                        <mat-icon class="icon-size-5 text-secondary mx-1" [svgIcon]="'heroicons_mini:chevron-right'"></mat-icon>
-                        <span class="whitespace-nowrap text-primary-500">Simulaciones</span>
-                        <mat-icon class="icon-size-5 text-secondary mx-1" [svgIcon]="'heroicons_mini:chevron-right'"></mat-icon>
-                        <span class="text-secondary">{{ simulation?.name }}</span>
-                    </div>
-                </div>
-            </div>                                 
-        </div>
-    </div>
-
     <!-- Main -->
     <div class="flex-auto p-6 sm:px-10">
         <div class="flex w-full">
             <!-- Primer formulario que ocupa 2/3 -->
-            <div class="max-h-400 rounded-2xl w-2/3">
-                <form [formGroup]="simulationForm" (ngSubmit)="onSubmit()" class="flex flex-col p-8 pb-0 bg-card rounded-2xl shadow overflow-hidden">
+            <div class="max-h-400 rounded-2xl w-3/5">
+                <form [formGroup]="simulationForm" (ngSubmit)="onSubmit()" class="flex flex-col px-8 py-6 pb-0 bg-card rounded-2xl shadow overflow-hidden">
                     <!-- Contenedor para alinear las dos columnas 50/50 -->
-                    <div class="flex gap-4">
-                        
+                    <div class="flex gap-3">
+                    
                         <!-- Primera columna con "Nombre" y "Localización" -->
                         <div class="w-1/2 flex flex-col mr-2">
                             <!-- Campo Nombre -->
                             <div class="flex flex-col">
-                                <mat-label class="block mb-2">Nombre</mat-label>
+                                <mat-label class="block mb-1">Nombre</mat-label>
                                 <mat-form-field [ngClass]="formFieldHelpers" class="w-full">
                                     <input matInput formControlName="name" class="p-0" [value]="simulation?.name">
                                 </mat-form-field>
@@ -43,7 +21,7 @@
 
                             <!-- Campo "Nº elementos a simular" con valores mínimo y máximo -->
                             <div class="flex flex-col">
-                                <mat-label class="block mb-2">Nº registros en cada instante</mat-label>
+                                <mat-label class="block mb-1">Nº registros en cada instante</mat-label>
                                 <!-- Contenedor de los campos Mínimo y Máximo -->
                                 <div class="flex">
                                     <!-- Campo Mínimo -->
@@ -55,25 +33,19 @@
                                     <!-- Campo Máximo -->
                                     <div class="w-3/5">
                                         <mat-form-field [ngClass]="formFieldHelpers" class="w-full">
-                                            <input matInput type="number" formControlName="maxRegistrosPorInstante" placeholder="Máximo" min="0" [value]="simulation?.maxRegistrosPorInstante">                                      
-                                            <!-- Checkbox con mayor ancho -->
-                                            <mat-checkbox formControlName="noRepetirCheckbox" class="ml-4 flex-grow" [checked]="simulation?.noRepetirCheckbox">
-                                                <div class="text-sm">No repetir elementos</div>
+                                            <input matInput type="number" formControlName="maxRegistrosPorInstante" placeholder="Máximo" min="0" [value]="simulation?.maxRegistrosPorInstante">                                 
+                                            <mat-checkbox formControlName="noRepetirCheckbox" class="ml-2" [checked]="simulation?.noRepetirCheckbox">
+                                                <p class="text-sm">No repetir elementos</p>
                                             </mat-checkbox>
                                         </mat-form-field>
                                     </div>
                                 </div>
-                                <div class="">
-                                    <!-- Mensaje de error -->
-                                    <div *ngIf="simulationForm.hasError('registrosExcedenCoordenadas')" class="text-red-500 text-sm mb-2">
-                                        El número de registros por instante no puede ser superior a la cantidad de localizaciones cuando "No repetir elementos" está activo.
-                                    </div>
-                                </div>
                             </div>
-                            <!-- Campo "Nº elementos a simular" -->
+
+                            <!-- Campo "Total registros a simular" -->
                             <div class="flex flex-col">
-                                <mat-label class="block mb-2">Total registros a simular <span style="color: lightslategray">(0 significa infinito)</span></mat-label>
-                                <mat-form-field [ngClass]="formFieldHelpers" class="w-full flex items-center p-0">
+                                <mat-label class="block mb-1">Total registros a simular <span class="text-gray-500">(0 significa infinito)</span></mat-label>
+                                <mat-form-field [ngClass]="formFieldHelpers" class="w-full">
                                     <input matInput type="number" formControlName="numElementosASimular" min="0" required [value]="simulation?.numElementosASimular">
                                 </mat-form-field>
                             </div>
@@ -83,7 +55,7 @@
                         <div class="w-1/2 flex flex-col">
                             <!-- Segundo campo Nombre -->
                             <div class="flex flex-col">
-                                <mat-label class="block mb-2">Sensores</mat-label>
+                                <mat-label class="block mb-1">Sensores</mat-label>
                                 <mat-form-field [ngClass]="formFieldHelpers" class="w-full p-0">
                                     <mat-select formControlName="sensorId" [value]="simulation?.sensorId">
                                         <mat-option *ngFor="let sensor of sensors" [value]="sensor.id">
@@ -95,16 +67,13 @@
 
                             <!-- Segunda lista desplegable -->
                             <div class="flex flex-col">
-                                <mat-label class="block mb-2">Tiempo entre registros <span style="color: lightslategray">(seg.)</span></mat-label>
-                                <!-- Contenedor de los campos Mínimo y Máximo -->
+                                <mat-label class="block mb-1">Tiempo entre registros <span class="text-gray-500">(seg.)</span></mat-label>
                                 <div class="flex">
-                                    <!-- Campo Mínimo -->
                                     <div class="w-1/2 mr-2">
-                                        <mat-form-field [ngClass]="formFieldHelpers" class="w-full p-0" >
+                                        <mat-form-field [ngClass]="formFieldHelpers" class="w-full p-0">
                                             <input matInput type="number" formControlName="minIntervaloEntreRegistros" placeholder="Mínimo" min="0" [value]="simulation?.minIntervaloEntreRegistros">
                                         </mat-form-field>
                                     </div>
-                                    <!-- Campo Máximo -->
                                     <div class="w-1/2">
                                         <mat-form-field [ngClass]="formFieldHelpers" class="w-full p-0">
                                             <input matInput type="number" formControlName="maxIntervaloEntreRegistros" placeholder="Máximo" min="0" [value]="simulation?.maxIntervaloEntreRegistros">
@@ -112,69 +81,35 @@
                                     </div>
                                 </div>
                             </div>
+
                             <!-- Campo "Fecha de inicio" -->
                             <div class="flex flex-col">
-                                <mat-label class="block mb-2">Fecha de inicio <span style="color: lightslategray">(DD/MM/YYYY HH:mm:ss)</span> </mat-label>
-                              
+                                <mat-label class="block mb-1">Fecha de inicio <span class="text-gray-500">(DD/MM/YYYY HH:mm:ss)</span> </mat-label>
                                 <mat-form-field class="w-full">
-                                    <input 
-                                        matInput 
-                                        type="text" 
-                                        formControlName="date" 
-                                        [value]="simulation?.date"
-                                        [placeholder]="placeholderText">  <!-- Usar la variable para el placeholder -->
+                                    <input matInput type="text" formControlName="date" [value]="simulation?.date" [placeholder]="placeholderText">
                                     <mat-hint>
-                                        <button  (click)="setPlaceholderToNow()" class="text-gray-500 underline bg-transparent border-none cursor-pointer"> Usar fecha actual </button>
+                                        <button (click)="setPlaceholderToNow()" class="text-gray-500 underline">Usar fecha actual</button>
                                     </mat-hint>
-                                </mat-form-field> 
-                            </div>                              
-                        </div>
-                    </div>                  
-            
-                    <!-- Campo de Parámetros que ocupa todo el ancho -->
-                    <div class="flex flex-col mb-4">
-                        <mat-label class="block mb-1 flex items-center">Parámetros
-                            <div class="flex items-center relative">
-                                <!-- Botón de información con ícono -->
-                                <button mat-icon-button (click)="showTooltip = !showTooltip" type="button">
-                                    <mat-icon class="icon-size-5" [svgIcon]="'heroicons_outline:information-circle'"></mat-icon>
-                                </button>
-                                <!-- Div flotante que muestra el formato JSON -->
-                                <div *ngIf="showTooltip"
-                                    class="bg-gray-50 absolute left-10 z-50 bg-white border border-gray-300 shadow-lg p-4 min-w-[450px] max-w-[600px] max-h-[480px] overflow-y-auto">
-                                    <div class="flex justify-between items-start pb-0">
-                                        <h4 class="text-base font-semibold">Formato JSON</h4>
-                                        <!-- Botón de cerrar (X) -->
-                                        <button mat-icon-button (click)="showTooltip = false" aria-label="Cerrar" type="button">
-                                            <mat-icon class="text-gray-500 icon-size-5">close</mat-icon>
-                                        </button>
-                                    </div>
-                                    <!-- Contenido JSON -->
-                                    <div [innerHTML]="formattedFormatJson"></div>
-            
-                                    <!-- Botón para copiar el contenido -->
-                                    <button mat-button class="absolute right-4 bottom-4 flex items-center"
-                                        (click)="copyToClipboard()" (click)="showTooltip = false">
-                                        <mat-icon>content_copy</mat-icon>
-                                    </button>
-                                </div>
+                                </mat-form-field>
                             </div>
+                        </div>
+                    </div>
+
+                    <!-- Campo de Parámetros que ocupa todo el ancho -->
+                    <div class="flex flex-col mb-0">
+                        <mat-label class="block mb-1 flex items-center">Parámetros
+                            <button mat-icon-button (click)="showTooltip = !showTooltip" type="button">
+                                <mat-icon class="icon-size-5" [svgIcon]="'heroicons_outline:information-circle'"></mat-icon>
+                            </button>
                         </mat-label>
-            
+
                         <mat-form-field [ngClass]="formFieldHelpers" class="w-full">
-                            <textarea matInput
-                                      formControlName="parameters"
-                                      (keydown)="onKeydown($event)"
-                                      class="h-55"
-                                      rows="10"
-                                      [placeholder]="placeholderText"
-                                      [value]="simulation?.parameters ? (simulation?.parameters | json) : '{}'"></textarea>
-                        </mat-form-field>                        
-                        
-                    </div>   
-    
-                    <div class="flex items-center justify-between border-t -mx-8 px-8 py-4 bg-gray-50 dark:bg-gray-700 rounded-b-lg">
-                        <!-- Botón para generar la simulación al principio -->
+                            <textarea matInput formControlName="parameters" (keydown)="onKeydown($event)" class="h-[calc(22vh)]" rows="6" [placeholder]="placeholderText" [value]="simulation?.parameters ? (simulation?.parameters | json) : '{}'"></textarea>
+                        </mat-form-field>
+                    </div>
+
+                    <div class="flex items-center justify-between border-t -mx-8 px-8 py-3 bg-gray-50 dark:bg-gray-700 rounded-b-lg">
+                        <!-- Botón para generar la simulación -->
                         <div class="flex">
                             <button mat-stroked-button color="accent" (click)="testSimulation()" class="bg-white mr-4" type="button">
                                 <span class="material-icons" style="vertical-align: middle; margin-right: 4px;">play_arrow</span>
@@ -184,30 +119,99 @@
                         <!-- Botones "Cancelar" y "Guardar" alineados a la derecha -->
                         <div class="flex items-center">
                             <button mat-button type="button" (click)="volver()" class="ml-3">Volver</button>
-                            <button class="px-6 ml-3 text-white" mat-flat-button [color]="'primary'" type="submit">
-                                Guardar
-                            </button>
+                            <button class="px-6 ml-3 text-white" mat-flat-button [color]="'primary'" type="submit">Guardar</button>
                         </div>
-                    </div>                                                    
+                    </div>
                 </form>
             </div>
+
             <!-- Segundo formulario que ocupa 1/3 -->
-            <div class="max-h-400 rounded-2xl w-1/3 ml-4">
-                <div class="flex flex-col p-6 bg-card rounded-2xl shadow overflow-hidden h-[calc(102vh-190px)]"> <!-- Ajuste de alto fijo con h-96 -->
-                    <mat-label class="block mb-4 text-lg">Simulación generada</mat-label>
-                    <div class="flex flex-col p-4 bg-card rounded-2xl shadow overflow-auto bg-gray-50 h-full"> <!-- Se añadió overflow-auto -->
-                        <div *ngIf="generatedSimulation; else noSimulation">
-                            <div [innerHTML]="formattedSimulationJson" class="text-base"></div>
+            <div class="max-h-400 rounded-2xl w-2/5 ml-4">
+                <div class="flex flex-col p-6 py-0 bg-card rounded-2xl shadow overflow-hidden h-[calc(100vh-108px)]">
+                    <div class="flex items-center justify-between border-b -mx-8 px-8 py-3 bg-gray-50 dark:bg-gray-700 rounded-b-lg mb-4">
+                        <div class="flex">
+                            <mat-label class="block text-lg">Simulación</mat-label>   
                         </div>
+                        <div class="flex">
+                            <!-- Botón de Simular Instantáneamente -->
+                            <button mat-stroked-button color="accent" (click)="simularInstantaneamente()" class="bg-white mr-4" type="button" matTooltip="Instantáneamente" matTooltipPosition="above">
+                                <span class="material-icons" style="vertical-align: middle;">rocket</span>
+                            </button>
+                            <!-- Botón de Ejecutar -->
+                            <button mat-stroked-button color="accent" (click)="toggleSimulation()" class="bg-white" type="button" matTooltip="En tiempo real" matTooltipPosition="above">
+                                <span class="material-icons" style="vertical-align: middle;">play_arrow</span>
+                            </button>
+                        </div> 
+                    </div>           
+                    <div class="flex flex-col p-4 bg-card rounded-2xl shadow overflow-auto bg-gray-50 h-full">
+                        <!-- JSON de simulación generada -->
+                        <div *ngIf="generatedSimulation?.length; else noSimulation">
+                            <div *ngFor="let item of generatedSimulation; let i = index">
+                              <div class="json-item">
+                                <div class="json-item-header" (click)="toggleExpand(i)" [style.cursor]="'default'">
+                                  <strong><span class="material-icons text-base" style="vertical-align: middle;">play_arrow</span> {{i}}</strong>: 
+                                  <!-- Mostrar un resumen si está colapsado -->
+                                  <span *ngIf="!isExpanded[i]">
+                                    {{ getSummary(item) }}
+                                  </span>
+                                </div>
+                                <!-- Cuando el item está expandido, mostrar el JSON completo -->
+                                <div *ngIf="isExpanded[i]" class="json-item-body">
+                                  <pre>{{ item | json }}</pre>
+                                </div>
+                              </div>
+                            </div>
+                        </div>
+                          
                         <ng-template #noSimulation>
-                            <!-- Muestra un mensaje o JSON vacío si no hay simulación generada -->
                             <pre>{{ '{ ' }}{{ '}' }}</pre>
                         </ng-template>
+                    
+                        <!-- Mensaje de alerta -->
+                        <div *ngIf="showAlert" class="flex items-center p-4 mt-4 bg-red-100 border border-red-400 text-red-700 rounded-lg" role="alert">
+                            <div> Genera simulación antes de crear. </div>
+                        </div>  
                     </div>
-                    <div *ngIf="showAlert" class="flex items-center p-4 mt-4 bg-red-100 border border-red-400 text-red-700 rounded-lg" role="alert">
-                        <div> Genera simulación antes de crear. </div>
-                    </div>  
-                </div>                               
+                    <!-- Tabla de progreso de simulación -->
+                    <div class="py-2">
+                        <div *ngIf="simulando">
+                            <table class="w-full table-auto bg-transparent">
+                                <tbody>
+                                    <tr>
+                                        <td class="py-2 text-s text-gray-600 flex items-center whitespace-nowrap">
+                                            <div class="flex items-center w-full justify-between">
+                                                <div class="flex items-center">
+                                                    <p class="mr-4">
+                                                        <span>Elementos generados: {{ getSimulationProgress() }} </span>
+                                                    </p>
+                                                    <mat-progress-bar 
+                                                        mode="determinate" 
+                                                        [value]="getSimulationPercentage()" 
+                                                        style="width: 160px; height: 20px;"
+                                                        [color]="getSimulationPercentage() === 100 ? 'primary' : 'warn'">
+                                                    </mat-progress-bar>
+                                                </div>
+                                                <div class="flex items-center">
+                                                    <div class="flex items-center space-x-2">
+                                                        <!-- Botón de pausa más grande -->
+                                                        <button (click)="toggleSimulation()" class="bg-gray-50 px-4 py-2 rounded flex items-center mr-2 shadow">
+                                                            <span class="material-icons text-xll">pause</span> <!-- Ajusté el tamaño del icono -->
+                                                        </button>
+                                                    
+                                                        <!-- Botón de detener más grande con texto rojo -->
+                                                        <button (click)="stopSimulation()" class="bg-gray-50 text-red-500 px-4 py-2 rounded flex items-center shadow">
+                                                            <span class="material-icons text-xll">stop</span> <!-- Ajusté el tamaño del icono -->
+                                                        </button>
+                                                    </div>                                                    
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>                                                            
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>     
+                </div>                                             
             </div>                  
         </div>                             
     </div>

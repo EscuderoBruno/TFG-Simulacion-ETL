@@ -67,18 +67,6 @@ export class SimulacionesComponent implements OnInit, OnDestroy {
         );
     }
 
-    deleteSimulation(id) {
-        this._simulationsService.deleteSimulation(id).subscribe(
-            (response) => {
-                console.log("Simulación " + id + " eliminada");
-                location.reload();
-            },
-            (error) => {
-                console.error('Error al eliminar la simulación', error);
-            }
-        );
-    }
-
     simularInstantaneamente(simulationId: number): void {
         const existingSimulationIndex = this.activeSimulations.findIndex(s => s.simulation.id === simulationId);
         this._simulationsService.simularInstantaneamente(simulationId, (result) => {
@@ -169,6 +157,18 @@ export class SimulacionesComponent implements OnInit, OnDestroy {
     getUserName(userId: number): string {
         const user = this.users.find(us => us.id === userId);
         return user ? user.username : 'Usuario no encontrado'; // Manejar el caso en que no se encuentre la localización
+    }
+
+    deleteSimulation(id) {
+        this._simulationsService.deleteSimulation(id).subscribe(
+            (response) => {
+                console.log("Simulación " + id + " eliminada");
+                location.reload();
+            },
+            (error) => {
+                console.error('Error al eliminar la simulación', error);
+            }
+        );
     }
 
     // Implementación de OnDestroy

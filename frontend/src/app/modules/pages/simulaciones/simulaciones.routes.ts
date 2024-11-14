@@ -9,7 +9,7 @@ export default [
         children: [
             { path: '', component: SimulacionesComponent },
             { path: 'crear', component: CrearSimulacionComponent },
-            { path: 'editar/:id', component: EditarSimulacionComponent }
+            { path: ':id', component: EditarSimulacionComponent }
         ]
     }
 ] as Routes;

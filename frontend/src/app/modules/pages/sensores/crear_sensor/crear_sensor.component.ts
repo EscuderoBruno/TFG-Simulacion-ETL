@@ -65,7 +65,10 @@ export class CrearSensorComponent implements OnInit {
             lat: ['', Validators.required],
             long: ['', Validators.required],
             height: ['', Validators.required],
-            alias: ['', Validators.required]
+            alias: ['', Validators.required],
+            dev_eui: ['', Validators.required],
+            join_eui: ['', Validators.required],
+            dev_addr: ['', Validators.required]
         });
 
         this.coordinates.push(sensorForm);

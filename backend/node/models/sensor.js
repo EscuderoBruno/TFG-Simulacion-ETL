@@ -17,7 +17,10 @@ const Sensor = sequelize.define('Sensor', {
       lat: 0,
       long: 0,
       height: 0,
-      alias: ''
+      alias: '',
+      dev_eui: '',
+      join_eui: '',
+      dev_addr: ''
     },
   },
   // Clave foránea que referencia al usuario

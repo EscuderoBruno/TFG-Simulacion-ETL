@@ -11,6 +11,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
@@ -20,6 +21,8 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { DomSanitizer } from '@angular/platform-browser';
 import mqtt from 'mqtt';
 import { DatePipe } from '@angular/common';
+import { ChangeDetectorRef } from '@angular/core';
+import { AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
 
 @Component({
     selector: 'editar-simulacion',
@@ -40,7 +43,8 @@ import { DatePipe } from '@angular/common';
         ReactiveFormsModule,
         RouterModule,
         MatCheckboxModule,
-        MatDatepickerModule
+        MatDatepickerModule,
+        MatProgressBarModule
     ],
     providers: [DatePipe]
 })
@@ -48,20 +52,23 @@ import { DatePipe } from '@angular/common';
 export class EditarSimulacionComponent implements OnInit {
 
     simulation: any;
+    simulationId: number;
     simulationForm: UntypedFormGroup;
     formFieldHelpers = '';
     sensors: any[] = [];
-    generatedSimulation: string = '';
+    generatedSimulation: any[] = [];  // Aquí irán los datos de la simulación
     jsonFormat: any;
     showTooltip = false;
     simulacionGenerada = false;
     showAlert = false;
     showAdvise = true;
-    private mqttClient: any;
     numArrayLocalizacion: 0;
     simulacionesGeneradas: any[] = [];
     minDate: Date;
     placeholderText: string = 'Fecha';
+    activeSimulation: { simulation: any; elapsedTime: number; interval?: any } = { simulation: null, elapsedTime: 0 }; // Inicializar valores predeterminados
+    simulando = false;
+    isExpanded: boolean[] = []; // Lista para saber qué items están expandidos
 
     jsonData = {
         campo2: "^int[0,10]",
@@ -83,25 +90,26 @@ export class EditarSimulacionComponent implements OnInit {
     };
 
     rawFormatJson: string = `{
-        "campo2": "^int[0,10]",
-        "campo3": "^float[20,25]",
-        "campo4": "^bool[8,9]",
-        "time": "^time",
-        "campo5": "este texto",
-        "campo6": "^array[4]int[0,50]",
-        "campo7": "^array[4]float[0,50]",
-        "campo8": "^array[4]bool",
-        "campo9": {
+    "campo2": "^int[0,10]",
+    "campo3": "^float[20,25]",
+    "campo4": "^bool[8,9]",
+    "time": "^time",
+    "campo5": "este texto",
+    "campo6": "^array[4]int[0,50]",
+    "campo7": "^array[4]float[0,50]",
+    "campo8": "^array[4]bool",
+    "campo9": {
         "campo10": "^array[4]float[0,50]",
         "campo11": "^float[20,25]"
-        },
-        "campo12": "^positionlong",
-        "campo13": "^positionlat",
-        "campo14": "^positioncote",
-        "campo15": "^positionalias"
+    },
+    "campo12": "^positionlong",
+    "campo13": "^positionlat",
+    "campo14": "^positioncote",
+    "campo15": "^positionalias",
+    "campo16": "^positiondeveui",
+    "campo17": "^positionjoineui",
+    "campo18": "^positiondevaddr"
     }`;
-
-    simulationId: string;
 
     constructor(
         private _simulationService: SimulacionesService,
@@ -110,11 +118,12 @@ export class EditarSimulacionComponent implements OnInit {
         private _activatedRoute: ActivatedRoute,
         private _router: Router,
         private sanitizer: DomSanitizer,
-        private datePipe: DatePipe
+        private datePipe: DatePipe,
+        private cdr: ChangeDetectorRef
     ) { }
 
     ngOnInit(): void {
-        this.simulationId = this._activatedRoute.snapshot.paramMap.get('id') || '';
+        this.simulationId = Number(this._activatedRoute.snapshot.paramMap.get('id') || '');
         const formattedDate = this.datePipe.transform(new Date(), 'dd/MM/yyyy 00:00:00');
 
         this.simulationForm = this._formBuilder.group({
@@ -128,6 +137,9 @@ export class EditarSimulacionComponent implements OnInit {
             noRepetirCheckbox: [0],
             parameters: [''],
             date: [formattedDate, Validators.required],
+        }, {
+            // Aquí aplicamos el validador al formulario completo
+            validators: this.registrosPorInstanteValidator()
         });
 
         if (this.simulationId) {
@@ -135,7 +147,8 @@ export class EditarSimulacionComponent implements OnInit {
             if (!isNaN(simulationIdNumber)) {
                 this._simulationService.getSimulationById(simulationIdNumber).subscribe(
                 (simulation) => {
-                    const formValue = this.simulationForm.value;
+                    const formattedDate = this.datePipe.transform(simulation.date, 'dd/MM/yyyy HH:mm:ss');
+                    simulation.date = formattedDate;
                     console.log('Datos de simulación recibidos:', simulation); // Imprime los datos antes de asignarlos al formulario
                     this.simulation = simulation;
                     this.simulationForm.patchValue(simulation);
@@ -174,20 +187,20 @@ export class EditarSimulacionComponent implements OnInit {
             let fechaDate: Date;
 
             if (formValue.date === 'now') {
-            fechaDate = new Date();
+                fechaDate = new Date();
             } else {
-            fechaDate = this.getFechaAsDate(formValue.date);
+                fechaDate = this.getFechaAsDate(formValue.date);
             }
 
             formValue.date = this.getFormattedDate(fechaDate);
 
             if (typeof formValue.parameters === 'string') {
-            try {
-                formValue.parameters = JSON.parse(formValue.parameters);
-            } catch (error) {
-                console.error("Error al convertir los parámetros a JSON", error);
-                return;
-            }
+                try {
+                    formValue.parameters = JSON.parse(formValue.parameters);
+                } catch (error) {
+                    console.error("Error al convertir los parámetros a JSON", error);
+                    return;
+                }
             }
 
             this.simulationForm.disable();
@@ -262,7 +275,7 @@ export class EditarSimulacionComponent implements OnInit {
             // Verificar si hay parámetros válidos para generar un nuevo JSON
             if (formValue.parameters) {
             // Generar el nuevo JSON
-            this.generatedSimulation = this._simulationService.generateNewJson(formValue.parameters, formValue.sensorId, randomIndex, fechaDate);
+            this.generatedSimulation[0] = this._simulationService.generateNewJson(formValue.parameters, formValue.sensorId, randomIndex, fechaDate);
             console.log("Resultado generado:", formValue.parameters); // Imprimir el nuevo JSON generado
 
             // Asignar los resultados generados a las variables de estado
@@ -278,6 +291,102 @@ export class EditarSimulacionComponent implements OnInit {
         );
     }
 
+    // Método para cambiar el estado de expansión
+    toggleExpand(index: number): void {
+        this.isExpanded[index] = !this.isExpanded[index];
+    }
+
+    // Método para obtener un resumen del contenido de cada item
+    getSummary(item: any): string {
+        // Aquí seleccionamos algunos campos clave para mostrar en el resumen
+        return `{campo2: ${item.campo2}, campo3: ${item.campo3}, campo4: ${item.campo4}, ...}`;
+    }
+
+    // Si es necesario, puedes cargar los datos simulados aquí
+    simularInstantaneamente(): void {
+        this._simulationService.simularInstantaneamente(this.simulationId, (result) => {
+        this.generatedSimulation = result;
+        this.isExpanded = new Array(this.generatedSimulation.length).fill(false); // Inicializa los estados de expansión
+        });
+  }
+
+    toggleSimulation(): void {
+        if (this._simulationService.isSimulationRunning(this.simulationId)) {
+            this._simulationService.stopSimulation(this.simulationId);
+            this.simulando = false;
+            this.stopSimulation();
+        } else {
+            this._simulationService.simular(this.simulationId, (result) => {
+            });
+            this.startSimulation();
+            this.simulando = true;
+        }
+    }
+
+    startSimulation(): void {
+
+        if (this.simulation && !this.activeSimulation.interval) {
+  
+            this.activeSimulation.elapsedTime = 0;
+            this.activeSimulation.interval = setInterval(() => {
+                const percentage = this.getSimulationPercentage();
+
+                if (percentage >= 100) {
+                    // Detener la simulación automáticamente cuando llegue al 100%
+                    this.stopSimulation();
+                } else {
+                    // Incrementa el tiempo cada segundo mientras no esté al 100%
+                    this.activeSimulation.elapsedTime += 1;
+                }
+                this.cdr.detectChanges(); // Forzar la detección de cambios
+            }, 1000);
+        }
+    }
+
+    stopSimulation(): void {
+        if (this.activeSimulation.interval) {
+            clearInterval(this.activeSimulation.interval);
+            this.activeSimulation.interval = null;
+        }
+    }
+
+    formatElapsedTime(seconds: number): string {
+        const hours = Math.floor(seconds / 3600);
+        const minutes = Math.floor((seconds % 3600) / 60);
+        const secs = seconds % 60;
+
+        // Asegúrate de que siempre haya dos dígitos
+        return `${this.padTime(hours)}:${this.padTime(minutes)}:${this.padTime(secs)}`;
+    }
+
+    padTime(time: number): string {
+        return time < 10 ? '0' + time : time.toString();
+    }
+
+    getSimulationPercentage(): number {
+        const totalGenerados = this._simulationService.getTotalGenerados(this.simulationId);
+        const numElementosASimular = this.simulation.numElementosASimular || 0;
+
+        if (numElementosASimular === 0) return 0;
+
+        const percentage = (totalGenerados / numElementosASimular) * 100;
+        return Math.round(percentage); // Redondear al entero más cercano
+    }
+
+    getSimulationProgress(): string {
+        const totalGenerados = this._simulationService.getTotalGenerados(this.simulationId);
+        const numElementosASimular = this.simulation.numElementosASimular || 0;
+    
+        // Si `numElementosASimular` es 0, devolver solo el total generado
+        if (numElementosASimular === 0) {
+            return `${totalGenerados} / ∞`;
+        }
+    
+        // En caso contrario, devolver el progreso en el formato `totalGenerados / numElementosASimular`
+        return `${totalGenerados} / ${numElementosASimular}`;
+    }    
+
+
     getFormattedDate(date: Date): string {
         return this.datePipe.transform(date, 'yyyy-MM-dd HH:mm:ss')!;
     }
@@ -290,9 +399,8 @@ export class EditarSimulacionComponent implements OnInit {
     }
 
     get formattedSimulationJson(): any {
-        const jsonString = JSON.stringify(this.generatedSimulation, null, 2).trim();
-        return this.sanitizer.bypassSecurityTrustHtml('<pre>' + jsonString + '</pre>');
-    }
+        return this.generatedSimulation
+    }  
 
     copyToClipboard(): void {
         const textArea = document.createElement('textarea');
@@ -325,6 +433,28 @@ export class EditarSimulacionComponent implements OnInit {
     setPlaceholderToNow() {
         this.placeholderText = 'now'; // Cambiar el texto del placeholder
         this.simulationForm.get('date')?.setValue(this.placeholderText); // Establecer la fecha actual
+    }
+
+        // Validador personalizado
+    registrosPorInstanteValidator(): ValidatorFn {
+        return (control: AbstractControl): ValidationErrors | null => {
+            const minRegistros = control.get('minRegistrosPorInstante')?.value;
+            const maxRegistros = control.get('maxRegistrosPorInstante')?.value;
+            const noRepetir = control.get('noRepetirCheckbox')?.value;
+            const sensorId = control.get('sensorId')?.value;
+
+            if (noRepetir && sensorId) {
+                // Buscar localización por ID
+                const sensor = this.sensors.find(loc => loc.id === sensorId);
+                const maxCoordinates = sensor?.coordinates.length || 0;
+
+                // Verificar que los registros no excedan las coordenadas disponibles
+                if ((minRegistros > maxCoordinates) || (maxRegistros > maxCoordinates)) {
+                    return { registrosExcedenCoordenadas: true };
+                }
+            }
+            return null;
+        };
     }
 
     volver() {

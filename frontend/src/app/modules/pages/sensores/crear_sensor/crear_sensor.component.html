@@ -42,8 +42,11 @@
                                 <tr class="bg-gray-50">
                                     <th class="px-4 py-3 text-left border-r" style="font-weight: normal;">Latitud</th>
                                     <th class="px-4 py-3 text-left border-r" style="font-weight: normal;">Longitud</th>
-                                    <th class="px-4 py-3 text-left border-r" style="font-weight: normal;">Altura</th>
+                                    <th class="px-4 py-3 text-left border-r" style="font-weight: normal;">Cota</th>
                                     <th class="px-4 py-3 text-left border-r" style="font-weight: normal;">Alias</th>
+                                    <th class="px-4 py-3 text-left border-r" style="font-weight: normal;">Dev_eui</th>
+                                    <th class="px-4 py-3 text-left border-r" style="font-weight: normal;">Join_eui</th>
+                                    <th class="px-4 py-3 text-left border-r" style="font-weight: normal;">Dev_addr</th>
                                     <th class="px-4 py-3 text-left" style="font-weight: normal;"></th>
                                 </tr>
                             </thead>                            
@@ -60,6 +63,15 @@
                                     </td>
                                     <td class="px-4 py-2 border-r border-t">
                                         <input matInput formControlName="alias" class="w-full px-2 py-1">
+                                    </td>
+                                    <td class="px-4 py-2 border-r border-t">
+                                        <input matInput formControlName="dev_eui" class="w-full px-2 py-1">
+                                    </td>
+                                    <td class="px-4 py-2 border-r border-t">
+                                        <input matInput formControlName="join_eui" class="w-full px-2 py-1">
+                                    </td>
+                                    <td class="px-4 py-2 border-r border-t">
+                                        <input matInput formControlName="dev_addr" class="w-full px-2 py-1">
                                     </td>
                                     <td class="px-4 py-2 text-center border-t">
                                         <button mat-icon-button color="warn" (click)="eliminarCoordenada(i)">

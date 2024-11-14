@@ -56,7 +56,7 @@
                                 <tr>
                                     <th class="px-6 py-3 text-left text-s font-medium text-gray-500 tracking-wider">ID</th>
                                     <th class="px-6 py-3 text-left text-s font-medium text-gray-500 tracking-wider w-2/6">Nombre</th>
-                                    <th class="px-6 py-3 text-left text-s font-medium text-gray-500 tracking-wider">Total</th>
+                                    <th class="px-6 py-3 text-left text-s font-medium text-gray-500 tracking-wider">Total sensores</th>
                                     <th class="px-6 py-3 text-left text-s font-medium text-gray-500 tracking-wider flex justify-end"></th>
                                 </tr>
                             </thead>
@@ -65,7 +65,7 @@
                                 <tr *ngFor="let location of locations">
                                     <td class="px-6 py-4 whitespace-nowrap text-s font-medium text-gray-600">{{ location.id }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-s font-medium text-gray-600">{{ location.name }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-s text-gray-600">{{ location.coordinates.length }}</td>                                 
+                                    <td class="px-6 py-4 whitespace-nowrap text-s text-gray-600">{{ location.coordinates.length }}</td>                                                             
                                     <td class="px-6 py-4 whitespace-nowrap text-s text-gray-600 space-x-2 flex justify-end">
                                         <!-- Ícono de tres puntos para el menú desplegable -->
                                         <button mat-icon-button [matMenuTriggerFor]="menu">

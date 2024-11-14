@@ -6,7 +6,6 @@ const newSensor = async (req, res) => {
     const userId = req.user.id;  // Obtener el ID del usuario desde el token o el sesión
 
     try {
-
         // Crear el nuevo usuario
         const sensor = await Sensor.create({ name, coordinates, userId });
 
@@ -22,10 +21,10 @@ const deleteSensor = async (req, res) => {
 
     try {
         const sensor = await Sensor.findByPk(id);
-        if (!sensor) return res.status(404).json({ message: 'Sensor no encontrada' });
+        if (!sensor) return res.status(404).json({ message: 'Sensor no encontrado' });
 
         await sensor.destroy();
-        res.status(200).json({ message: 'Sensor eliminada con éxito' });
+        res.status(200).json({ message: 'Sensor eliminado con éxito' });
     } catch (error) {
         res.status(500).json({ message: 'Error al eliminar sensor', error });
     }

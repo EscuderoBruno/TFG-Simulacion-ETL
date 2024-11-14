@@ -1,48 +1,39 @@
 <div class="flex flex-col flex-auto min-w-0">
 
-    <!-- Header -->
-    <div class="flex flex-col sm:flex-row flex-0 sm:items-center sm:justify-between p-6 sm:py-4 sm:px-10 border-b bg-card dark:bg-transparent ">
-        <div class="flex-1 min-w-0">
-            <!-- Breadcrumbs -->
-            <div class="flex flex-col">
-                <div class="hidden sm:flex font-medium">
-                    <!-- Título "Crear usuario" -->
-                    <div class="mr-8">
-                        <a class="whitespace-nowrap text-secondary-500 md:text-2xl">Simulaciones</a>
-                    </div>
-                    <div class="flex items-end pb-1">
-                        <a class="whitespace-nowrap text-primary-500">Inicio</a>
-                        <mat-icon class="icon-size-5 text-secondary mx-1" [svgIcon]="'heroicons_mini:chevron-right'"></mat-icon>
-                        <span class="text-secondary">Simulaciones</span>
-                    </div>
-                </div>
-            </div>                                
-        </div>
-        <!-- Actions -->
-        <div class="relative mr-4">
-            <input 
-                type="text"
-                placeholder="Buscar..."
-                class="bg-white-200 border border-gray-300 text-gray-900 rounded-lg py-2 px-4 focus:outline-none focus:ring-1 focus:ring-sky-500"
-            />
-            <mat-icon 
-                class="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-500"
-                [svgIcon]="'heroicons_mini:magnifying-glass'"></mat-icon>
-        </div>
-        <div class="flex shrink-0 items-center mt-6 sm:mt-0 sm:ml-4">
-            <button
-                class="ml-3 bg-sky-400 hover:bg-sky-500 text-white"
-                mat-flat-button [routerLink]="['crear']">
-                <mat-icon
-                    class="icon-size-4"
-                    [svgIcon]="'heroicons_mini:plus'"></mat-icon>
-                <span class="ml-2">Nueva</span>
-            </button>
-        </div>
-    </div>
-
     <!-- Main -->
     <div class="flex-auto p-6 sm:px-10">
+        <div class="flex flex-col sm:flex-row flex-0 sm:items-center sm:justify-between pb-4">
+            <div class="flex-1 min-w-0">
+                <!-- Breadcrumbs -->
+                <div class="flex flex-col">
+                    <!-- Título "Crear usuario" -->
+                    <div class="mr-8">
+                        <a class="whitespace-nowrap text-secondary-500 md:text-2xl">Lista simulaciones</a>
+                    </div>
+                </div>                                
+            </div>
+            <!-- Actions -->
+            <div class="relative mr-4">
+                <input 
+                    type="text"
+                    placeholder="Buscar..."
+                    class="bg-white-200 border border-gray-300 text-gray-900 rounded-lg py-2 px-4 focus:outline-none focus:ring-1 focus:ring-sky-500"
+                />
+                <mat-icon 
+                    class="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-500"
+                    [svgIcon]="'heroicons_mini:magnifying-glass'"></mat-icon>
+            </div>
+            <div class="flex shrink-0 items-center mt-6 sm:mt-0 sm:ml-4">
+                <button
+                    class="ml-3 bg-sky-400 hover:bg-sky-500 text-white"
+                    mat-flat-button [routerLink]="['crear']">
+                    <mat-icon
+                        class="icon-size-4"
+                        [svgIcon]="'heroicons_mini:plus'"></mat-icon>
+                    <span class="ml-2">Nueva</span>
+                </button>
+            </div>
+        </div>
         <!-- CONTENT GOES HERE -->
         <div class="max-h-400 rounded-2xl">
             <!-- Simulaciones en ejecución -->
@@ -102,7 +93,9 @@
                                 <tr *ngFor="let simulation of simulations">
                                     <td class="px-6 py-4 whitespace-nowrap text-s font-medium text-gray-600">{{ getUserName(simulation.userId) }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-s font-medium text-gray-600">{{ simulation.id }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-s font-medium text-gray-600">{{ simulation.name }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-s font-medium text-gray-600 cursor-pointer underline" [routerLink]="[simulation.id]">
+                                    {{ simulation.name }}
+                                    </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-s font-medium text-gray-600">{{ getSensorName(simulation.sensorId) }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-s font-medium text-gray-600">{{ simulation.numElementosASimular === 0 ? '∞' : simulation.numElementosASimular }} </td>                                    
                                     <td class="px-6 py-4 whitespace-nowrap text-s font-medium text-gray-600">{{ simulation.minRegistrosPorInstante }}-{{ simulation.maxRegistrosPorInstante }}</td>
@@ -110,7 +103,7 @@
                                     <td class="px-6 py-4 whitespace-nowrap text-s text-gray-600 space-x-2 flex justify-end">
                                         <!-- Botón de Ejecutar -->
                                         <button mat-icon-button (click)="simularInstantaneamente(simulation.id)">
-                                            <mat-icon svgIcon="heroicons_mini:rocket-launch"></mat-icon>
+                                            <mat-icon>rocket</mat-icon>
                                         </button>
                                         <!-- Botón de Ejecutar -->
                                         <button mat-icon-button (click)="toggleSimulation(simulation.id)">
@@ -123,9 +116,9 @@
                                         <!-- Menú desplegable -->
                                         <mat-menu #menu="matMenu">
                                             <!-- Botón de Editar -->
-                                            <button mat-menu-item (click)="editSimulation(simulation.id)">
-                                                Editar
-                                            </button>
+                                            <button mat-menu-item [routerLink]="[simulation.id]">
+                                                Abrir
+                                            </button>                                            
                                             <!-- Botón de Eliminar -->
                                             <button mat-menu-item (click)="deleteSimulation(simulation.id)" class="text-red-500">
                                                 Eliminar

@@ -16,10 +16,13 @@ export class SensoresService {
         long: number;
         height: number;
         alias: string;
+        dev_eui: string;
+        join_eui: string;
+        dev_addr: string;
     }> = []; // Cambiado a un array de coordenadas
 
     // Método para crear un nueva sensor
-    create(sensor: { name: string; coordinates: Array<{ lat: number; long: number; height: number; alias: string }> }): Observable<any> {
+    create(sensor: { name: string; coordinates: Array<{ lat: number; long: number; height: number; alias: string; dev_eui: string; join_eui: string; dev_addr: string; }> }): Observable<any> {
         return this._httpClient.post(`${environment.apiBaseUrl}/sensors/create`, sensor);
     }
 

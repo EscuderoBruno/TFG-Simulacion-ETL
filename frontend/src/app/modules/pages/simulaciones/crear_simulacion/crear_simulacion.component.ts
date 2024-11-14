@@ -80,26 +80,32 @@ export class CrearSimulacionComponent implements OnInit {
         campo12: "^positionlong",
         campo13: "^positionlat",
         campo14: "^positioncote",
-        campo15: "^positionalias"
+        campo15: "^positionalias",
+        campo16: "^positiondeveui",
+        campo17: "^positionjoineui",
+        campo18: "^positiondevaddr"
     };
 
     rawFormatJson: string = `{
-        "campo2": "^int[0,10]",
-        "campo3": "^float[20,25]",
-        "campo4": "^bool[8,9]",
-        "time": "^time",
-        "campo5": "este texto",
-        "campo6": "^array[4]int[0,50]",
-        "campo7": "^array[4]float[0,50]",
-        "campo8": "^array[4]bool",
-        "campo9": {
-          "campo10": "^array[4]float[0,50]",
-          "campo11": "^float[20,25]"
-        },
-        "campo12": "^positionlong",
-        "campo13": "^positionlat",
-        "campo14": "^positioncote",
-        "campo15": "^positionalias"
+    "campo2": "^int[0,10]",
+    "campo3": "^float[20,25]",
+    "campo4": "^bool[8,9]",
+    "time": "^time",
+    "campo5": "este texto",
+    "campo6": "^array[4]int[0,50]",
+    "campo7": "^array[4]float[0,50]",
+    "campo8": "^array[4]bool",
+    "campo9": {
+        "campo10": "^array[4]float[0,50]",
+        "campo11": "^float[20,25]"
+    },
+    "campo12": "^positionlong",
+    "campo13": "^positionlat",
+    "campo14": "^positioncote",
+    "campo15": "^positionalias",
+    "campo16": "^positiondeveui",
+    "campo17": "^positionjoineui",
+    "campo18": "^positiondevaddr"
     }`;
 
     constructor(
@@ -129,6 +135,9 @@ export class CrearSimulacionComponent implements OnInit {
             parameters: [''],
             // Campo fecha con el valor formateado
             date: [formattedDate, Validators.required],
+        }, {
+            // Aquí aplicamos el validador al formulario completo
+            validators: this.registrosPorInstanteValidator()
         });
 
         // Obtener las ubicaciones de los sensores
@@ -191,14 +200,17 @@ export class CrearSimulacionComponent implements OnInit {
     
                 // Enviar el formulario
                 this._simulationService.create(formValue).subscribe(
-                    () => {
+                    (response: any) => {
+                        const simulationId = response.id;
                         console.log('Simulación creada exitosamente');
+                        this._router.navigate([`/simulaciones/${simulationId}`]);
                     },
                     (error) => {
                         console.error('Error durante el registro:', error);
                         this.simulationForm.enable(); // Habilita el formulario si ocurre un error
                     }
                 );
+
             } else {
                 console.log("Genera antes la simulación");
                 this.showAlert = true;
