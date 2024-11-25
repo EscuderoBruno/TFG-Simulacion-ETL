@@ -272,7 +272,11 @@ export class CrearSimulacionComponent implements OnInit {
                 // Verificar si hay parámetros válidos para generar un nuevo JSON
                 if (formValue.parameters) {
                     // Generar el nuevo JSON
-                    this.generatedSimulation = this._simulationService.generateNewJson(formValue.parameters, formValue.sensorId, randomIndex, fechaDate);
+                    this._simulationService.generateNewJson(formValue.parameters, formValue.sensorId, randomIndex, fechaDate)
+                    .then(generatedJson => {
+                        this.generatedSimulation = generatedJson;
+                        console.log('JSON generado:', generatedJson);
+                    })
                     console.log("Resultado generado:", formValue.parameters); // Imprimir el nuevo JSON generado
 
                     // Asignar los resultados generados a las variables de estado

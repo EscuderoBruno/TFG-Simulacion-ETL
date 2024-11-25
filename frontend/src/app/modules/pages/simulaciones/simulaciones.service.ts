@@ -3,12 +3,14 @@ import { Injectable } from '@angular/core';
 import { Observable, timer } from 'rxjs';
 import { environment } from 'environment/environment';
 import { SensoresService } from '../sensores/sensores.service';
+import { MqttService } from 'app/services/mqtt.service';
 
 @Injectable({ providedIn: 'root' })
 export class SimulacionesService {
 
     constructor(private _httpClient: HttpClient,
                 private _sensoresService: SensoresService,
+                private mqttService: MqttService
     ) {}
 
     // Datos
@@ -19,6 +21,7 @@ export class SimulacionesService {
     intervals: { [key: number]: any } = {}; // Almacena los intervalos por ID de simulación
     isRunning: { [key: number]: boolean } = {}; // Almacena el estado de cada simulación
     totalGenerados: { [simulationId: number]: number } = {}; // Almacenar totalGenerados por ID de simulación
+    paused: { [key: number]: boolean } = {};  // Diccionario que mantiene el estado de pausa de cada simulación
 
     // Método para crear una nueva simulación
     create(simulation: {
@@ -71,80 +74,69 @@ export class SimulacionesService {
     // -------------------------------------------------------- GENERAR SIMULACIÓN ------------------------------------------------------------ //
 
     // Método para generar un nuevo JSON basado en los parámetros
-    generateNewJson(params: any, sensorId: number, numArrayLocalizaciones: number, time: Date): any {
+    async generateNewJson(params: any, sensorId: number, numArrayLocalizaciones: number, time: Date): Promise<any> {
+        const coord = await this._sensoresService.getCoordinatesById(sensorId, numArrayLocalizaciones).toPromise();
         const newJson: any = {};
-
-        // Llamar a getCoordinatesById y suscribirse para obtener las coordenadas
-        this._sensoresService.getCoordinatesById(sensorId, numArrayLocalizaciones).subscribe(coord => {
-            // Una vez que tenemos las coordenadas, llenamos el newJson
-            for (const key in params) {
-                if (params.hasOwnProperty(key)) {
-                    const value = params[key];
-
-                    if (typeof value === 'string' && value.startsWith('^')) {
-                        if (value.startsWith('^int[')) {
-                            const range = value.match(/\[(\d+),(\d+)\]/);
-                            if (range) {
-                                const min = parseInt(range[1]);
-                                const max = parseInt(range[2]);
-                                newJson[key] = this.getRandomInt(min, max);
-                            }
-                        } else if (value.startsWith('^float[')) {
-                            const range = value.match(/\[(\d+),(\d+)\]/);
-                            if (range) {
-                                const min = parseFloat(range[1]);
-                                const max = parseFloat(range[2]);
-                                newJson[key] = this.getRandomFloat(min, max);
-                            }
-                        } else if (value.startsWith('^bool')) {
-                            newJson[key] = Math.random() < 0.5; // true o false aleatorio
-                        } else if (value.startsWith('^array[')) {
-                            // Ajustar la expresión regular para capturar tanto el tamaño como el tipo de elemento
-                            const arrayDetails = value.match(/^\^array\[(\d+)\](\w+)(?:\[(\d+),(\d+)\])?/);
-                            
-                            if (arrayDetails) {
-                                const arrayLength = parseInt(arrayDetails[1]); // Longitud del array
-                                const elementType = arrayDetails[2]; // Tipo de elemento: 'int', 'float', 'bool'
-                                
-                                // Inicializa min y max solo si el tipo es int o float
-                                let min = 0;
-                                let max = 100;
-                        
-                                // Comprueba si es necesario obtener min y max
-                                if (arrayDetails[3] && arrayDetails[4]) {
-                                    min = parseInt(arrayDetails[3]);
-                                    max = parseInt(arrayDetails[4]);
-                                }
-                        
-                                // Generar el array dependiendo del tipo
-                                if (elementType === 'bool') {
-                                    newJson[key] = this.generateBooleanArray(arrayLength);
-                                } else {
-                                    newJson[key] = this.generateArray(arrayLength, elementType, min, max);
-                                }
-                            }
-                        } else if (value === '^time') {
-                            newJson[key] = time.toISOString();
-                        } else if (value.startsWith('^positionlong')) {
-                            newJson[key] = coord.long;  // Aquí asignamos la longitud
-                        } else if (value.startsWith('^positionlat')) {
-                            newJson[key] = coord.lat;   // Aquí asignamos la latitud
-                        } else if (value.startsWith('^positioncote')) {
-                            newJson[key] = coord.height; // Aquí asignamos la altura
-                        } else if (value.startsWith('^positionalias')) {
-                            newJson[key] = coord.alias; // Aquí asignamos la altura
+    
+        for (const key in params) {
+            if (params.hasOwnProperty(key)) {
+                const value = params[key];
+    
+                if (typeof value === 'string' && value.startsWith('^')) {
+                    if (value.startsWith('^int[')) {
+                        const range = value.match(/\[(\d+),(\d+)\]/);
+                        if (range) {
+                            const min = parseInt(range[1]);
+                            const max = parseInt(range[2]);
+                            newJson[key] = this.getRandomInt(min, max);
                         }
-                    } else if (typeof value === 'object' && !Array.isArray(value)) {
-                        newJson[key] = this.generateNewJson(value, sensorId, numArrayLocalizaciones, time);
-                    } else {
-                        newJson[key] = value; // Copiar otros valores como están
+                    } else if (value.startsWith('^float[')) {
+                        const range = value.match(/\[(\d+),(\d+)\]/);
+                        if (range) {
+                            const min = parseFloat(range[1]);
+                            const max = parseFloat(range[2]);
+                            newJson[key] = this.getRandomFloat(min, max);
+                        }
+                    } else if (value.startsWith('^bool')) {
+                        newJson[key] = Math.random() < 0.5; // true o false aleatorio
+                    } else if (value.startsWith('^array[')) {
+                        const arrayDetails = value.match(/^\^array\[(\d+)\](\w+)(?:\[(\d+),(\d+)\])?/);
+                        if (arrayDetails) {
+                            const arrayLength = parseInt(arrayDetails[1]);
+                            const elementType = arrayDetails[2];
+                            let min = 0;
+                            let max = 100;
+                            if (arrayDetails[3] && arrayDetails[4]) {
+                                min = parseInt(arrayDetails[3]);
+                                max = parseInt(arrayDetails[4]);
+                            }
+                            if (elementType === 'bool') {
+                                newJson[key] = this.generateBooleanArray(arrayLength);
+                            } else {
+                                newJson[key] = this.generateArray(arrayLength, elementType, min, max);
+                            }
+                        }
+                    } else if (value === '^time') {
+                        newJson[key] = time.toISOString();
+                    } else if (value.startsWith('^positionlong')) {
+                        newJson[key] = coord.long;
+                    } else if (value.startsWith('^positionlat')) {
+                        newJson[key] = coord.lat;
+                    } else if (value.startsWith('^positioncote')) {
+                        newJson[key] = coord.height;
+                    } else if (value.startsWith('^positionalias')) {
+                        newJson[key] = coord.alias;
                     }
+                } else if (typeof value === 'object' && !Array.isArray(value)) {
+                    newJson[key] = await this.generateNewJson(value, sensorId, numArrayLocalizaciones, time);
+                } else {
+                    newJson[key] = value;
                 }
             }
-        });
-
-        return newJson;  // Aquí regresamos el nuevo JSON
-    } 
+        }
+    
+        return newJson;
+    }    
     
     getRandomInt(min: number, max: number): number {
         return Math.floor(Math.random() * (max - min + 1)) + min;
@@ -197,16 +189,20 @@ export class SimulacionesService {
             (simulacion) => {
                 let totalGenerados = 0;
                 let usedIndices: Set<number> = new Set(); // Set para rastrear índices ya usados
-                // Convertir la cadena de fecha a un objeto Date
                 let time = new Date(simulacion.date);
 
                 const executeSimulationStep = () => {
                     // Comprobar si se ha alcanzado el límite de elementos a simular
-                    // Solo detener si `numElementosASimular` es mayor que 0
                     if (simulacion.numElementosASimular > 0 && totalGenerados >= simulacion.numElementosASimular) {
-                        console.log("Resultado generado:", this.simulacionesGeneradas); // Imprimir el resultado final
+                        console.log("Resultado final generado:", this.simulacionesGeneradas); // Imprimir el resultado final
                         this.isRunning[simulationId] = false; // Cambia el estado a inactivo al finalizar
                         return; // Termina la simulación
+                    }
+
+                    // Si está pausada, simplemente no guardamos los datos pero seguimos ejecutando
+                    if (this.paused[simulationId]) {
+                        setTimeout(executeSimulationStep, 1000); // Esperar antes de continuar el ciclo
+                        return; // No guardamos los datos cuando está pausada
                     }
 
                     // Generar un número aleatorio dentro del rango de registros por instante
@@ -226,26 +222,29 @@ export class SimulacionesService {
 
                         this._sensoresService.getSensorById(simulacion.sensorId).subscribe(
                             (sensor) => {
-                                // Verificar que las coordenadas existen
                                 if (!sensor.coordinates || sensor.coordinates.length === 0) {
                                     console.error('No se encontraron coordenadas para la localización', sensor);
                                     return;
                                 }
 
-                                // Selección de índice sin repetir, si el checkbox está activo
                                 let randomIndex: number;
                                 if (simulacion.noRepetirCheckbox === 1) {
                                     const availableIndices = sensor.coordinates.map((_, idx) => idx).filter(idx => !usedIndices.has(idx));
                                     
                                     if (availableIndices.length === 0) {
                                         console.warn("No quedan localizaciones únicas disponibles.");
-                                        return;
+                                        // Si no hay localizaciones únicas disponibles, se permite la repetición
+                                        if (sensor.coordinates.length > 0) {
+                                            randomIndex = Math.floor(Math.random() * sensor.coordinates.length);  // Se elige aleatoriamente una coordenada
+                                        } else {
+                                            return;  // Si no hay coordenadas, no se puede continuar
+                                        }
+                                    } else {
+                                        randomIndex = availableIndices[Math.floor(Math.random() * availableIndices.length)];
+                                        usedIndices.add(randomIndex); // Marcamos la localización como usada
                                     }
-
-                                    randomIndex = availableIndices[Math.floor(Math.random() * availableIndices.length)];
-                                    usedIndices.add(randomIndex);
                                 } else {
-                                    randomIndex = Math.floor(Math.random() * sensor.coordinates.length);
+                                    randomIndex = Math.floor(Math.random() * sensor.coordinates.length); // Si no hay restricción de repetición, seleccionamos aleatoriamente
                                 }
 
                                 // Intentar parsear los parámetros si son una cadena
@@ -260,8 +259,15 @@ export class SimulacionesService {
                                 }
 
                                 if (parameters) {
-                                    // Generar el nuevo JSON
-                                    this.simulacionesGeneradas.push(this.generateNewJson(parameters, simulacion.sensorId, randomIndex, time));
+                                    this.generateNewJson(parameters, simulacion.sensorId, randomIndex, time)
+                                    .then((newSimulacion) => {
+                                        this.simulacionesGeneradas.push(newSimulacion);
+                                        this.sendMessageMqtt(newSimulacion);
+                                        callback(newSimulacion); // Llamar al callback
+                                    })
+                                    .catch((error) => {
+                                        console.error('Error al generar el JSON:', error);
+                                    });                                
                                 } else {
                                     console.error("No se encontraron parámetros válidos.");
                                 }
@@ -281,7 +287,7 @@ export class SimulacionesService {
                     this.intervals[simulationId] = setTimeout(executeSimulationStep, intervalo * 1000);
 
                     time = new Date(time.getTime() + intervalo * 1000);
-                    console.log(time);
+                    //console.log(time);
                 };
 
                 // Iniciar el primer paso de la simulación
@@ -291,6 +297,18 @@ export class SimulacionesService {
                 console.error("Error al obtener la simulación", error);
             }
         );
+    }
+
+    // Método para pausar la simulación
+    pauseSimulation(simulationId: number): void {
+        this.paused[simulationId] = true;
+        console.log(`Simulación ${simulationId} pausada.`);
+    }
+
+    // Método para reanudar la simulación
+    resumeSimulation(simulationId: number): void {
+        this.paused[simulationId] = false;
+        console.log(`Simulación ${simulationId} reanudada.`);
     }
 
     // Método para iniciar la simulación sin esperar entre intervalos
@@ -371,9 +389,14 @@ export class SimulacionesService {
 
                                 if (parameters) {
                                     // Generar el nuevo JSON con el tiempo específico para este registro
-                                    this.simulacionesGeneradas.push(
-                                        this.generateNewJson(parameters, simulacion.sensorId, randomIndex, currentRecordTime)
-                                    );
+                                    this.generateNewJson(parameters, simulacion.sensorId, randomIndex, currentRecordTime)
+                                    .then((newSimulacion) => {
+                                        this.simulacionesGeneradas.push(newSimulacion);
+                                        this.sendMessageMqtt(newSimulacion);
+                                    })
+                                    .catch((error) => {
+                                        console.error('Error al generar el JSON:', error);
+                                    });                                
                                 } else {
                                     console.error("No se encontraron parámetros válidos.");
                                 }
@@ -407,8 +430,6 @@ export class SimulacionesService {
         );
     }
 
-
-
     // Método para detener la simulación
     stopSimulation(simulationId: number) {
         clearTimeout(this.intervals[simulationId]);
@@ -430,6 +451,12 @@ export class SimulacionesService {
         return Object.keys(this.isRunning)
             .filter(simulationId => this.isRunning[parseInt(simulationId, 10)])
             .map(id => parseInt(id, 10));
+    }
+
+    // Enviar mensaje MQTT
+    sendMessageMqtt(message: String) {
+        const messageMQTT = JSON.stringify(message);
+        this.mqttService.sendMessage('simulaciones', messageMQTT);
     }
     
 }

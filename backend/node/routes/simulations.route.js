@@ -12,6 +12,6 @@ router.get('/', authenticate, getAllSimulations);
 // Ruta para obtener una localización por id
 router.get('/:id', authenticate, getSimulationById);
 // Ruta para editar una localización por id
-router.put('/:id', authenticate, updateSimulation);
+router.put('/update/:id', authenticate, updateSimulation);
 
 module.exports = router;

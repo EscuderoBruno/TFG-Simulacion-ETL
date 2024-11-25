@@ -119,9 +119,12 @@
                             "src/assets"
                         ],
                         "styles": [
-                            "src/styles/styles.scss"
+                        "node_modules/prismjs/themes/prism.css",
+                        "src/styles.css" 
                         ],
-                        "scripts": []
+                        "scripts": [
+                        "node_modules/prismjs/prism.js"
+                        ]
                     }
                 }
             }

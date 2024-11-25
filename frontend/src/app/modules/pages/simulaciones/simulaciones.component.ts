@@ -10,6 +10,7 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { ChangeDetectorRef } from '@angular/core';
+import { MqttService } from 'app/services/mqtt.service';
 
 
 @Component({
@@ -25,12 +26,14 @@ export class SimulacionesComponent implements OnInit, OnDestroy {
     sensors: any[] = [];
     users: any[] = [];
     activeSimulations: { simulation: any; elapsedTime: number; interval: any }[] = []; // Simulaciones en ejecución
+    isPaused: boolean = false; // Controlar si está pausada
 
     constructor(
         private _simulationsService: SimulacionesService,
         private _sensoresService: SensoresService,
         private _userService: AuthService,
-        private cdr: ChangeDetectorRef
+        private cdr: ChangeDetectorRef,
+        private mqttService: MqttService
     ) {}
 
     ngOnInit(): void {
@@ -68,10 +71,10 @@ export class SimulacionesComponent implements OnInit, OnDestroy {
     }
 
     simularInstantaneamente(simulationId: number): void {
-        const existingSimulationIndex = this.activeSimulations.findIndex(s => s.simulation.id === simulationId);
+        // Llamar al servicio para simular la simulación instantáneamente
         this._simulationsService.simularInstantaneamente(simulationId, (result) => {
         });
-    }
+    }    
 
     toggleSimulation(simulationId: number): void {
         const existingSimulationIndex = this.activeSimulations.findIndex(s => s.simulation.id === simulationId);
@@ -111,6 +114,29 @@ export class SimulacionesComponent implements OnInit, OnDestroy {
     stopSimulation(index: number): void {
         clearInterval(this.activeSimulations[index].interval); // Limpiar el temporizador
         this.activeSimulations.splice(index, 1); // Eliminar la simulación de la lista de simulaciones activas
+    }
+
+    // Método para pausar o reanudar la simulación
+    togglePauseSimulation(simulationId: number): void {
+        if (this.isPaused) {
+            // Si está pausada, reanudar la simulación
+            this.resumeSimulation(simulationId);
+        } else {
+            // Si no está pausada, pausar la simulación
+            this.pauseSimulation(simulationId);
+        }
+    }
+
+    // Método para pausar la simulación
+    pauseSimulation(simulationId: number): void {
+        this.isPaused = true;
+        this._simulationsService.pauseSimulation(simulationId);
+    }
+
+    // Método para reanudar la simulación
+    resumeSimulation(simulationId: number): void {
+        this.isPaused = false;
+        this._simulationsService.resumeSimulation(simulationId);
     }
 
     getSensorName(sensorId: number): string {

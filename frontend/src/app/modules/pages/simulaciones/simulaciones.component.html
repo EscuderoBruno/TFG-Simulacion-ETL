@@ -2,7 +2,7 @@
 
     <!-- Main -->
     <div class="flex-auto p-6 sm:px-10">
-        <div class="flex flex-col sm:flex-row flex-0 sm:items-center sm:justify-between pb-4">
+        <div class="flex flex-col sm:flex-row flex-0 sm:items-center sm:justify-between pb-4 px-1">
             <div class="flex-1 min-w-0">
                 <!-- Breadcrumbs -->
                 <div class="flex flex-col">
@@ -63,7 +63,12 @@
                                     <!-- <h class="ml-12 text-s text-gray-600">
                                         {{ formatElapsedTime(activeSimulation.elapsedTime) }}
                                     </h> -->
-                                    <button (click)="toggleSimulation(activeSimulation.simulation.id)" class="bg-red-500 text-white px-4 py-2 rounded ml-12">Detener</button>
+                                    <button (click)="togglePauseSimulation(activeSimulation.simulation.id)" class="bg-gray-50 px-4 py-2 rounded flex items-center mr-2 shadow ml-10">
+                                        <span class="material-icons text-xl">
+                                            {{ isPaused ? 'play_arrow' : 'pause' }} <!-- Cambiar entre 'play_arrow' y 'pause' -->
+                                        </span>
+                                    </button>
+                                    <button (click)="toggleSimulation(activeSimulation.simulation.id)" class="bg-red-500 text-white px-4 py-2 rounded ml-2 text-sm">Detener</button>
                                 </td>
                             </tr>                                                     
                         </tbody>
