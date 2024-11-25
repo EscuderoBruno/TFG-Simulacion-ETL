@@ -73,7 +73,7 @@ CREATE TABLE IF NOT EXISTS `users` (
   UNIQUE KEY `username` (`username`)
 ) ENGINE=InnoDB AUTO_INCREMENT=28 DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
--- Volcando datos para la tabla tfg.users: ~3 rows (aproximadamente)
+-- Volcando datos para la tabla tfg.users: ~3 rows (aproximadamente) admin password: ua
 DELETE FROM `users`;
 INSERT INTO `users` (`id`, `username`, `password`, `rol`, `estado`, `createdAt`, `updatedAt`) VALUES
 	(24, 'admin', '$2b$10$2Tp7wyCyL6Fa1VxSqEr9SOOwY/0vA317fkAKXcWnLrzlwjC/7zwCq', 1, 1, '2024-10-17 18:12:48', '2024-10-17 18:12:48'),
