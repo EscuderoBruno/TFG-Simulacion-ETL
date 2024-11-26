@@ -68,7 +68,6 @@ export class AuthService {
 
     // Verificar si el usuario es Admin (rol == 1 o el valor que uses para Admin)
     isAdmin(): boolean {
-        console.log(this.rol)
         return this.rol === 1; // Cambia '1' por el valor que representa a "admin" en tu sistema
     }
 

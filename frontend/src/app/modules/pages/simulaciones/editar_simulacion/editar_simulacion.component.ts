@@ -19,7 +19,6 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { RouterModule } from '@angular/router';
 import { ReactiveFormsModule } from '@angular/forms';
 import { DomSanitizer } from '@angular/platform-browser';
-import mqtt from 'mqtt';
 import { DatePipe } from '@angular/common';
 import { ChangeDetectorRef } from '@angular/core';
 import { AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
@@ -326,6 +325,7 @@ export class EditarSimulacionComponent implements OnInit {
         if (this._simulationService.isSimulationRunning(this.simulationId)) {
             this._simulationService.stopSimulation(this.simulationId);
             this.simulando = false;
+            this.isPaused = false;
             this.stopSimulation();
         } else {
             this.generatedSimulation = [];  // Reinicializamos como array vacío

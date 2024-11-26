@@ -63,12 +63,17 @@
                                     <!-- <h class="ml-12 text-s text-gray-600">
                                         {{ formatElapsedTime(activeSimulation.elapsedTime) }}
                                     </h> -->
-                                    <button (click)="togglePauseSimulation(activeSimulation.simulation.id)" class="bg-gray-50 px-4 py-2 rounded flex items-center mr-2 shadow ml-10">
+                                    <button 
+                                        (click)="togglePauseSimulation(activeSimulation.simulation.id)" 
+                                        class="bg-gray-50 px-4 py-2 rounded flex items-center mr-2 shadow ml-10">
                                         <span class="material-icons text-xl">
-                                            {{ isPaused ? 'play_arrow' : 'pause' }} <!-- Cambiar entre 'play_arrow' y 'pause' -->
+                                            {{ activeSimulation.isPaused ? 'play_arrow' : 'pause' }} <!-- Cambiar entre 'play_arrow' y 'pause' -->
                                         </span>
+                                    </button>                                
+                                    <!-- Botón de detener -->
+                                    <button (click)="toggleSimulation(activeSimulation.simulation.id)" class="bg-gray-50 text-red-500 px-4 py-2 rounded flex items-center mr-2 shadow ml-2">
+                                        <span class="material-icons text-xl">stop</span>
                                     </button>
-                                    <button (click)="toggleSimulation(activeSimulation.simulation.id)" class="bg-red-500 text-white px-4 py-2 rounded ml-2 text-sm">Detener</button>
                                 </td>
                             </tr>                                                     
                         </tbody>
@@ -98,7 +103,7 @@
                                 <tr *ngFor="let simulation of simulations">
                                     <td class="px-6 py-4 whitespace-nowrap text-s font-medium text-gray-600">{{ getUserName(simulation.userId) }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-s font-medium text-gray-600">{{ simulation.id }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-s font-medium text-gray-600 cursor-pointer underline" [routerLink]="[simulation.id]">
+                                    <td class="px-6 py-4 whitespace-nowrap text-s font-medium text-gray-600 cursor-pointer underline" (click)="openSimulation(simulation.id)">
                                     {{ simulation.name }}
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-s font-medium text-gray-600">{{ getSensorName(simulation.sensorId) }}</td>
@@ -121,7 +126,7 @@
                                         <!-- Menú desplegable -->
                                         <mat-menu #menu="matMenu">
                                             <!-- Botón de Editar -->
-                                            <button mat-menu-item [routerLink]="[simulation.id]">
+                                            <button mat-menu-item (click)="openSimulation(simulation.id)">
                                                 Abrir
                                             </button>                                            
                                             <!-- Botón de Eliminar -->

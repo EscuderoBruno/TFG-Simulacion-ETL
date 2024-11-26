@@ -25,7 +25,7 @@ export class SimulacionesComponent implements OnInit, OnDestroy {
     simulations: any[] = [];
     sensors: any[] = [];
     users: any[] = [];
-    activeSimulations: { simulation: any; elapsedTime: number; interval: any }[] = []; // Simulaciones en ejecución
+    activeSimulations: { simulation: any; elapsedTime: number; interval: any; isPaused: boolean }[] = [];
     isPaused: boolean = false; // Controlar si está pausada
 
     constructor(
@@ -90,54 +90,67 @@ export class SimulacionesComponent implements OnInit, OnDestroy {
 
     startSimulation(simulationId: number): void {
         const simulation = this.simulations.find(sim => sim.id === simulationId);
-        
+    
         if (simulation) {
-            this.activeSimulations.push({ simulation, elapsedTime: 0, interval: null });
-            const activeSimulationIndex = this.activeSimulations.length - 1; // Index of the newly added simulation
-  
-            // Iniciar el temporizador
+            this.activeSimulations.push({ simulation, elapsedTime: 0, interval: null, isPaused: false });
+            const activeSimulationIndex = this.activeSimulations.length - 1;
+    
             this.activeSimulations[activeSimulationIndex].interval = setInterval(() => {
                 const percentage = this.getSimulationPercentage(simulationId);
-
+    
                 if (percentage >= 100) {
-                    // Detener la simulación automáticamente cuando llegue al 100%
                     this.stopSimulation(activeSimulationIndex);
                 } else {
-                    // Incrementa el tiempo cada segundo mientras no esté al 100%
                     this.activeSimulations[activeSimulationIndex].elapsedTime += 1;
                 }
-                this.cdr.detectChanges(); // Forzar la detección de cambios
+                this.cdr.detectChanges();
             }, 1000);
         }
-    }
+    }    
 
     stopSimulation(index: number): void {
         clearInterval(this.activeSimulations[index].interval); // Limpiar el temporizador
         this.activeSimulations.splice(index, 1); // Eliminar la simulación de la lista de simulaciones activas
     }
 
-    // Método para pausar o reanudar la simulación
     togglePauseSimulation(simulationId: number): void {
-        if (this.isPaused) {
-            // Si está pausada, reanudar la simulación
-            this.resumeSimulation(simulationId);
-        } else {
-            // Si no está pausada, pausar la simulación
-            this.pauseSimulation(simulationId);
+        const activeSimulation = this.activeSimulations.find(s => s.simulation.id === simulationId);
+        if (activeSimulation) {
+            if (activeSimulation.isPaused) {
+                this.resumeSimulation(simulationId);
+            } else {
+                this.pauseSimulation(simulationId);
+            }
         }
     }
-
-    // Método para pausar la simulación
+    
     pauseSimulation(simulationId: number): void {
-        this.isPaused = true;
-        this._simulationsService.pauseSimulation(simulationId);
+        const activeSimulation = this.activeSimulations.find(s => s.simulation.id === simulationId);
+        if (activeSimulation) {
+            activeSimulation.isPaused = true;
+            clearInterval(activeSimulation.interval); // Pausar el temporizador
+            this._simulationsService.pauseSimulation(simulationId);
+        }
     }
-
-    // Método para reanudar la simulación
+    
     resumeSimulation(simulationId: number): void {
-        this.isPaused = false;
-        this._simulationsService.resumeSimulation(simulationId);
-    }
+        const activeSimulation = this.activeSimulations.find(s => s.simulation.id === simulationId);
+        if (activeSimulation) {
+            activeSimulation.isPaused = false;
+            // Reiniciar el temporizador
+            activeSimulation.interval = setInterval(() => {
+                const percentage = this.getSimulationPercentage(simulationId);
+    
+                if (percentage >= 100) {
+                    this.stopSimulation(this.activeSimulations.indexOf(activeSimulation));
+                } else {
+                    activeSimulation.elapsedTime += 1;
+                }
+                this.cdr.detectChanges();
+            }, 1000);
+            this._simulationsService.resumeSimulation(simulationId);
+        }
+    }    
 
     getSensorName(sensorId: number): string {
         const sensor = this.sensors.find(se => se.id === sensorId);
@@ -204,4 +217,10 @@ export class SimulacionesComponent implements OnInit, OnDestroy {
             this.stopSimulation(index);
         });
     }
+
+    openSimulation(simulationId: number) {
+        const url = `simulaciones/${simulationId}`;
+        window.open(url, '_blank');
+    }    
+    
 }

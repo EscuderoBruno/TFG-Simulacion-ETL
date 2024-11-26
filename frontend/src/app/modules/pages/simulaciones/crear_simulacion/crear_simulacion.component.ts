@@ -18,7 +18,6 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { RouterModule } from '@angular/router';
 import { ReactiveFormsModule } from '@angular/forms';
 import { DomSanitizer } from '@angular/platform-browser';
-import mqtt from 'mqtt';  // Importa la librería MQTT
 import { AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
 import { DatePipe } from '@angular/common';
 
@@ -58,7 +57,6 @@ export class CrearSimulacionComponent implements OnInit {
     simulacionGenerada = false;
     showAlert = false;
     showAdvise = true;
-    private mqttClient: any; // Cliente MQTT
     numArrayLocalizacion: 0;
     simulacionesGeneradas: any[] = [];
     minDate: Date;
