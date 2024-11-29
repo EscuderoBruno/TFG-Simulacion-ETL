@@ -98,9 +98,31 @@
                     <!-- Campo de Parámetros que ocupa todo el ancho -->
                     <div class="flex flex-col mb-0">
                         <mat-label class="block mb-1 flex items-center">Parámetros
-                            <button mat-icon-button (click)="showTooltip = !showTooltip" type="button">
-                                <mat-icon class="icon-size-5" [svgIcon]="'heroicons_outline:information-circle'"></mat-icon>
-                            </button>
+                            <div class="flex items-center relative">
+                                <!-- Botón de información con ícono -->
+                                <button mat-icon-button (click)="showTooltip = !showTooltip" type="button">
+                                    <mat-icon class="icon-size-5" [svgIcon]="'heroicons_outline:information-circle'"></mat-icon>
+                                </button>
+                                <!-- Div flotante que muestra el formato JSON -->
+                                <div *ngIf="showTooltip"
+                                    class="bg-gray-50 absolute left-10 z-50 bg-white border border-gray-300 shadow-lg p-4 min-w-[450px] max-w-[600px] max-h-[480px] overflow-y-auto">
+                                    <div class="flex justify-between items-start pb-0">
+                                        <h4 class="text-base font-semibold">Formato JSON</h4>
+                                        <!-- Botón de cerrar (X) -->
+                                        <button mat-icon-button (click)="showTooltip = false" aria-label="Cerrar" type="button">
+                                            <mat-icon class="text-gray-500 icon-size-5">close</mat-icon>
+                                        </button>
+                                    </div>
+                                    <!-- Contenido JSON -->
+                                    <div [innerHTML]="formattedFormatJson"></div>
+            
+                                    <!-- Botón para copiar el contenido -->
+                                    <button mat-button class="absolute right-4 bottom-4 flex items-center"
+                                        (click)="copyToClipboard()" (click)="showTooltip = false">
+                                        <mat-icon>content_copy</mat-icon>
+                                    </button>
+                                </div>
+                            </div>
                         </mat-label>
 
                         <mat-form-field [ngClass]="formFieldHelpers" class="w-full">

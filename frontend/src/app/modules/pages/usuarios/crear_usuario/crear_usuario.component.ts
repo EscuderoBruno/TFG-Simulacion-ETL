@@ -13,7 +13,7 @@ import { FuseAlertComponent, FuseAlertType } from '@fuse/components/alert';
 
 
 @Component({
-    selector     : 'landing-home',
+    selector     : 'crear-usuario',
     templateUrl  : './crear_usuario.component.html',
     encapsulation: ViewEncapsulation.None,
     standalone   : true,
@@ -48,14 +48,14 @@ export class CrearUsuarioComponent
     constructor(private _authService: AuthService, private _formBuilder: UntypedFormBuilder, private _activatedRoute: ActivatedRoute, private _router: Router) {}
 
     ngOnInit(): void {
-      // Crear el formulario
+      // Crear el formulario con los valores predeterminados
       this.signInForm = this._formBuilder.group({
         username: ['', Validators.required],
         password: ['', Validators.required],
-        rol: ['', Validators.required],
-        estado: ['', Validators.required]
+        rol: [1, Validators.required], // Básico por defecto
+        estado: [0, Validators.required] // Activo por defecto
       });
-    }
+    }    
   
     // Función para enviar el formulario
     onSubmit(): void {

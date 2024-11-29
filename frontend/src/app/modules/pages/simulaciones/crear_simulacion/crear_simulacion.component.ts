@@ -87,7 +87,7 @@ export class CrearSimulacionComponent implements OnInit {
     rawFormatJson: string = `{
     "campo2": "^int[0,10]",
     "campo3": "^float[20,25]",
-    "campo4": "^bool[8,9]",
+    "campo4": "^bool",
     "time": "^time",
     "campo5": "este texto",
     "campo6": "^array[4]int[0,50]",

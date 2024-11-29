@@ -41,6 +41,11 @@ export class SensoresService {
         return this._httpClient.delete(`${environment.apiBaseUrl}/sensors/delete/${sensorId}`);
     }
 
+    // Método para editar un sensor por su ID
+    editSensor(sensorId: number, sensorData: { name: string; coordinates: Array<{ lat: number; long: number; height: number; alias: string; dev_eui: string; join_eui: string; dev_addr: string; }> }): Observable<any> {
+        return this._httpClient.put(`${environment.apiBaseUrl}/sensors/update/${sensorId}`, sensorData);
+    }
+
     // Método para obtener las coordenadas por ID
     getCoordinatesById(sensorId: number, numArray: number): Observable<{ lat: number; long: number; height: number, alias: string }> {
         return this.getSensorById(sensorId).pipe(

@@ -5,14 +5,15 @@
 
         <div class="max-h-400 rounded-2xl w-3/3">
             <form [formGroup]="locationForm" (ngSubmit)="onSubmit()" class="flex flex-col p-8 pb-0 bg-card rounded-2xl shadow overflow-hidden">
+                
+                <!-- Nombre del Sensor -->
                 <div class="flex flex-col gt-xs:flex-row mb-4">
-                    <!-- Nombre -->
                     <mat-label class="block mb-2">Nombre</mat-label>
                     <mat-form-field [ngClass]="formFieldHelpers" class="flex-auto gt-xs:pr-3">
-                        <input matInput formControlName="name" placeholder="Nombre">
+                        <input matInput formControlName="name" placeholder="Nombre del Sensor">
                     </mat-form-field>
                 </div>
-
+                
                 <!-- Sección de Localizaciones -->
                 <div class="flex flex-col w-full space-y-4" formArrayName="coordinates">
                     <mat-label class="block mb-2">Sensores</mat-label>
@@ -32,31 +33,24 @@
                             </thead>
                             <tbody>
                                 <tr *ngFor="let cor of coordinates.controls; let i = index" [formGroupName]="i">
-                                    <!-- Latitud -->
                                     <td class="px-4 py-2 border-r border-t">
                                         <input matInput formControlName="lat" class="w-full px-2 py-1" type="number" placeholder="Latitud">
                                     </td>
-                                    <!-- Longitud -->
                                     <td class="px-4 py-2 border-r border-t">
                                         <input matInput formControlName="long" class="w-full px-2 py-1" type="number" placeholder="Longitud">
                                     </td>
-                                    <!-- Cota -->
                                     <td class="px-4 py-2 border-r border-t">
                                         <input matInput formControlName="height" class="w-full px-2 py-1" type="number" placeholder="Cota">
                                     </td>
-                                    <!-- Alias -->
                                     <td class="px-4 py-2 border-r border-t">
                                         <input matInput formControlName="alias" class="w-full px-2 py-1" placeholder="Alias">
                                     </td>
-                                    <!-- Dev_eui -->
                                     <td class="px-4 py-2 border-r border-t">
                                         <input matInput formControlName="dev_eui" class="w-full px-2 py-1" placeholder="Dev_eui">
                                     </td>
-                                    <!-- Join_eui -->
                                     <td class="px-4 py-2 border-r border-t">
                                         <input matInput formControlName="join_eui" class="w-full px-2 py-1" placeholder="Join_eui">
                                     </td>
-                                    <!-- Dev_addr -->
                                     <td class="px-4 py-2 border-r border-t">
                                         <input matInput formControlName="dev_addr" class="w-full px-2 py-1" placeholder="Dev_addr">
                                     </td>
@@ -74,10 +68,11 @@
                     </button>
                 </div>
 
+                <!-- Botones de acción -->
                 <div class="flex items-center justify-end border-t -mx-8 mt-4 px-8 py-5 bg-gray-50 dark:bg-gray-700 rounded-b-lg">
                     <button mat-button type="button" (click)="cancel()">Cancelar</button>
                     <button class="px-6 ml-3 text-white" mat-flat-button [color]="'primary'" type="submit">
-                        Crear
+                        Editar
                     </button>
                 </div>
             </form>

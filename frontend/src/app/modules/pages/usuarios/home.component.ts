@@ -1,7 +1,7 @@
 import { Component, ViewEncapsulation } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { RouterLink } from '@angular/router';
+import { RouterLink, ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common'; // Importar CommonModule aquí
 import { AuthService } from 'app/core/auth/auth.service';
 import { MatMenuModule } from '@angular/material/menu';
@@ -27,7 +27,9 @@ export class LandingHomeComponent
       this.isActive = !this.isActive; // Cambia el estado
     }
 
-    constructor(private _authService: AuthService) {}
+    constructor(private _authService: AuthService,
+                private _router: Router
+    ) {}
 
     ngOnInit(): void {
       this._authService.getAllUsers().subscribe(
@@ -51,5 +53,9 @@ export class LandingHomeComponent
           console.error('Error al eliminar el usuario', error);
         }
       );
+    }
+
+    openEditUser(userId: number): void {
+      this._router.navigate([`gestion_usuarios/editar/${userId}`]);
     }
 }
