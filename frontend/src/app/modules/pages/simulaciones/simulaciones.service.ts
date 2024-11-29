@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { Observable, timer } from 'rxjs';
 import { environment } from 'environment/environment';
 import { SensoresService } from '../sensores/sensores.service';
-import { MqttService } from 'app/services/mqtt.service';
+import { MqttService } from 'app/core/mqtt/mqtt.service';
 
 @Injectable({ providedIn: 'root' })
 export class SimulacionesService {
