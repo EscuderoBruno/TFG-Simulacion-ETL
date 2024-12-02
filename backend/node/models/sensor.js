@@ -2,7 +2,7 @@
 
 const { DataTypes } = require('sequelize');
 const sequelize = require('../database/connection');
-const User = require('./user');  // Importamos el modelo User
+const User = require('./User');  // Importamos el modelo User
 
 // Definición del modelo Sensor
 const Sensor = sequelize.define('Sensor', {

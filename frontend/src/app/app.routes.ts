@@ -60,6 +60,7 @@ export const appRoutes: Route[] = [
             {path: 'example', loadChildren: () => import('app/modules/pages/example/example.routes')},
             {path: 'sensores', loadChildren: () => import('app/modules/pages/sensores/sensores.routes')},
             {path: 'simulaciones', loadChildren: () => import('app/modules/pages/simulaciones/simulaciones.routes')},
+            {path: 'conexiones', loadChildren: () => import('app/modules/pages/conexiones/conexiones.routes')},
         ]
     }
 ];

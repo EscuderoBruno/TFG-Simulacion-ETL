@@ -2,10 +2,11 @@
 require('dotenv').config();
 const express = require('express');
 const sequelize = require('./database/connection');  // Conexión a MySQL
-const User = require('./models/user');
+const User = require('./models/User');
 const authRoutes = require('./routes/auth.route');
 const sensorRoutes = require('./routes/sensors.route');
 const simulationsRoutes = require('./routes/simulations.route');
+const connectionsRoutes = require('./routes/connections.route');
 const cors = require('cors');
 
 const app = express();
@@ -37,6 +38,8 @@ app.use('/auth', authRoutes);
 app.use('/sensors', sensorRoutes);
 // Rutas de simulación
 app.use('/simulations', simulationsRoutes);
+// Rutas de conexiones
+app.use('/connections', connectionsRoutes);
 
 
 // Iniciar servidor

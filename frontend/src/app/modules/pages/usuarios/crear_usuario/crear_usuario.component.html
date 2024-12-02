@@ -23,10 +23,10 @@
                     <!-- Rol -->
                     <mat-label class="block mb-2">Rol</mat-label>
                     <mat-button-toggle-group formControlName="rol" aria-label="Rol">
-                      <mat-button-toggle value="0">
+                      <mat-button-toggle value="1">
                         <mat-icon class="mr-2">admin_panel_settings</mat-icon> Administrador
                       </mat-button-toggle>
-                      <mat-button-toggle value="1" checked>
+                      <mat-button-toggle value="0" checked>
                         <mat-icon class="mr-2">person</mat-icon> Básico
                       </mat-button-toggle>
                     </mat-button-toggle-group>
@@ -34,10 +34,10 @@
                     <!-- Estado -->
                     <mat-label class="block mb-2">Estado</mat-label>
                     <mat-button-toggle-group formControlName="estado" aria-label="Estado">
-                      <mat-button-toggle value="0" checked>
+                      <mat-button-toggle value="1" checked>
                         <mat-icon class="mr-2 text-green-500">check_circle</mat-icon> Activo
                       </mat-button-toggle>
-                      <mat-button-toggle value="1">
+                      <mat-button-toggle value="0">
                         <mat-icon class="mr-2 text-red-500">cancel</mat-icon> Inactivo
                       </mat-button-toggle>
                     </mat-button-toggle-group>

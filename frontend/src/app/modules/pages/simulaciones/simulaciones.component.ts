@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy, ViewEncapsulation } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { RouterLink } from '@angular/router';
+import { RouterLink, ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { SimulacionesService } from './simulaciones.service';
 import { SensoresService } from '../sensores/sensores.service';
@@ -11,6 +11,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { ChangeDetectorRef } from '@angular/core';
 import { MqttService } from 'app/core/mqtt/mqtt.service';
+
 
 
 @Component({
@@ -33,7 +34,8 @@ export class SimulacionesComponent implements OnInit, OnDestroy {
         private _sensoresService: SensoresService,
         private _userService: AuthService,
         private cdr: ChangeDetectorRef,
-        private mqttService: MqttService
+        private mqttService: MqttService,
+        private _router: Router
     ) {}
 
     ngOnInit(): void {
@@ -219,8 +221,7 @@ export class SimulacionesComponent implements OnInit, OnDestroy {
     }
 
     openSimulation(simulationId: number) {
-        const url = `simulaciones/${simulationId}`;
-        window.open(url, '_blank');
+        this._router.navigate([`sensores/editar/${simulationId}`]);
     }    
     
 }

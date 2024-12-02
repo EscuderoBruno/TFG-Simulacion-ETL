@@ -1,0 +1,115 @@
+<div class="flex flex-col flex-auto min-w-0">
+    <div class="flex-auto p-5 sm:px-10">
+        <div class="max-h-400 rounded-2xl w-3/3">
+            <form [formGroup]="connectionForm" (ngSubmit)="onSubmit()" class="flex flex-col px-8 py-6 pb-0 bg-card rounded-2xl shadow overflow-hidden">
+                <div class="flex gap-4 border-b mb-4">
+                    <div class="w-1/2 flex flex-col">
+                        <!-- Nombre -->
+                        <div class="flex flex-col">
+                            <mat-label class="block mb-1">Nombre</mat-label>
+                            <mat-form-field class="w-full">
+                            <input matInput formControlName="name" class="p-0" placeholder="Nombre de la conexión">
+                            </mat-form-field>
+                        </div>
+                    </div>
+                    <div class="w-1/2 flex flex-col">
+                        <!-- Tipo de Conexión -->
+                        <div class="flex flex-col">
+                            <mat-label class="block mb-1">Tipo de Conexión</mat-label>
+                            <mat-form-field class="w-full">
+                            <mat-select formControlName="type" placeholder="Selecciona el tipo" (selectionChange)="onTypeSelect()">
+                                <mat-option value="0">MQTT</mat-option>
+                                <mat-option value="1">API</mat-option>
+                            </mat-select>
+                            </mat-form-field>                       
+                        </div>
+                    </div>
+                </div>
+        
+                <!-- Opciones de Conexión -->
+                <div formGroupName="options">
+                    <!-- Si la conexión es MQTT -->
+                    <div *ngIf="connectionForm.controls['type'].value === '0'" class="flex gap-4">
+                        <div class="w-1/2 flex flex-col">
+                            <div class="flex flex-col">
+                                <mat-label class="block mb-1">Host</mat-label>
+                                <mat-form-field class="w-full">
+                                    <input matInput formControlName="host" placeholder="Host para MQTT">
+                                </mat-form-field>
+                            </div>
+                            <div class="flex flex-col">
+                                <mat-label class="block mb-1">Port</mat-label>
+                                <mat-form-field class="w-full">
+                                    <input matInput formControlName="port" placeholder="Port">
+                                </mat-form-field>
+                            </div>
+                            <div class="flex flex-col">
+                                <mat-label class="block mb-1">Username</mat-label>
+                                <mat-form-field class="w-full">
+                                    <input matInput formControlName="username" placeholder="Username">
+                                </mat-form-field>
+                            </div>
+                        </div>
+        
+                        <div class="w-1/2 flex flex-col">
+                            <div class="flex flex-col">
+                                <mat-label class="block mb-1">ClientID</mat-label>
+                                <mat-form-field class="w-full">
+                                    <input matInput formControlName="clientId" placeholder="ClientID">
+                                </mat-form-field>
+                            </div>
+                            <div class="flex flex-col">
+                                <mat-label class="block mb-1">Tópico</mat-label>
+                                <mat-form-field class="w-full">
+                                    <input matInput formControlName="topic" placeholder="Tópico MQTT">
+                                </mat-form-field>
+                            </div>
+                            <div class="flex flex-col">
+                                <mat-label class="block mb-1">Password</mat-label>
+                                <mat-form-field class="w-full">
+                                    <input matInput formControlName="password" type="password" placeholder="Password">
+                                </mat-form-field>
+                            </div>
+                        </div>
+                    </div>
+        
+                    <!-- Si la conexión es API -->
+                    <div *ngIf="connectionForm.controls['type'].value === '1'" class="flex gap-4">
+                        <div class="w-1/2 flex flex-col">
+                            <div class="flex flex-col">
+                                <mat-label class="block mb-1">Host</mat-label>
+                                <mat-form-field class="w-full">
+                                    <input matInput formControlName="host" placeholder="Host para API">
+                                </mat-form-field>
+                            </div>
+                            <div class="flex flex-col">
+                                <mat-label class="block mb-1">Token</mat-label>
+                                <mat-form-field class="w-full">
+                                    <input matInput formControlName="token" placeholder="Token API">
+                                </mat-form-field>
+                            </div>
+                        </div>
+            
+                        <div class="w-1/2 flex flex-col">
+                            <div class="flex flex-col">
+                                <mat-label class="block mb-1">Tópico</mat-label>
+                                <mat-form-field class="w-full">
+                                    <input matInput formControlName="topic" placeholder="Tópico API">
+                                </mat-form-field>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+        
+                <!-- Botones de acción -->
+                <div class="flex items-center justify-end border-t -mx-8 mt-4 px-8 py-5 bg-gray-50 dark:bg-gray-700 rounded-b-lg">
+                    <button mat-button type="button" (click)="cancel()" class="ml-3">Cancelar</button>
+                    <button class="px-6 ml-3 text-white" mat-flat-button [color]="'primary'" type="submit">
+                        Guardar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+    

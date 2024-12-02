@@ -158,11 +158,11 @@ export class AuthService {
 
     // Obtiene un usuario por ID
     getUserById(id: string): Observable<any> {
-        return this._httpClient.get(`${environment.apiBaseUrl}/users/${id}`);
+        return this._httpClient.get(`${environment.apiBaseUrl}/auth/user/${id}`);
     }
 
     // Actualiza la información de un usuario por ID
     updateUser(id: string, data: any): Observable<any> {
-        return this._httpClient.put(`${environment.apiBaseUrl}/users/${id}`, data);
+        return this._httpClient.put(`${environment.apiBaseUrl}/auth/update/${id}`, data);
     }
 }

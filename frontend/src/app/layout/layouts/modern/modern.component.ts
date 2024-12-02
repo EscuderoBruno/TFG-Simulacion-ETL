@@ -1,3 +1,4 @@
+import { CommonModule } from '@angular/common';  // Importa CommonModule
 import { NgIf } from '@angular/common';
 import { Component, OnDestroy, OnInit, ViewEncapsulation } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
@@ -5,7 +6,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { ActivatedRoute, Router, RouterOutlet } from '@angular/router';
 import { FuseFullscreenComponent } from '@fuse/components/fullscreen';
 import { FuseLoadingBarComponent } from '@fuse/components/loading-bar';
-import { FuseNavigationService, FuseVerticalNavigationComponent } from '@fuse/components/navigation';
+import { FuseHorizontalNavigationComponent, FuseNavigationService, FuseVerticalNavigationComponent } from '@fuse/components/navigation';
 import { FuseMediaWatcherService } from '@fuse/services/media-watcher';
 import { NavigationService } from 'app/core/navigation/navigation.service';
 import { Navigation } from 'app/core/navigation/navigation.types';
@@ -17,19 +18,29 @@ import { SearchComponent } from 'app/layout/common/search/search.component';
 import { ShortcutsComponent } from 'app/layout/common/shortcuts/shortcuts.component';
 import { UserComponent } from 'app/layout/common/user/user.component';
 import { Subject, takeUntil } from 'rxjs';
+import { FuseNavigationItem } from '@fuse/components/navigation';
+import { RouterModule } from '@angular/router';
+import { AuthService } from 'app/core/auth/auth.service';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatDividerModule } from '@angular/material/divider';
+
 
 @Component({
-    selector     : 'thin-layout',
-    templateUrl  : './thin.component.html',
+    selector     : 'modern-layout',
+    templateUrl  : './modern.component.html',
     encapsulation: ViewEncapsulation.None,
     standalone   : true,
-    imports      : [FuseLoadingBarComponent, FuseVerticalNavigationComponent, MatButtonModule, MatIconModule, LanguagesComponent, FuseFullscreenComponent, SearchComponent, ShortcutsComponent, MessagesComponent, NotificationsComponent, UserComponent, NgIf, RouterOutlet, QuickChatComponent],
+    imports      : [CommonModule, FuseLoadingBarComponent, NgIf, FuseVerticalNavigationComponent, FuseHorizontalNavigationComponent, MatButtonModule, MatIconModule, LanguagesComponent, FuseFullscreenComponent, SearchComponent, ShortcutsComponent, MessagesComponent, NotificationsComponent, UserComponent, RouterOutlet, QuickChatComponent, RouterModule, MatMenuModule, MatDividerModule],
 })
-export class ThinLayoutComponent implements OnInit, OnDestroy
+export class ModernLayoutComponent implements OnInit, OnDestroy
 {
     isScreenSmall: boolean;
     navigation: Navigation;
+    currentUser: any;  // Propiedad para almacenar los datos del usuario
+    isUserMenuOpen = false; // Variable para controlar la visibilidad del menú desplegable
     private _unsubscribeAll: Subject<any> = new Subject<any>();
+    
+    navigationItems: FuseNavigationItem[] = [];
 
     /**
      * Constructor
@@ -40,8 +51,48 @@ export class ThinLayoutComponent implements OnInit, OnDestroy
         private _navigationService: NavigationService,
         private _fuseMediaWatcherService: FuseMediaWatcherService,
         private _fuseNavigationService: FuseNavigationService,
+        private _authService: AuthService // Inyectamos AuthService
     )
     {
+        this.setNavigationItems(); // Inicializamos los elementos de navegación aquí
+    }
+
+    private setNavigationItems(): void {
+        // Siempre añade los elementos comunes
+        this.navigationItems = [
+            {
+                id: 'simulaciones',
+                title: 'Simulaciones',
+                type: 'basic',
+                link: '/simulaciones',
+                icon: 'heroicons_outline:adjustments-horizontal'
+            },
+            {
+                id: 'sensores',
+                title: 'Sensores',
+                type: 'basic',
+                link: '/sensores',
+                icon: 'heroicons_outline:map'
+            },
+            {
+                id: 'conexiones',
+                title: 'Conexiones',
+                type: 'basic',
+                link: '/conexiones',
+                icon: 'heroicons_outline:server-stack'
+            }    
+        ];
+
+        // Añade "Gestión usuarios" solo si el usuario es admin
+        if (this._authService.isAdmin()) {
+            this.navigationItems.push({
+                id: 'gestion_usuarios',
+                title: 'Gestión usuarios',
+                type: 'basic',
+                link: '/gestion_usuarios',
+                icon: 'heroicons_outline:users'
+            });
+        }
     }
 
     // -----------------------------------------------------------------------------------------------------
@@ -64,7 +115,7 @@ export class ThinLayoutComponent implements OnInit, OnDestroy
      * On init
      */
     ngOnInit(): void
-    {
+    {   
         // Subscribe to navigation data
         this._navigationService.navigation$
             .pipe(takeUntil(this._unsubscribeAll))
@@ -81,6 +132,10 @@ export class ThinLayoutComponent implements OnInit, OnDestroy
                 // Check if the screen is small
                 this.isScreenSmall = !matchingAliases.includes('md');
             });
+
+        // Obtener el usuario actualmente autenticado
+        this.currentUser = this._authService.getCurrentUser();  // Llama al método para obtener el usuario
+        console.log('Usuario actual:', this.currentUser);  // Imprime el usuario en la consola
     }
 
     /**
@@ -112,5 +167,9 @@ export class ThinLayoutComponent implements OnInit, OnDestroy
             // Toggle the opened status
             navigation.toggle();
         }
+    }
+
+    signOut() {
+        this._authService.signOut();
     }
 }

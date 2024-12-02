@@ -48,21 +48,30 @@ export class EditarUsuarioComponent implements OnInit {
         this.editForm = this._formBuilder.group({
             username: ['', Validators.required],
             password: ['', Validators.required],
-            rol: [1, Validators.required], // Básico por defecto
-            estado: [0, Validators.required] // Activo por defecto
+            rol: [Validators.required], // Básico por defecto
+            estado: [Validators.required] // Activo por defecto
         });
 
         // Cargar los datos del usuario para edición
         if (this.userId) {
             this._authService.getUserById(this.userId).subscribe(
                 (user) => {
-                    this.editForm.patchValue(user); // Cargar los datos del usuario en el formulario
+                    // Verifica los valores
+                    console.log('Datos del usuario:', user);
+        
+                    // Asegúrate de que rol sea 0 o 1
+                    if (user.rol !== 0 && user.rol !== 1) {
+                        console.warn('Valor inesperado para rol:', user.rol);
+                    }
+        
+                    // Actualiza el formulario
+                    this.editForm.patchValue(user);
                 },
                 (error) => {
                     console.error('Error al cargar los datos del usuario:', error);
                 }
             );
-        }
+        }        
     }
 
     // Función para enviar el formulario de edición
