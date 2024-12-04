@@ -1,4 +1,5 @@
-import { Component, OnInit, OnDestroy, ViewEncapsulation } from '@angular/core';
+import { NgModule, Component, OnInit, OnDestroy, ViewEncapsulation } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { RouterLink, ActivatedRoute, Router } from '@angular/router';
@@ -10,26 +11,31 @@ import { AuthService } from 'app/core/auth/auth.service';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatPaginatorModule } from '@angular/material/paginator'; // Importa el módulo paginator
 import { ChangeDetectorRef } from '@angular/core';
 import { MqttService } from 'app/core/envio_mensajes/mqtt.service';
-
-
+import { PageEvent } from '@angular/material/paginator';
 
 @Component({
     selector: 'simulaciones',
     standalone: true,
     templateUrl: './simulaciones.component.html',
     encapsulation: ViewEncapsulation.None,
-    imports: [MatButtonModule, RouterLink, MatIconModule, CommonModule, MatMenuModule, MatTooltipModule, MatProgressBarModule],
+    imports: [MatButtonModule, RouterLink, MatIconModule, CommonModule, MatMenuModule, MatTooltipModule, MatProgressBarModule, FormsModule, MatPaginatorModule ],
 })
 export class SimulacionesComponent implements OnInit, OnDestroy {
     isActive: boolean = true;
     simulations: any[] = [];
+    filteredSimulations = []; // Lista filtrada de simulaciones
+    paginatedSimulations: any[] = [];
+    searchTerm: string = ''; // Término de búsqueda
     sensors: any[] = [];
     connections: any[] = [];
     users: any[] = [];
     activeSimulations: { simulation: any; elapsedTime: number; interval: any; isPaused: boolean }[] = [];
     isPaused: boolean = false; // Controlar si está pausada
+    pageSize: number = 5;
+    currentPage: number = 0;        
 
     constructor(
         private _simulationsService: SimulacionesService,
@@ -45,7 +51,10 @@ export class SimulacionesComponent implements OnInit, OnDestroy {
         this._simulationsService.getAllSimulations().subscribe(
             (response) => {
                 this.simulations = response;  // Guardar la lista de usuarios
+                this.filteredSimulations = [...this.simulations];
                 console.log(this.simulations);
+                // Llamar a updatePaginatedSimulations después de cargar las simulaciones
+                this.updatePaginatedSimulations();
                 // Obtener simulaciones activas y cargarlas
                 const activeSimulationIds = this._simulationsService.getActiveSimulations();
                 activeSimulationIds.forEach(simulationId => {
@@ -259,11 +268,46 @@ export class SimulacionesComponent implements OnInit, OnDestroy {
             console.log('Simulación duplicada:', newSimulation);
             // Agregar la nueva simulación a la lista (opcional, depende de cómo gestionas el estado)
             this.simulations.push(newSimulation);
+            location.reload();
         },
         (error) => {
             console.error('Error al duplicar simulación:', error);
         }
         );
     }
+
+    updatePaginatedSimulations(): void {
+        // Si no hay simulaciones filtradas, no hace nada
+        if (this.filteredSimulations.length === 0) {
+            this.paginatedSimulations = [];
+            return;
+        }
+    
+        const startIndex = this.currentPage * this.pageSize;
+        const endIndex = startIndex + this.pageSize;
+        this.paginatedSimulations = this.filteredSimulations.slice(startIndex, endIndex);
+    }    
+
+    // Llama a este método cuando se cambia la página.
+    changePage(event: PageEvent) {
+        this.pageSize = event.pageSize; // Actualiza el tamaño de la página
+        this.currentPage = event.pageIndex; // Actualiza la página actual
+        this.updatePaginatedSimulations(); // Actualiza las simulaciones para la página actual
+    }    
+
+    filterSimulations(): void {
+        const term = this.searchTerm.toLowerCase();
+    
+        // Filtrar simulaciones con el término de búsqueda
+        this.filteredSimulations = this.simulations.filter(simulation =>
+            simulation.name.toLowerCase().includes(term) || 
+            this.getUserName(simulation.userId).toLowerCase().includes(term) ||
+            simulation.id.toString().includes(term)
+        );
+    
+        // Después de filtrar, actualiza el paginado
+        this.currentPage = 0;  // Resetear a la primera página después de filtrar
+        this.updatePaginatedSimulations(); // Actualizar las simulaciones paginadas después de aplicar el filtro
+    }    
     
 }

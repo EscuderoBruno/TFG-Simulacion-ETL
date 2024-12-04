@@ -47,7 +47,7 @@ export class EditarUsuarioComponent implements OnInit {
         // Inicializar el formulario
         this.editForm = this._formBuilder.group({
             username: ['', Validators.required],
-            password: ['', Validators.required],
+            password: [''], // Este campo puede usarse para establecer una nueva contraseña
             rol: [Validators.required], // Básico por defecto
             estado: [Validators.required] // Activo por defecto
         });
@@ -58,20 +58,23 @@ export class EditarUsuarioComponent implements OnInit {
                 (user) => {
                     // Verifica los valores
                     console.log('Datos del usuario:', user);
-        
+
                     // Asegúrate de que rol sea 0 o 1
                     if (user.rol !== 0 && user.rol !== 1) {
                         console.warn('Valor inesperado para rol:', user.rol);
                     }
-        
-                    // Actualiza el formulario
-                    this.editForm.patchValue(user);
+
+                    // Excluir la contraseña al cargar los datos en el formulario
+                    const { password, ...userWithoutPassword } = user;
+
+                    // Actualiza el formulario sin la contraseña
+                    this.editForm.patchValue(userWithoutPassword);
                 },
                 (error) => {
                     console.error('Error al cargar los datos del usuario:', error);
                 }
             );
-        }        
+        }
     }
 
     // Función para enviar el formulario de edición

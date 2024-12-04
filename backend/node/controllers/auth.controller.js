@@ -96,17 +96,20 @@ const updateUser = async (req, res) => {
 
         // Actualizar los datos del usuario
         if (username) user.username = username;
-        if (password) user.password = await bcrypt.hash(password, 10); // Rehash new password
+        if (password && password.trim() !== "") {
+            user.password = await bcrypt.hash(password, 10); // Rehash new password
+        }
         if (rol) user.rol = rol;
         if (estado) user.estado = estado;
 
         await user.save();
         res.status(200).json({ message: 'Usuario actualizado con éxito', user });
     } catch (error) {
-        console.error(error);  // Para ver el error en la consola
+        console.error(error); // Para ver el error en la consola
         res.status(500).json({ message: 'Error al actualizar usuario', error: error.message });
     }
 };
+
 
 // Método para obtener todos los usuarios
 const getAllUsers = async (req, res) => {

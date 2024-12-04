@@ -1,35 +1,32 @@
 <div class="flex flex-col flex-auto min-w-0">
-
     <!-- Main -->
     <div class="flex-auto p-6 sm:px-10">
         <div class="flex flex-col sm:flex-row flex-0 sm:items-center sm:justify-between pb-4 px-1">
             <div class="flex-1 min-w-0">
-                <!-- Breadcrumbs -->
                 <div class="flex flex-col">
-                    <!-- Título "Crear usuario" -->
                     <div class="mr-8">
                         <a class="whitespace-nowrap text-secondary-500 md:text-2xl">Lista usuarios</a>
                     </div>
-                </div>                                
+                </div>
             </div>
-            <!-- Actions -->
             <div class="relative mr-4">
-                <input 
+                <input
                     type="text"
+                    [(ngModel)]="searchTerm"
+                    (input)="filterUsers()"
                     placeholder="Buscar..."
                     class="bg-white-200 border border-gray-300 text-gray-900 rounded-lg py-2 px-4 focus:outline-none focus:ring-1 focus:ring-sky-500"
                 />
-                <mat-icon 
+                <mat-icon
                     class="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-500"
-                    [svgIcon]="'heroicons_mini:magnifying-glass'"></mat-icon>
+                    [svgIcon]="'heroicons_mini:magnifying-glass'"
+                ></mat-icon>
             </div>
             <div class="flex shrink-0 items-center mt-6 sm:mt-0 sm:ml-4">
                 <button
                     class="ml-3 bg-sky-400 hover:bg-sky-500 text-white"
                     mat-flat-button [routerLink]="['crear']">
-                    <mat-icon
-                        class="icon-size-4"
-                        [svgIcon]="'heroicons_mini:plus'"></mat-icon>
+                    <mat-icon class="icon-size-4" [svgIcon]="'heroicons_mini:plus'"></mat-icon>
                     <span class="ml-2">Nueva</span>
                 </button>
             </div>
@@ -37,10 +34,8 @@
 
         <!-- CONTENT GOES HERE -->
         <div class="max-h-400 rounded-2xl">
-
             <div class="grid grid-cols-1 gap-8 w-full">
-                <!-- Recent transactions table -->
-                <div class="xl:col-span-2 flex flex-col flex-auto bg-card shadow rounded-2xl overflow-hidden p-4">
+                <div class="xl:col-span-2 flex flex-col flex-auto bg-card shadow rounded-2xl overflow-hidden p-2">
                     <div class="overflow-x-auto mx-6 mb-4 mt-5">
                         <table class="w-full table-auto bg-transparent">
                             <thead class="bg-gray-50">
@@ -53,56 +48,45 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <!-- Iterar sobre los usuarios -->
-                                <tr *ngFor="let user of users">
+                                <tr *ngFor="let user of filteredUsers">
                                     <td class="px-6 py-4 whitespace-nowrap text-s font-medium text-gray-600">{{ user.id }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-s font-medium text-gray-600">{{ user.username }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-s">
                                         <span class="text-gray-600 flex items-center">
-                                            <!-- Mostrar si el rol es Administrador (1) -->
                                             <ng-container *ngIf="user.rol === 1">
                                                 <mat-icon class="mr-2 align-middle" style="font-size: 20px;">admin_panel_settings</mat-icon>
                                                 <span class="align-middle">Administrador</span>
                                             </ng-container>
-                                    
-                                            <!-- Mostrar si el rol es Básico (otro valor, como 0) -->
                                             <ng-container *ngIf="user.rol !== 1">
-                                                <mat-icon class="mr-2 align-middle" style="font-size: 20px;">person</mat-icon> 
+                                                <mat-icon class="mr-2 align-middle" style="font-size: 20px;">person</mat-icon>
                                                 <span class="align-middle">Básico</span>
                                             </ng-container>
                                         </span>
-                                    </td>                                                                                                 
+                                    </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-s">
                                         <span [ngClass]="user.estado === 1 ? 'text-green-500' : 'text-red-500'">
                                             {{ user.estado === 1 ? 'Activo' : 'Inactivo' }}
                                         </span>
-                                    </td>                                    
+                                    </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-s text-gray-600 space-x-2 flex justify-end">
-                                        <!-- Ícono de tres puntos para el menú desplegable -->
                                         <button mat-icon-button [matMenuTriggerFor]="menu">
                                             <mat-icon>more_vert</mat-icon>
                                         </button>
-                                        <!-- Menú desplegable -->
                                         <mat-menu #menu="matMenu">
-                                            <!-- Botón de Editar -->
                                             <button mat-menu-item (click)="openEditUser(user.id)">
                                                 Editar
                                             </button>
-
-                                            <!-- Botón de Eliminar -->
                                             <button mat-menu-item (click)="deleteUser(user.id)" class="text-red-500">
                                                 Eliminar
                                             </button>
-                                        </mat-menu> 
+                                        </mat-menu>
                                     </td>
                                 </tr>
                             </tbody>
                         </table>
                     </div>
                 </div>
-            </div>            
+            </div>
         </div>
-
     </div>
-
 </div>

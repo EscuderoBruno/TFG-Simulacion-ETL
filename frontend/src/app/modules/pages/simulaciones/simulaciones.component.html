@@ -16,6 +16,8 @@
             <div class="relative mr-4">
                 <input 
                     type="text"
+                    [(ngModel)]="searchTerm"
+                    (input)="filterSimulations()"
                     placeholder="Buscar..."
                     class="bg-white-200 border border-gray-300 text-gray-900 rounded-lg py-2 px-4 focus:outline-none focus:ring-1 focus:ring-sky-500"
                 />
@@ -83,7 +85,7 @@
             
             <div class="grid grid-cols-1 gap-8 w-full">
                 <!-- Recent transactions table -->
-                <div class="xl:col-span-2 flex flex-col flex-auto bg-card shadow rounded-2xl overflow-hidden p-4">
+                <div class="xl:col-span-2 flex flex-col flex-auto bg-card shadow rounded-2xl overflow-hidden p-2">
                     <div class="overflow-x-auto mx-6 mb-4 mt-5">
                         <table class="w-full table-auto bg-transparent">
                             <thead class="bg-gray-50">
@@ -101,7 +103,7 @@
                             </thead>
                             <tbody>
                                 <!-- Iterar sobre las simulaciones -->
-                                <tr *ngFor="let simulation of simulations">
+                                <tr *ngFor="let simulation of paginatedSimulations">
                                     <td class="px-6 py-4 whitespace-nowrap text-s font-medium text-gray-600">{{ getUserName(simulation.userId) }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-s font-medium text-gray-600">{{ simulation.id }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-s font-medium text-gray-600 cursor-pointer underline" (click)="openSimulation(simulation.id)">
@@ -151,6 +153,16 @@
                                 </tr>
                             </tbody>
                         </table>
+                        <!-- Paginador -->
+                        <div class="flex justify-end">
+                            <mat-paginator
+                                [pageSize]="pageSize"
+                                [pageSizeOptions]="[5, 10, 25]"
+                                [length]="filteredSimulations.length"
+                                showFirstLastButtons
+                                (page)="changePage($event)">
+                            </mat-paginator>
+                        </div>
                     </div>
                 </div>
             </div>

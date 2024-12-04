@@ -1,8 +1,9 @@
-import { Component, ViewEncapsulation } from '@angular/core';
+import { Component, ViewEncapsulation, NgModule } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { RouterLink, ActivatedRoute, Router } from '@angular/router';
-import { CommonModule } from '@angular/common'; // Importar CommonModule aquí
+import { RouterLink, Router } from '@angular/router';
+import { CommonModule } from '@angular/common';
 import { ConexionesService } from './conexiones.service';
 import { AuthService } from 'app/core/auth/auth.service';
 import { MatMenuModule } from '@angular/material/menu';
@@ -10,18 +11,21 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterModule } from '@angular/router';
 
 @Component({
-    selector     : 'connections',
-    standalone   : true,
-    templateUrl  : './conexiones.component.html',
+    selector: 'connections',
+    standalone: true,
+    templateUrl: './conexiones.component.html',
     encapsulation: ViewEncapsulation.None,
-    imports      : [MatButtonModule, RouterLink, MatIconModule, CommonModule, MatMenuModule, MatTooltipModule, RouterModule],
+    imports: [MatButtonModule, RouterLink, MatIconModule, CommonModule, MatMenuModule, MatTooltipModule, RouterModule, FormsModule],
 })
 export class ConexionesComponent {
     isActive: boolean = true;
-    connections: any[] = []; // Lista de conexiones
+    connections: any[] = []; // Lista completa de conexiones
+    filteredConnections: any[] = []; // Lista filtrada
+    users: any[] = [];
+    searchText: string = ''; // Texto del buscador
 
     constructor(
-        private _conexionesService: ConexionesService, // Servicio de conexiones
+        private _conexionesService: ConexionesService,
         private _authService: AuthService,
         private _router: Router
     ) {}
@@ -29,20 +33,30 @@ export class ConexionesComponent {
     ngOnInit(): void {
         this._conexionesService.getAllConnections().subscribe(
             (response) => {
-                this.connections = response; // Guardar la lista de conexiones
-                console.log(this.connections);
+                this.connections = response;
+                this.filteredConnections = response; // Inicializar lista filtrada
             },
             (error) => {
                 console.error('Error al obtener las conexiones', error);
+            }
+        );
+
+        this._authService.getAllUsers().subscribe(
+            (response) => {
+                this.users = response;
+            },
+            (error) => {
+                console.error('Error al obtener los usuarios', error);
             }
         );
     }
 
     deleteConnection(id: number): void {
         this._conexionesService.deleteConnection(id).subscribe(
-            (response) => {
+            () => {
                 console.log(`Conexión ${id} eliminada con éxito`);
-                this.connections = this.connections.filter(conn => conn.id !== id); // Actualizar la lista localmente
+                this.connections = this.connections.filter(conn => conn.id !== id);
+                this.filterConnections(); // Actualizar filtro después de eliminar
             },
             (error) => {
                 console.error('Error al eliminar la conexión', error);
@@ -51,18 +65,25 @@ export class ConexionesComponent {
     }
 
     openEditConnection(connectionId: number): void {
-        this._router.navigate([`conexiones/editar/${connectionId}`]); // Navegar a la página de edición
+        this._router.navigate([`conexiones/editar/${connectionId}`]);
     }
 
-    // Método para truncar el JSON y agregar "..." si es necesario
     truncateOptions(options: any): string {
         const optionsJson = JSON.stringify(options);
-        const maxLength = 60;  // Ajusta la longitud según lo que necesites
+        const maxLength = 60;
+        return optionsJson.length > maxLength ? optionsJson.slice(0, maxLength) + '...' : optionsJson;
+    }
 
-        if (optionsJson.length > maxLength) {
-        return optionsJson.slice(0, maxLength) + '...';
-        }
+    getUserName(userId: number): string {
+        const user = this.users.find(us => us.id === userId);
+        return user ? user.username : 'Usuario no encontrado';
+    }
 
-        return optionsJson;
+    filterConnections(): void {
+        const searchLower = this.searchText.toLowerCase();
+        this.filteredConnections = this.connections.filter(connection =>
+            connection.name.toLowerCase().includes(searchLower) || // Filtrar por nombre
+            this.getUserName(connection.userId).toLowerCase().includes(searchLower) // Filtrar por usuario
+        );
     }
 }

@@ -13,13 +13,16 @@
             <div class="relative mr-4">
                 <input 
                     type="text"
+                    [(ngModel)]="searchText"
+                    (input)="filterConnections()"
                     placeholder="Buscar..."
                     class="bg-white-200 border border-gray-300 text-gray-900 rounded-lg py-2 px-4 focus:outline-none focus:ring-1 focus:ring-sky-500"
                 />
                 <mat-icon 
                     class="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-500"
-                    [svgIcon]="'heroicons_mini:magnifying-glass'"></mat-icon>
-            </div>
+                    [svgIcon]="'heroicons_mini:magnifying-glass'">
+                </mat-icon>
+            </div>            
             <div class="flex shrink-0 items-center mt-6 sm:mt-0 sm:ml-4">
                 <button
                     class="ml-3 bg-sky-400 hover:bg-sky-500 text-white"
@@ -36,11 +39,12 @@
         <div class="max-h-400 rounded-2xl">
             <div class="grid grid-cols-1 gap-8 w-full">
                 <!-- Tabla de conexiones -->
-                <div class="xl:col-span-2 flex flex-col flex-auto bg-card shadow rounded-2xl overflow-hidden p-4">
+                <div class="xl:col-span-2 flex flex-col flex-auto bg-card shadow rounded-2xl overflow-hidden p-2">
                     <div class="overflow-x-auto mx-6 mb-4 mt-5">
                         <table class="w-full table-auto bg-transparent">
                             <thead class="bg-gray-50">
                                 <tr>
+                                    <th class="px-6 py-3 text-left text-s font-medium text-gray-500 tracking-wider">Usuario</th>
                                     <th class="px-6 py-3 text-left text-s font-medium text-gray-500 tracking-wider">ID</th>
                                     <th class="px-6 py-3 text-left text-s font-medium text-gray-500 tracking-wider w-2/6">Nombre</th>
                                     <th class="px-6 py-3 text-left text-s font-medium text-gray-500 tracking-wider">Tipo</th>
@@ -50,7 +54,8 @@
                             </thead>
                             <tbody>
                                 <!-- Iterar sobre las conexiones -->
-                                <tr *ngFor="let connection of connections">
+                                <tr *ngFor="let connection of filteredConnections">
+                                    <td class="px-6 py-4 whitespace-nowrap text-s font-medium text-gray-600">{{ getUserName(connection.userId) }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-s font-medium text-gray-600">{{ connection.id }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-s font-medium text-gray-600">{{ connection.name }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-s text-gray-600">

@@ -16,6 +16,8 @@
             <div class="relative mr-4">
                 <input 
                     type="text"
+                    [(ngModel)]="searchTerm"
+                    (input)="filterSensors()"
                     placeholder="Buscar..."
                     class="bg-white-200 border border-gray-300 text-gray-900 rounded-lg py-2 px-4 focus:outline-none focus:ring-1 focus:ring-sky-500"
                 />
@@ -40,11 +42,12 @@
 
             <div class="grid grid-cols-1 gap-8 w-full">
                 <!-- Recent transactions table -->
-                <div class="xl:col-span-2 flex flex-col flex-auto bg-card shadow rounded-2xl overflow-hidden p-4">
+                <div class="xl:col-span-2 flex flex-col flex-auto bg-card shadow rounded-2xl overflow-hidden p-2">
                     <div class="overflow-x-auto mx-6 mb-4 mt-5">
                         <table class="w-full table-auto bg-transparent">
                             <thead class="bg-gray-50">
                                 <tr>
+                                    <th class="px-6 py-3 text-left text-s font-medium text-gray-500 tracking-wider">Usuario</th>
                                     <th class="px-6 py-3 text-left text-s font-medium text-gray-500 tracking-wider">ID</th>
                                     <th class="px-6 py-3 text-left text-s font-medium text-gray-500 tracking-wider w-2/6">Nombre</th>
                                     <th class="px-6 py-3 text-left text-s font-medium text-gray-500 tracking-wider">Total</th>
@@ -53,7 +56,8 @@
                             </thead>
                             <tbody>
                                 <!-- Iterar sobre los usuarios -->
-                                <tr *ngFor="let sensor of sensors">
+                                <tr *ngFor="let sensor of filteredSensors">
+                                    <td class="px-6 py-4 whitespace-nowrap text-s font-medium text-gray-600">{{ getUserName(sensor.userId) }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-s font-medium text-gray-600">{{ sensor.id }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-s font-medium text-gray-600">{{ sensor.name }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-s text-gray-600">{{ sensor.coordinates.length }}</td>                                                             
