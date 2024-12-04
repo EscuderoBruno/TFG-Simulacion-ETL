@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { SimulacionesService } from '../simulaciones.service';
 import { SensoresService } from '../../sensores/sensores.service';
+import { ConexionesService } from '../../conexiones/conexiones.service';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -51,6 +52,7 @@ export class CrearSimulacionComponent implements OnInit {
     simulationForm: UntypedFormGroup;
     formFieldHelpers = '';
     sensors: any[] = [];
+    connections: any[] = [];
     generatedSimulation: string = ''; // Propiedad para almacenar la simulación generada
     jsonFormat: any; // Propiedad para almacenar el formato JSON
     showTooltip = false;
@@ -109,6 +111,7 @@ export class CrearSimulacionComponent implements OnInit {
     constructor(
         private _simulationService: SimulacionesService,
         private _sensoresService: SensoresService,
+        private _conexionesService: ConexionesService,
         private _formBuilder: UntypedFormBuilder,
         private _activatedRoute: ActivatedRoute,
         private _router: Router,
@@ -124,6 +127,7 @@ export class CrearSimulacionComponent implements OnInit {
         this.simulationForm = this._formBuilder.group({
             name: ['', Validators.required],
             sensorId: [null, Validators.required],
+            connectionId: [null, Validators.required],
             minRegistrosPorInstante: ["", [Validators.required, Validators.min(0)]],
             maxRegistrosPorInstante: ["", [Validators.required, Validators.min(0)]],
             minIntervaloEntreRegistros: ["", [Validators.required, Validators.min(0)]],
@@ -145,6 +149,15 @@ export class CrearSimulacionComponent implements OnInit {
             },
             (error) => {
                 console.error('Error al obtener los sensores', error);
+            }
+        );
+        // Obtener las conexiones
+        this._conexionesService.getAllConnections().subscribe(
+            (response) => {
+                this.connections = response;
+            },
+            (error) => {
+                console.error('Error al obtener las conexiones', error);
             }
         );
     }
@@ -181,7 +194,6 @@ export class CrearSimulacionComponent implements OnInit {
     
                 // Luego formateamos la fecha al formato de MySQL (YYYY-MM-DD HH:mm:ss)
                 formValue.date = this.getFormattedDate(fechaDate);
-                console.log(formValue.date)
     
                 // Verificar y convertir los parámetros si son una cadena
                 if (typeof formValue.parameters === 'string') {
@@ -290,12 +302,6 @@ export class CrearSimulacionComponent implements OnInit {
         );
     }
 
-
-    // Método para cancelar y redirigir a otra ruta
-    cancel(): void {
-        this._router.navigate(['/simulaciones']);
-    }
-
     get formattedSimulationJson(): any {
         const jsonString = JSON.stringify(this.generatedSimulation, null, 2).trim();
         return this.sanitizer.bypassSecurityTrustHtml('<pre>' + jsonString + '</pre>');
@@ -354,6 +360,16 @@ export class CrearSimulacionComponent implements OnInit {
     setPlaceholderToNow() {
         this.placeholderText = 'now'; // Cambiar el texto del placeholder
         this.simulationForm.get('date')?.setValue(this.placeholderText); // Establecer la fecha actual
+    }
+
+    getSelectedConnection() {
+        const connectionId = this.simulationForm.get('connectionId')?.value;
+        return this.connections.find(connection => connection.id === connectionId);
+    }
+    
+    // Método para cancelar y redirigir a otra ruta
+    cancel(): void {
+        this._router.navigate(['/simulaciones']);
     }
 
 }

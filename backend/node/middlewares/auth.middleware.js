@@ -19,14 +19,5 @@ const authenticate = (req, res, next) => {
     }
 };
 
-const generateToken = (user) => {
-    const payload = {
-        id: user.id,
-        rol: user.rol,  // Incluye el rol en el token
-    };
-
-    return jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '1h' });
-};
-
 module.exports = authenticate;
 

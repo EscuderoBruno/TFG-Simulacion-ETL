@@ -35,9 +35,15 @@
                                         <mat-form-field [ngClass]="formFieldHelpers" class="w-full">
                                             <input matInput type="number" formControlName="maxRegistrosPorInstante" placeholder="Máximo" min="0" [value]="simulation?.maxRegistrosPorInstante">                                 
                                             <mat-checkbox formControlName="noRepetirCheckbox" class="ml-2" [checked]="simulationForm.get('noRepetirCheckbox')?.value === 1" (change)="onCheckboxChange($event)">
-                                                <p class="text-sm">No repetir elementos</p>
+                                                <p class="text-sm leading-tight">No repetir elementos</p>
                                             </mat-checkbox>
                                         </mat-form-field>
+                                    </div>
+                                </div>
+                                <div class="">
+                                    <!-- Mensaje de error -->
+                                    <div *ngIf="simulationForm.hasError('registrosExcedenCoordenadas')" class="text-red-500 text-sm mb-2">
+                                        El número de registros por instante no puede ser superior a la cantidad de localizaciones cuando "No repetir elementos" está activo.
                                     </div>
                                 </div>
                             </div>
@@ -88,7 +94,7 @@
                                 <mat-form-field class="w-full">
                                     <input matInput type="text" formControlName="date" [value]="simulation?.date" [placeholder]="placeholderText">
                                     <mat-hint>
-                                        <button (click)="setPlaceholderToNow()" class="text-gray-500 underline">Usar fecha actual</button>
+                                        <button (click)="setPlaceholderToNow()" class="text-gray-500 underline" style="font-size: 12px;">Usar fecha actual</button>
                                     </mat-hint>
                                 </mat-form-field>
                             </div>
@@ -97,7 +103,7 @@
 
                     <!-- Campo de Parámetros que ocupa todo el ancho -->
                     <div class="flex flex-col mb-0">
-                        <mat-label class="block mb-1 flex items-center">Parámetros
+                        <mat-label class="block flex items-center">Parámetros
                             <div class="flex items-center relative">
                                 <!-- Botón de información con ícono -->
                                 <button mat-icon-button (click)="showTooltip = !showTooltip" type="button">
@@ -115,7 +121,7 @@
                                     </div>
                                     <!-- Contenido JSON -->
                                     <div [innerHTML]="formattedFormatJson"></div>
-            
+
                                     <!-- Botón para copiar el contenido -->
                                     <button mat-button class="absolute right-4 bottom-4 flex items-center"
                                         (click)="copyToClipboard()" (click)="showTooltip = false">
@@ -125,17 +131,66 @@
                             </div>
                         </mat-label>
 
+                        <!-- Campo de texto ajustable -->
                         <mat-form-field [ngClass]="formFieldHelpers" class="w-full">
-                            <textarea matInput formControlName="parameters" (keydown)="onKeydown($event)" class="h-[calc(22vh)]" rows="6" [placeholder]="placeholderText" [value]="simulation?.parameters ? (simulation?.parameters | json) : '{}'"></textarea>
+                            <textarea matInput formControlName="parameters" (keydown)="onKeydown($event)"
+                                    class="resize-y min-h-[calc(13.5vh)] max-h-[260px]" rows="4" [placeholder]="placeholderText"
+                                    [value]="simulation?.parameters ? (simulation?.parameters | json) : '{}'"></textarea>
                         </mat-form-field>
                     </div>
+
+                    <div class="flex gap-3">
+                        <div class="w-1/2 flex flex-col">
+                            <mat-label class="block mb-1">Conexiones</mat-label>
+                            <mat-form-field [ngClass]="formFieldHelpers" class="w-full p-0">
+                                <mat-select formControlName="connectionId">
+                                    <!-- Personalización del contenido seleccionado -->
+                                    <mat-select-trigger>
+                                        <div class="flex items-center gap-2">
+                                            <img
+                                                *ngIf="getSelectedConnection()?.type === 0"
+                                                src="assets/images//varios/mqtt.png"
+                                                alt="MQTT"
+                                                class="w-5 h-5 object-contain"
+                                            />
+                                            <img
+                                                *ngIf="getSelectedConnection()?.type === 1"
+                                                src="assets/images//varios/api.png"
+                                                alt="API"
+                                                class="w-5 h-5 object-contain"
+                                            />
+                                            <span>{{ getSelectedConnection()?.name }}</span>
+                                        </div>
+                                    </mat-select-trigger>
+                                    <!-- Opciones desplegables -->
+                                    <mat-option *ngFor="let connection of connections" [value]="connection.id">
+                                        <div class="flex items-center gap-2">
+                                            <img
+                                                *ngIf="connection.type === 0"
+                                                src="assets/images/varios/mqtt.png"
+                                                alt="MQTT"
+                                                class="w-5 h-5 object-contain"
+                                            />
+                                            <img
+                                                *ngIf="connection.type === 1"
+                                                src="assets/images/varios/api.png"
+                                                alt="API"
+                                                class="w-5 h-5 object-contain"
+                                            />
+                                            <span>{{ connection.name }}</span>
+                                        </div>
+                                    </mat-option>
+                                </mat-select>
+                            </mat-form-field>
+                        </div>
+                    </div>                                     
 
                     <div class="flex items-center justify-between border-t -mx-8 px-8 py-3 bg-gray-50 dark:bg-gray-700 rounded-b-lg">
                         <!-- Botón para generar la simulación -->
                         <div class="flex">
                             <button mat-stroked-button color="accent" (click)="testSimulation()" class="bg-white mr-4" type="button">
                                 <span class="material-icons" style="vertical-align: middle; margin-right: 4px;">play_arrow</span>
-                                Probar Simulación
+                                Probar simulación
                             </button>
                             <!-- Mensaje de alerta -->
                             <div *ngIf="showAlert" class="flex items-center px-2 text-red-700 rounded-lg" role="alert">
@@ -152,8 +207,8 @@
             </div>
 
             <!-- Segundo formulario que ocupa 1/3 -->
-            <div class="max-h-400 rounded-2xl w-2/5 ml-4 border">
-                <div class="flex flex-col p-6 py-0 bg-card rounded-2xl shadow overflow-hidden h-[calc(100vh-108px)]">
+            <div class="max-h-400 rounded-2xl w-2/5 ml-4">
+                <div class="flex flex-col p-6 py-0 bg-card rounded-2xl shadow overflow-hidden h-[calc(100vh-102px)]">
                     <div class="flex items-center justify-between border-b -mx-8 px-8 py-3 bg-gray-50 dark:bg-gray-700 rounded-b-lg mb-4">
                         <div class="flex">
                             <mat-label class="block text-lg">Simulación</mat-label>   

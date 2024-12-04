@@ -3,7 +3,7 @@ const Sensor = require('../models/sensor');
 
 // Método para crear Simulación
 const newSimulation = async (req, res) => {
-    const { name, sensorId, parameters, minRegistrosPorInstante, maxRegistrosPorInstante, minIntervaloEntreRegistros, maxIntervaloEntreRegistros, numElementosASimular, noRepetirCheckbox, date } = req.body;
+    const { name, sensorId, connectionId, parameters, minRegistrosPorInstante, maxRegistrosPorInstante, minIntervaloEntreRegistros, maxIntervaloEntreRegistros, numElementosASimular, noRepetirCheckbox, date } = req.body;
     const userId = req.user.id;
 
     try {
@@ -17,6 +17,7 @@ const newSimulation = async (req, res) => {
         const simulation = await Simulation.create({
             name,
             sensorId,
+            connectionId,
             parameters,
             userId,
             minRegistrosPorInstante,
@@ -93,7 +94,7 @@ const getSimulationById = async (req, res) => {
 const updateSimulation = async (req, res) => {
     try {
         const { id } = req.params;
-        const { name, sensorId, parameters, minRegistrosPorInstante, maxRegistrosPorInstante, minIntervaloEntreRegistros, maxIntervaloEntreRegistros, numElementosASimular, noRepetirCheckbox, date } = req.body;
+        const { name, sensorId, connectionId, parameters, minRegistrosPorInstante, maxRegistrosPorInstante, minIntervaloEntreRegistros, maxIntervaloEntreRegistros, numElementosASimular, noRepetirCheckbox, date } = req.body;
 
         // Verifica si la ubicación existe
         const sensor = await Sensor.findByPk(sensorId);
@@ -104,6 +105,7 @@ const updateSimulation = async (req, res) => {
         const [updated] = await Simulation.update({
             name,
             sensorId,
+            connectionId,
             parameters,
             minRegistrosPorInstante,
             maxRegistrosPorInstante,

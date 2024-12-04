@@ -1,5 +1,5 @@
 const bcrypt = require('bcrypt');
-const User = require('../models/user');
+const User = require('../models/User');
 const jwt = require('jsonwebtoken');
 
 // Método para crear usuario (registro)
@@ -62,7 +62,6 @@ const login = async (req, res) => {
                 id: user.id,
                 username: user.username,
                 rol: user.rol,  // Asegúrate de que este campo exista en el modelo
-                estado: user.estado,  // Asegúrate de que este campo exista en el modelo
             },
         });
     } catch (error) {

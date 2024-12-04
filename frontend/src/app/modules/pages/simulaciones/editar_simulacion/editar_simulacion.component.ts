@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { SimulacionesService } from '../simulaciones.service';
 import { SensoresService } from '../../sensores/sensores.service';
+import { ConexionesService } from '../../conexiones/conexiones.service';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -55,6 +56,7 @@ export class EditarSimulacionComponent implements OnInit {
     simulationForm: UntypedFormGroup;
     formFieldHelpers = '';
     sensors: any[] = [];
+    connections: any[] = [];
     generatedSimulation: any[] = [];  // Aquí irán los datos de la simulación
     generatedTest: string;
     jsonFormat: any;
@@ -63,10 +65,9 @@ export class EditarSimulacionComponent implements OnInit {
     showAlert = false;
     showAdvise = true;
     numArrayLocalizacion: 0;
-    simulacionesGeneradas: any[] = [];
     minDate: Date;
     placeholderText: string = 'Fecha';
-    activeSimulation: { simulation: any; elapsedTime: number; interval?: any; startTime?: number; remainingTime?: number; totalTime?: number } = { simulation: null, elapsedTime: 0 }; // Inicializar valores predeterminados
+    activeSimulation: { simulation: any; elapsedTime: number; interval?: any; } = { simulation: null, elapsedTime: 0 }; // Inicializar valores predeterminados
     simulando = false;
     isExpanded: boolean[] = []; // Lista para saber qué items están expandidos
     isPaused: boolean = false; // Controlar si está pausada
@@ -115,6 +116,7 @@ export class EditarSimulacionComponent implements OnInit {
     constructor(
         private _simulationService: SimulacionesService,
         private _sensoresService: SensoresService,
+        private _conexionesService: ConexionesService,
         private _formBuilder: UntypedFormBuilder,
         private _activatedRoute: ActivatedRoute,
         private _router: Router,
@@ -126,10 +128,10 @@ export class EditarSimulacionComponent implements OnInit {
     ngOnInit(): void {
         this.simulationId = Number(this._activatedRoute.snapshot.paramMap.get('id') || '');
         const formattedDate = this.datePipe.transform(new Date(), 'dd/MM/yyyy 00:00:00');
-
         this.simulationForm = this._formBuilder.group({
             name: ['', Validators.required],
             sensorId: [null, Validators.required],
+            connectionId: [null, Validators.required],
             minRegistrosPorInstante: ["", [Validators.required, Validators.min(0)]],
             maxRegistrosPorInstante: ["", [Validators.required, Validators.min(0)]],
             minIntervaloEntreRegistros: ["", [Validators.required, Validators.min(0)]],
@@ -143,6 +145,7 @@ export class EditarSimulacionComponent implements OnInit {
             validators: this.registrosPorInstanteValidator()
         });
 
+        // Obtener la información de la simulación
         if (this.simulationId) {
             const simulationIdNumber = Number(this.simulationId); // Convierte la cadena a número
             if (!isNaN(simulationIdNumber)) {
@@ -153,8 +156,6 @@ export class EditarSimulacionComponent implements OnInit {
                     console.log('Datos de simulación recibidos:', simulation); // Imprime los datos antes de asignarlos al formulario
                     this.simulation = simulation;
                     this.simulationForm.patchValue(simulation);
-                    this.generatedSimulation = simulation.generatedSimulation || '';
-                    this.testGenerado = !!simulation.generatedSimulation;
                 },
                 (error) => {
                     console.error('Error al cargar la simulación', error);
@@ -165,12 +166,34 @@ export class EditarSimulacionComponent implements OnInit {
             }
         }
 
+        // Arrancar la simulación si está activa
+        if (this._simulationService.isSimulationRunning(this.simulationId)) {
+            this.getGeneratedSimulations();
+            this.isPaused = this._simulationService.getIsPaused(this.simulationId);
+            // Asignamos directamente la simulación activa al estado 'activeSimulation'
+            this.activeSimulation = {
+                simulation: this.simulationId,   // Usamos el ID de la simulación directamente
+                elapsedTime: 0,                   // Tiempo transcurrido
+                interval: null,                   // Intervalo, inicialmente null
+            };
+            this.simulando = true;
+            this.startSimulation();
+        }
+
         this._sensoresService.getAllSensors().subscribe(
             (response) => {
                 this.sensors = response;
             },
             (error) => {
                 console.error('Error al obtener los sensores', error);
+            }
+        );
+        this._conexionesService.getAllConnections().subscribe(
+            (response) => {
+                this.connections = response;
+            },
+            (error) => {
+                console.error('Error al obtener las conexiones', error);
             }
         );
     }
@@ -181,7 +204,6 @@ export class EditarSimulacionComponent implements OnInit {
     }
 
     onSubmit(): void {
-        this.testSimulation();
         if (this.simulationForm.valid) {
             if (this.testGenerado) {
                 const formValue = this.simulationForm.value;
@@ -328,19 +350,16 @@ export class EditarSimulacionComponent implements OnInit {
             this.isPaused = false;
             this.stopSimulation();
         } else {
-            this.generatedSimulation = [];  // Reinicializamos como array vacío
+            this.generatedSimulation = [];  
+            // Iniciar la simulación
             this._simulationService.simular(this.simulationId, (result) => {
-                // Verificar que 'generatedSimulation' sea un array antes de agregar elementos
-                if (Array.isArray(this.generatedSimulation)) {
-                    this.generatedSimulation.push(result);  // Solo usa push si es un array
-                } else {
-                    this.generatedSimulation = [];  // Reinicializamos como array vacío
-                    this.generatedSimulation.push(result);  // Ahora podemos agregar el dato
-                }
             });
-        
             this.startSimulation();
             this.simulando = true;
+            // Asignar las simulaciones generadas al array después de que la simulación haya comenzado
+            setTimeout(() => {
+                this.generatedSimulation = this._simulationService.simulacionesGeneradasPorId[this.simulationId] || [];
+            }, 1000);
         }
     }
 
@@ -481,19 +500,24 @@ export class EditarSimulacionComponent implements OnInit {
         this.simulationForm.get('date')?.setValue(this.placeholderText); // Establecer la fecha actual
     }
 
-        // Validador personalizado
+    // Validador personalizado
     registrosPorInstanteValidator(): ValidatorFn {
         return (control: AbstractControl): ValidationErrors | null => {
             const minRegistros = control.get('minRegistrosPorInstante')?.value;
             const maxRegistros = control.get('maxRegistrosPorInstante')?.value;
             const noRepetir = control.get('noRepetirCheckbox')?.value;
             const sensorId = control.get('sensorId')?.value;
-
+    
+            // Verificar si el formulario está completamente cargado (para evitar errores al inicio)
+            if (!sensorId || !this.sensors.length) {
+                return null; // No realizamos la validación hasta que el sensorId y los sensores estén disponibles
+            }
+    
             if (noRepetir && sensorId) {
                 // Buscar localización por ID
                 const sensor = this.sensors.find(loc => loc.id === sensorId);
                 const maxCoordinates = sensor?.coordinates.length || 0;
-
+    
                 // Verificar que los registros no excedan las coordenadas disponibles
                 if ((minRegistros > maxCoordinates) || (maxRegistros > maxCoordinates)) {
                     return { registrosExcedenCoordenadas: true };
@@ -501,12 +525,26 @@ export class EditarSimulacionComponent implements OnInit {
             }
             return null;
         };
-    }
+    }    
 
     onCheckboxChange(event: any): void {
         const isChecked = event.checked ? 1 : 0;
         this.simulationForm.get('noRepetirCheckbox')?.setValue(isChecked);
     }    
+
+    getSelectedConnection() {
+        const connectionId = this.simulationForm.get('connectionId')?.value;
+        return this.connections.find(connection => connection.id === connectionId);
+    }
+
+    // Método para obtener las simulaciones generadas para esta simulación
+    getGeneratedSimulations(): void {
+        if (this._simulationService.simulacionesGeneradasPorId[this.simulationId]) {
+            this.generatedSimulation = this._simulationService.simulacionesGeneradasPorId[this.simulationId];
+        } else {
+            console.log("No se encontraron simulaciones generadas para este ID de simulación.");
+        }
+    }
 
     volver() {
         this._router.navigate(['/simulaciones']);

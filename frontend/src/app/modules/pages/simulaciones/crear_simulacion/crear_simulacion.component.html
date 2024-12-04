@@ -39,7 +39,7 @@
                                             <input matInput type="number" formControlName="maxRegistrosPorInstante" placeholder="Máx" min="0">                                      
                                             <!-- Checkbox con mayor ancho -->
                                             <mat-checkbox formControlName="noRepetirCheckbox" class="ml-4 flex-grow">
-                                                <div class="text-sm">No repetir elementos</div>
+                                                <p class="text-sm leading-tight">No repetir elementos</p>
                                             </mat-checkbox>
                                         </mat-form-field>
                                     </div>
@@ -104,7 +104,7 @@
                                         formControlName="date" 
                                         [placeholder]="placeholderText">  <!-- Usar la variable para el placeholder -->
                                     <mat-hint>
-                                        <button  (click)="setPlaceholderToNow()" (click)="showTooltip = false" class="text-gray-500 underline bg-transparent border-none cursor-pointer"> Usar fecha actual </button>
+                                        <button  (click)="setPlaceholderToNow()" (click)="showTooltip = false" class="text-gray-500 underline" style="font-size: 12px;"> Usar fecha actual </button>
                                     </mat-hint>
                                 </mat-form-field> 
                             </div>                              
@@ -113,7 +113,7 @@
             
                     <!-- Campo de Parámetros que ocupa todo el ancho -->
                     <div class="flex flex-col">
-                        <mat-label class="block mb-1 flex items-center">Parámetros
+                        <mat-label class="block flex items-center">Parámetros
                             <div class="flex items-center relative">
                                 <!-- Botón de información con ícono -->
                                 <button mat-icon-button (click)="showTooltip = !showTooltip" type="button">
@@ -142,22 +142,65 @@
                         </mat-label>
             
                         <mat-form-field [ngClass]="formFieldHelpers" class="w-full">
-                            <textarea matInput
-                                      formControlName="parameters"
-                                      (keydown)="onKeydown($event)"
-                                      class="h-[calc(22vh)]"
-                                      rows="10"
-                                      placeholder="{ }"></textarea>
+                            <textarea matInput formControlName="parameters" (keydown)="onKeydown($event)"
+                                      class="resize-y min-h-[calc(13.5vh)] max-h-[260px]" rows="4" placeholder="{ }"></textarea>
                         </mat-form-field>
                         
                     </div>   
+
+                    <div class="flex gap-3">
+                        <div class="w-1/2 flex flex-col">
+                            <mat-label class="block mb-1">Conexiones</mat-label>
+                            <mat-form-field [ngClass]="formFieldHelpers" class="w-full p-0">
+                                <mat-select formControlName="connectionId">
+                                    <!-- Personalización del contenido seleccionado -->
+                                    <mat-select-trigger>
+                                        <div class="flex items-center gap-2">
+                                            <img
+                                                *ngIf="getSelectedConnection()?.type === 0"
+                                                src="assets/images/varios/mqtt.png"
+                                                alt="MQTT"
+                                                class="w-5 h-5 object-contain"
+                                            />
+                                            <img
+                                                *ngIf="getSelectedConnection()?.type === 1"
+                                                src="assets/images/varios/api.png"
+                                                alt="API"
+                                                class="w-5 h-5 object-contain"
+                                            />
+                                            <span>{{ getSelectedConnection()?.name }}</span>
+                                        </div>
+                                    </mat-select-trigger>
+                                    
+                                    <!-- Opciones desplegables con imágenes -->
+                                    <mat-option *ngFor="let connection of connections" [value]="connection.id">
+                                        <div class="flex items-center gap-2">
+                                            <img
+                                                *ngIf="connection.type === 0"
+                                                src="assets/images/varios/mqtt.png"
+                                                alt="MQTT"
+                                                class="w-5 h-5 object-contain"
+                                            />
+                                            <img
+                                                *ngIf="connection.type === 1"
+                                                src="assets/images/varios/api.png"
+                                                alt="API"
+                                                class="w-5 h-5 object-contain"
+                                            />
+                                            <span>{{ connection.name }}</span>
+                                        </div>
+                                    </mat-option>
+                                </mat-select>
+                            </mat-form-field>
+                        </div>
+                    </div>                    
     
                     <div class="flex items-center justify-between border-t -mx-8 px-8 py-3 bg-gray-50 dark:bg-gray-700 rounded-b-lg">
                         <!-- Botón para generar la simulación al principio -->
                         <div class="flex">
                             <button mat-stroked-button color="accent" (click)="testSimulation()" class="bg-white mr-4" type="button">
                                 <span class="material-icons" style="vertical-align: middle; margin-right: 4px;">play_arrow</span>
-                                Probar Simulación
+                                Probar simulación
                             </button>
                         </div>
                         <!-- Botones "Cancelar" y "Crear" alineados a la derecha -->
@@ -171,8 +214,8 @@
                 </form>
             </div>
             <!-- Segundo formulario que ocupa 1/3 -->
-            <div class="max-h-400 rounded-2xl w-2/5 ml-4 border">
-                <div class="flex flex-col p-6 py-0 bg-card rounded-2xl shadow overflow-hidden h-[calc(100vh-108px)]">
+            <div class="max-h-400 rounded-2xl w-2/5 ml-4">
+                <div class="flex flex-col p-6 py-0 bg-card rounded-2xl shadow overflow-hidden h-[calc(100vh-102px)]">
                     <div class="flex items-center justify-between border-b -mx-8 px-8 py-5 bg-gray-50 dark:bg-gray-700 rounded-b-lg mb-4">
                         <div class="flex">
                             <mat-label class="block text-lg">Simulación</mat-label>   

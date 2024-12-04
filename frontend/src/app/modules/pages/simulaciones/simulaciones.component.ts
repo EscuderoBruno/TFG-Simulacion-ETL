@@ -5,12 +5,13 @@ import { RouterLink, ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { SimulacionesService } from './simulaciones.service';
 import { SensoresService } from '../sensores/sensores.service';
+import { ConexionesService } from '../conexiones/conexiones.service';
 import { AuthService } from 'app/core/auth/auth.service';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { ChangeDetectorRef } from '@angular/core';
-import { MqttService } from 'app/core/mqtt/mqtt.service';
+import { MqttService } from 'app/core/envio_mensajes/mqtt.service';
 
 
 
@@ -25,6 +26,7 @@ export class SimulacionesComponent implements OnInit, OnDestroy {
     isActive: boolean = true;
     simulations: any[] = [];
     sensors: any[] = [];
+    connections: any[] = [];
     users: any[] = [];
     activeSimulations: { simulation: any; elapsedTime: number; interval: any; isPaused: boolean }[] = [];
     isPaused: boolean = false; // Controlar si está pausada
@@ -32,6 +34,7 @@ export class SimulacionesComponent implements OnInit, OnDestroy {
     constructor(
         private _simulationsService: SimulacionesService,
         private _sensoresService: SensoresService,
+        private _conexionesService: ConexionesService,
         private _userService: AuthService,
         private cdr: ChangeDetectorRef,
         private mqttService: MqttService,
@@ -70,6 +73,15 @@ export class SimulacionesComponent implements OnInit, OnDestroy {
                 console.error('Error al obtener los usuarios', error);
             }
         );
+        // Obtener las conexiones
+        this._conexionesService.getAllConnections().subscribe(
+            (response) => {
+                this.connections = response;
+            },
+            (error) => {
+                console.error('Error al obtener las conexiones', error);
+            }
+        );
     }
 
     simularInstantaneamente(simulationId: number): void {
@@ -92,9 +104,11 @@ export class SimulacionesComponent implements OnInit, OnDestroy {
 
     startSimulation(simulationId: number): void {
         const simulation = this.simulations.find(sim => sim.id === simulationId);
+        console.log(this._simulationsService.getIsPaused(simulation));
     
         if (simulation) {
-            this.activeSimulations.push({ simulation, elapsedTime: 0, interval: null, isPaused: false });
+            const isPaused = this._simulationsService.getIsPaused(simulationId);
+            this.activeSimulations.push({ simulation, elapsedTime: 0, interval: null, isPaused });
             const activeSimulationIndex = this.activeSimulations.length - 1;
     
             this.activeSimulations[activeSimulationIndex].interval = setInterval(() => {
@@ -156,8 +170,18 @@ export class SimulacionesComponent implements OnInit, OnDestroy {
 
     getSensorName(sensorId: number): string {
         const sensor = this.sensors.find(se => se.id === sensorId);
-        return sensor ? sensor.name : 'Ubicación no encontrada'; // Manejar el caso en que no se encuentre la localización
+        return sensor ? sensor.name : 'Sensor no encontrado'; // Manejar el caso en que no se encuentre la localización
     }
+
+    getConnectioName(connectionId: number): string {
+        const connection = this.connections.find(co => co.id === connectionId);
+        return connection ? connection.name : 'Conexión no encontrada'; // Manejar el caso en que no se encuentre la conexión
+    }
+    
+    getConnectionType(connectionId: number): number {
+        const connection = this.connections.find(conn => conn.id === connectionId);
+        return connection ? connection.type : 0; // Devuelve el tipo de conexión (0 para MQTT, 1 para API)
+      }      
 
     formatElapsedTime(seconds: number): string {
         const hours = Math.floor(seconds / 3600);
@@ -193,7 +217,7 @@ export class SimulacionesComponent implements OnInit, OnDestroy {
     
         // En caso contrario, devolver el progreso en el formato `totalGenerados / numElementosASimular`
         return `${totalGenerados} / ${numElementosASimular}`;
-    }    
+    }
 
     getUserName(userId: number): string {
         const user = this.users.find(us => us.id === userId);
@@ -221,7 +245,25 @@ export class SimulacionesComponent implements OnInit, OnDestroy {
     }
 
     openSimulation(simulationId: number) {
-        this._router.navigate([`sensores/editar/${simulationId}`]);
-    }    
+        this._router.navigate([`simulaciones/${simulationId}`]);
+    }  
+    
+    // Método para duplicar una simulación
+    duplicateSimulation(simulation: any): void {
+        // Crea una nueva simulación con los mismos datos, pero modifica lo necesario (ejemplo: nombre)
+        const duplicatedSimulation = { ...simulation, name: `${simulation.name} - Copia` };
+
+        // Llama al servicio para guardar la nueva simulación duplicada
+        this._simulationsService.create(duplicatedSimulation).subscribe(
+        (newSimulation) => {
+            console.log('Simulación duplicada:', newSimulation);
+            // Agregar la nueva simulación a la lista (opcional, depende de cómo gestionas el estado)
+            this.simulations.push(newSimulation);
+        },
+        (error) => {
+            console.error('Error al duplicar simulación:', error);
+        }
+        );
+    }
     
 }

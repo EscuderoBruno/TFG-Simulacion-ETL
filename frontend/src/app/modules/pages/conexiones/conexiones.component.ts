@@ -53,4 +53,16 @@ export class ConexionesComponent {
     openEditConnection(connectionId: number): void {
         this._router.navigate([`conexiones/editar/${connectionId}`]); // Navegar a la página de edición
     }
+
+    // Método para truncar el JSON y agregar "..." si es necesario
+    truncateOptions(options: any): string {
+        const optionsJson = JSON.stringify(options);
+        const maxLength = 60;  // Ajusta la longitud según lo que necesites
+
+        if (optionsJson.length > maxLength) {
+        return optionsJson.slice(0, maxLength) + '...';
+        }
+
+        return optionsJson;
+    }
 }

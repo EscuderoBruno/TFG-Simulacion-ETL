@@ -1,7 +1,8 @@
 const { DataTypes, Sequelize } = require('sequelize');
 const sequelize = require('../database/connection');
-const Sensors = require('./sensor');
-const User = require('./user'); 
+const Sensor = require('./sensor');
+const User = require('./User'); 
+const Connection = require('./sensor');
 
 // Definición del modelo Simulation
 const Simulation = sequelize.define('Simulation', {
@@ -13,7 +14,7 @@ const Simulation = sequelize.define('Simulation', {
     type: DataTypes.INTEGER,
     allowNull: false,
     references: {
-      model: Sensors,
+      model: Sensor,
       key: 'id',
     },
   },
@@ -27,6 +28,14 @@ const Simulation = sequelize.define('Simulation', {
     allowNull: false,
     references: {
       model: User,
+      key: 'id',
+    },
+  },
+  connectionId: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    references: {
+      model: Connection,
       key: 'id',
     },
   },
@@ -63,6 +72,7 @@ const Simulation = sequelize.define('Simulation', {
 
 // Relaciones
 Simulation.belongsTo(User, { foreignKey: 'userId', as: 'user' });
-Simulation.belongsTo(Sensors, { foreignKey: 'sensorId' });
+Simulation.belongsTo(Sensor, { foreignKey: 'sensorId' });
+Simulation.belongsTo(Connection, { foreignKey: 'connectionId' });
 
 module.exports = Simulation;

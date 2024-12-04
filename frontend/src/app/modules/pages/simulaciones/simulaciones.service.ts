@@ -3,14 +3,18 @@ import { Injectable } from '@angular/core';
 import { Observable, timer } from 'rxjs';
 import { environment } from 'environment/environment';
 import { SensoresService } from '../sensores/sensores.service';
-import { MqttService } from 'app/core/mqtt/mqtt.service';
+import { ConexionesService } from '../conexiones/conexiones.service';
+import { MqttService } from 'app/core/envio_mensajes/mqtt.service';
+import { ApiService } from 'app/core/envio_mensajes/api.service';
 
 @Injectable({ providedIn: 'root' })
 export class SimulacionesService {
 
     constructor(private _httpClient: HttpClient,
                 private _sensoresService: SensoresService,
-                private mqttService: MqttService
+                private _conexionesService: ConexionesService,
+                private mqttService: MqttService,
+                private apiService: ApiService
     ) {}
 
     // Datos
@@ -22,11 +26,13 @@ export class SimulacionesService {
     isRunning: { [key: number]: boolean } = {}; // Almacena el estado de cada simulación
     totalGenerados: { [simulationId: number]: number } = {}; // Almacenar totalGenerados por ID de simulación
     paused: { [key: number]: boolean } = {};  // Diccionario que mantiene el estado de pausa de cada simulación
+    simulacionesGeneradasPorId: { [key: number]: any[] } = {}; // Objeto para almacenar las simulaciones generadas por cada simulationId
 
     // Método para crear una nueva simulación
     create(simulation: {
         name: string;
         sensorId: number;
+        connectionId: number;
         parameters: object;
         minRegistrosPorInstante: number;
         maxRegistrosPorInstante: number;
@@ -54,6 +60,7 @@ export class SimulacionesService {
         id: number;
         name: string;
         sensorId: number;
+        connectionId: number;
         parameters: object;
         minRegistrosPorInstante: number;
         maxRegistrosPorInstante: number;
@@ -184,6 +191,11 @@ export class SimulacionesService {
         this.isRunning[simulationId] = true; // Cambia el estado a activo
         this.totalGenerados[simulationId] = 0; // Inicializar totalGenerados para esta simulación
 
+        // Inicializar el array para almacenar las simulaciones generadas de este simulationId
+        if (!this.simulacionesGeneradasPorId[simulationId]) {
+            this.simulacionesGeneradasPorId[simulationId] = [];
+        }
+
         // Obtener la simulación por ID y suscribirse para recibir los datos
         this.getSimulationById(simulationId).subscribe(
             (simulacion) => {
@@ -194,7 +206,7 @@ export class SimulacionesService {
                 const executeSimulationStep = () => {
                     // Comprobar si se ha alcanzado el límite de elementos a simular
                     if (simulacion.numElementosASimular > 0 && totalGenerados >= simulacion.numElementosASimular) {
-                        console.log("Resultado final generado:", this.simulacionesGeneradas); // Imprimir el resultado final
+                        console.log("Resultado final generado:", this.simulacionesGeneradasPorId[simulationId]); // Imprimir todas las simulaciones generadas para este simulationId
                         this.isRunning[simulationId] = false; // Cambia el estado a inactivo al finalizar
                         return; // Termina la simulación
                     }
@@ -261,13 +273,14 @@ export class SimulacionesService {
                                 if (parameters) {
                                     this.generateNewJson(parameters, simulacion.sensorId, randomIndex, time)
                                     .then((newSimulacion) => {
-                                        this.simulacionesGeneradas.push(newSimulacion);
-                                        this.sendMessageMqtt(newSimulacion);
+                                        // Almacenar la simulación generada en el array correspondiente al simulationId
+                                        this.simulacionesGeneradasPorId[simulationId].push(newSimulacion);
+                                        this.sendMessage(newSimulacion, simulacion.connectionId);
                                         callback(newSimulacion); // Llamar al callback
                                     })
                                     .catch((error) => {
                                         console.error('Error al generar el JSON:', error);
-                                    });                                
+                                    });                                 
                                 } else {
                                     console.error("No se encontraron parámetros válidos.");
                                 }
@@ -287,7 +300,6 @@ export class SimulacionesService {
                     this.intervals[simulationId] = setTimeout(executeSimulationStep, intervalo * 1000);
 
                     time = new Date(time.getTime() + intervalo * 1000);
-                    //console.log(time);
                 };
 
                 // Iniciar el primer paso de la simulación
@@ -392,7 +404,7 @@ export class SimulacionesService {
                                     this.generateNewJson(parameters, simulacion.sensorId, randomIndex, currentRecordTime)
                                     .then((newSimulacion) => {
                                         this.simulacionesGeneradas.push(newSimulacion);
-                                        this.sendMessageMqtt(newSimulacion);
+                                        this.sendMessage(newSimulacion, simulacion.connectionId);
                                     })
                                     .catch((error) => {
                                         console.error('Error al generar el JSON:', error);
@@ -453,11 +465,39 @@ export class SimulacionesService {
             .map(id => parseInt(id, 10));
     }
 
-    // Enviar mensaje MQTT
-    sendMessageMqtt(message: String) {
-        const messageMQTT = JSON.stringify(message);
-        this.mqttService.sendMessage('simulaciones', messageMQTT);
+    getIsPaused(simulationId: number): boolean {
+        return this.paused[simulationId];
     }
-    
+
+    // Enviar mensaje con las simulaciones generadas por MQTT o API
+    sendMessage(message: string, connectionId: number): void {
+        const messageMQTT = JSON.stringify(message);
+        
+        this._conexionesService.getConnectionById(connectionId).subscribe(
+            (conexion) => {
+                // Conexión y envio por MQTT
+                if (conexion.type == 0) {
+                    this.mqttService.sendMessageMqtt(
+                        conexion.options.URL,        // Broker URL
+                        conexion.options.clientId,   // Client ID
+                        conexion.options.username,   // Username
+                        conexion.options.password,   // Password
+                        conexion.options.topic,      // Tópico
+                        messageMQTT                  // Mensaje
+                    );
+                    // Conexión y envio por API
+                } else if (conexion.type == 1) {
+                    this.apiService.sendMessageApi(
+                        conexion.options.URL,
+                        conexion.options.header, 
+                        messageMQTT
+                    );
+                }
+            }, (error) => {
+                console.error('Error al obtener la conexión:', error);  // Manejo de error si no se obtiene la conexión
+            }
+        );
+    }
+        
 }
 

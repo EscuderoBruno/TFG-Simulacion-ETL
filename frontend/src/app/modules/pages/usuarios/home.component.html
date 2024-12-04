@@ -61,13 +61,13 @@
                                         <span class="text-gray-600 flex items-center">
                                             <!-- Mostrar si el rol es Administrador (1) -->
                                             <ng-container *ngIf="user.rol === 1">
-                                                <mat-icon class="mr-2 align-middle">admin_panel_settings</mat-icon> 
+                                                <mat-icon class="mr-2 align-middle" style="font-size: 20px;">admin_panel_settings</mat-icon>
                                                 <span class="align-middle">Administrador</span>
                                             </ng-container>
                                     
                                             <!-- Mostrar si el rol es Básico (otro valor, como 0) -->
                                             <ng-container *ngIf="user.rol !== 1">
-                                                <mat-icon class="mr-2 align-middle">person</mat-icon> 
+                                                <mat-icon class="mr-2 align-middle" style="font-size: 20px;">person</mat-icon> 
                                                 <span class="align-middle">Básico</span>
                                             </ng-container>
                                         </span>

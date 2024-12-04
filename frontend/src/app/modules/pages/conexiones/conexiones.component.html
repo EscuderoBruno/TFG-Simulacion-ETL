@@ -54,9 +54,28 @@
                                     <td class="px-6 py-4 whitespace-nowrap text-s font-medium text-gray-600">{{ connection.id }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-s font-medium text-gray-600">{{ connection.name }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-s text-gray-600">
-                                        {{ connection.type === 0 ? 'MQTT' : 'API' }}
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-s text-gray-600">{{ connection.options }}</td>      
+                                        <div class="flex items-center gap-2">
+                                            <!-- Imagen antes del nombre -->
+                                            <img
+                                                *ngIf="connection.type === 0"
+                                                src="assets/images/varios/mqtt.png"
+                                                alt="MQTT"
+                                                class="w-5 h-5 object-contain"
+                                            />
+                                            <img
+                                                *ngIf="connection.type === 1"
+                                                src="assets/images/varios/api.png"
+                                                alt="API"
+                                                class="w-5 h-5 object-contain"
+                                            />
+                                            <span>{{ connection.type === 0 ? 'MQTT' : 'API' }}</span>
+                                        </div>
+                                    </td>                                    
+                                    <td class="px-6 py-4 whitespace-nowrap text-s text-gray-600">
+                                        <div [title]="connection.options | json">
+                                          {{ truncateOptions(connection.options) }}
+                                        </div>
+                                    </td>                                      
                                     <td class="px-6 py-4 whitespace-nowrap text-s text-gray-600 space-x-2 flex justify-end">
                                         <!-- Ícono de tres puntos para el menú desplegable -->
                                         <button mat-icon-button [matMenuTriggerFor]="menu">

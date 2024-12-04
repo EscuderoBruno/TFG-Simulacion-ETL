@@ -42,20 +42,27 @@ export class CrearConexionComponent implements OnInit {
     ) {}
 
     ngOnInit(): void {
+        // Generar un clientId por defecto
+        const defaultClientId = this.generateClientId();
+    
         // Inicializa el formulario principal para las conexiones
         this.connectionForm = this._formBuilder.group({
             name: ['', Validators.required], // Nombre de la conexión
             type: ['', Validators.required], // Para elegir entre 'MQTT' o 'API'
             options: this._formBuilder.group({
-              host: ['', Validators.required],  // Para MQTT y API, si aplica
-              token: ['', Validators.required],  // Solo para API, si aplica
-              port: ['', Validators.required],   // Solo para MQTT, si aplica
+              URL: ['', Validators.required],  // Para MQTT y API, si aplica
+              header: ['', Validators.required],  // Solo para API, si aplica
               username: ['', Validators.required], // Para MQTT, si aplica
               password: ['', Validators.required], // Para MQTT, si aplica
-              clientId: ['', Validators.required], // Para MQTT, si aplica
-              topic: ['', Validators.required], // Tópico, común para ambos
+              clientId: [defaultClientId, Validators.required], // Para MQTT, si aplica
+              topic: ['', Validators.required], // Para MQTT, si aplica
             })
         });
+    }
+
+    // Generar un clientId por defecto
+    private generateClientId(): string {
+        return `mqtt_${Math.random().toString(36).substring(2, 15)}`;
     }
 
     // Método para enviar el formulario
@@ -87,38 +94,36 @@ export class CrearConexionComponent implements OnInit {
         console.log('Tipo de conexión cambiado:', event.value);
     }      
 
-    // Función para manejar la selección del tipo de conexión
-    onTypeSelect() {
-        const type = this.connectionForm.controls['type'].value;
+    onTypeSelect(): void {
+        const type = this.connectionForm.controls['type'].value; // Obtiene el tipo de conexión seleccionado
         const options = this.connectionForm.controls['options'] as FormGroup;
-
-        // Lógica para mostrar u ocultar campos basados en la selección del tipo
+    
         if (type === '0') {
-            // MQTT
-            options.get('host')?.setValidators([Validators.required]);
-            options.get('port')?.setValidators([Validators.required]);
+            // Configuración para MQTT
+            options.get('URL')?.setValidators([Validators.required]);
             options.get('username')?.setValidators([Validators.required]);
             options.get('password')?.setValidators([Validators.required]);
             options.get('clientId')?.setValidators([Validators.required]);
-            options.get('token')?.clearValidators(); // No necesario para MQTT
-        } else {
-        // API
-            options.get('host')?.setValidators([Validators.required]);
-            options.get('token')?.setValidators([Validators.required]);
-            options.get('port')?.clearValidators(); // No necesario para API
-            options.get('username')?.clearValidators(); // No necesario para API
-            options.get('password')?.clearValidators(); // No necesario para API
-            options.get('clientId')?.clearValidators(); // No necesario para API
+            options.get('topic')?.setValidators([Validators.required]); // 'topic' es obligatorio para MQTT
+            options.get('header')?.clearValidators(); // 'header' no es necesario para MQTT
+        } else if (type === '1') {
+            // Configuración para API
+            options.get('URL')?.setValidators([Validators.required]);
+            options.get('header')?.setValidators([Validators.required]); // 'header' es obligatorio para API
+            options.get('username')?.clearValidators(); // 'username' no es necesario para API
+            options.get('password')?.clearValidators(); // 'password' no es necesario para API
+            options.get('clientId')?.clearValidators(); // 'clientId' no es necesario para API
+            options.get('topic')?.clearValidators(); // 'topic' no es necesario para API
         }
-
-        // Actualiza las validaciones del formulario
-        options.get('host')?.updateValueAndValidity();
-        options.get('token')?.updateValueAndValidity();
-        options.get('port')?.updateValueAndValidity();
+    
+        // Actualiza el estado de todos los campos para reflejar los cambios en las validaciones
+        options.get('URL')?.updateValueAndValidity();
+        options.get('header')?.updateValueAndValidity();
         options.get('username')?.updateValueAndValidity();
         options.get('password')?.updateValueAndValidity();
         options.get('clientId')?.updateValueAndValidity();
-    }
+        options.get('topic')?.updateValueAndValidity();
+    }    
 
     // Método para cancelar y redirigir a otra ruta
     cancel(): void {
