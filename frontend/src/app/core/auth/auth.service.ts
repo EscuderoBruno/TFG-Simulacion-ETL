@@ -19,21 +19,12 @@ export class AuthService {
     estado: number = -1;
 
     constructor() {
-        this.loadUserRole(); // Cargar el rol del usuario al iniciar el servicio
         this.loadAuthenticationStatus(); // Cargar estado de autenticación desde almacenamiento local
     }
 
     // -----------------------------------------------------------------------------------------
     // Métodos de soporte
     // -----------------------------------------------------------------------------------------
-
-    // Carga el rol del usuario desde el almacenamiento local
-    private loadUserRole(): void {
-        const storedRole = localStorage.getItem('userRole');
-        if (storedRole) {
-            this.rol = Number(storedRole); // Convertir de string a número
-        }
-    }
 
     // Carga el estado de autenticación desde el almacenamiento local
     private loadAuthenticationStatus(): void {
@@ -74,8 +65,17 @@ export class AuthService {
     }
 
     // Verifica si el usuario tiene rol de administrador
-    isAdmin(): boolean {
-        return this.rol === 1; // Cambiar '1' según el valor que representa a "admin" en tu sistema
+    isAdmin(): Observable<boolean> {
+        return this.getAuthenticatedUser().pipe(
+            switchMap((response: any) => {
+                // Verificar si el rol es de administrador (suponiendo que el rol de admin es 1)
+                return of(response.rol === 1);
+            }),
+            catchError((error) => {
+                console.error('Error al verificar el rol del usuario:', error);
+                return of(false); // Devolver false si ocurre un error
+            })
+        );
     }
 
     // Obtiene la información del usuario actual
@@ -87,6 +87,46 @@ export class AuthService {
     // -----------------------------------------------------------------------------------------
     // Métodos de autenticación
     // -----------------------------------------------------------------------------------------
+
+    // Obtener los datos del usuario autenticado
+    getAuthenticatedUser(): Observable<any> {
+        const token = this.accessToken;
+        if (!token) {
+            return throwError('No token available'); // No hay token
+        }
+
+        // Agregar el token en los encabezados para la autenticación
+        const headers = { Authorization: `Bearer ${token}` };
+
+        // Realizamos la solicitud HTTP para obtener los datos del usuario autenticado
+        return this._httpClient.get(`${environment.apiBaseUrl}/auth/user/me`, { headers }).pipe(
+            switchMap((response: any) => {
+                // Actualizar la información del usuario en el servicio
+                this.idUser = response.id;
+                this.user = response.username;
+                this.token = token;
+                this.rol = response.rol;
+                this.estado = response.estado;
+
+                // Opcionalmente, guardar la información del usuario en localStorage
+                localStorage.setItem('userInfo', JSON.stringify({
+                    id: this.idUser,
+                    username: this.user,
+                    rol: this.rol,
+                    estado: this.estado
+                }));
+                localStorage.setItem('userRole', this.rol.toString());
+                localStorage.setItem('authenticated', 'true');
+
+                this._authenticated = true; // Marcar como autenticado
+                return of(response); // Devolver la respuesta
+            }),
+            catchError(error => {
+                console.error('Error al obtener los datos del usuario:', error);
+                return throwError('Error al obtener los datos del usuario: ' + (error.error.message || 'Unknown error'));
+            })
+        );
+    }
 
     // Inicia sesión con las credenciales proporcionadas
     signIn(credentials: { username: string; password: string }): Observable<any> {
@@ -110,7 +150,6 @@ export class AuthService {
                     rol: this.rol,
                     estado: this.estado
                 }));
-                localStorage.setItem('userRole', this.rol.toString());
                 localStorage.setItem('accessToken', this.token);
                 localStorage.setItem('authenticated', 'true');
 

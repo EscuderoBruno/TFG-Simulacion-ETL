@@ -1,20 +1,19 @@
 
 const express = require('express');
-const { register, login, updateUser, deleteUser, getAllUsers, getUserById } = require('../controllers/auth.controller');
+const { register, login, updateUser, deleteUser, getAllUsers, getUserById, getAuthenticatedUser } = require('../controllers/auth.controller');
 const router = express.Router();
+const authenticate = require('../middlewares/auth.middleware'); // Importar el middleware de autenticación
 
-// Ruta para el registro de usuarios
+// Rutas públicas
 router.post('/register', register);
-// Ruta para el inicio de sesión
 router.post('/login', login);
-// Ruta para editar usuarios
-router.put('/update/:id', updateUser);
-// Ruta para eliminar usuarios
-router.delete('/delete/:id', deleteUser);
-// Ruta para obtener todos los usuarios
-router.get('/users', getAllUsers);
-// Ruta para obtener un usuario por id
-router.get('/user/:id', getUserById);
+
+// Rutas protegidas (requieren autenticación)
+router.get('/user/me', authenticate, getAuthenticatedUser);  // Obtener los datos del usuario autenticado
+router.delete('/delete/:id', authenticate, deleteUser); // Eliminar usuario
+router.put('/update/:id', authenticate, updateUser); // Actualizar usuario
+router.get('/users', authenticate, getAllUsers); // Obtener todos los usuarios
+router.get('/user/:id', authenticate, getUserById); // Obtener un usuario por ID
 
 module.exports = router;
 

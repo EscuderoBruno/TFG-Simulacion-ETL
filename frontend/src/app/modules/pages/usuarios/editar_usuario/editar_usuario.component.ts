@@ -84,7 +84,9 @@ export class EditarUsuarioComponent implements OnInit {
 
             // Actualizar el usuario
             this._authService.updateUser(this.userId, this.editForm.value).subscribe(
-                () => {
+                (updatedUser) => {
+                    // Actualiza userRole si corresponde
+                    localStorage.setItem('userRole', updatedUser.rol);
                     const redirectURL = this._activatedRoute.snapshot.queryParamMap.get('redirectURL') || '/gestion_usuarios';
                     this._router.navigateByUrl(redirectURL);
                 },

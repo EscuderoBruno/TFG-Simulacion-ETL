@@ -154,13 +154,14 @@
                             </tbody>
                         </table>
                         <!-- Paginador -->
-                        <div class="flex justify-end">
+                        <div class="flex justify-end mt-2">
                             <mat-paginator
                                 [pageSize]="pageSize"
                                 [pageSizeOptions]="[5, 10, 25]"
                                 [length]="filteredSimulations.length"
                                 showFirstLastButtons
-                                (page)="changePage($event)">
+                                (page)="changePage($event)"
+                                class="p-0">
                             </mat-paginator>
                         </div>
                     </div>

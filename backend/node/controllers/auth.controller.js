@@ -48,11 +48,12 @@ const login = async (req, res) => {
         const token = jwt.sign(
             {
                 id: user.id,
+                username: user.username,
                 rol: user.rol,      // Incluyendo el rol en el token
                 estado: user.estado, // Incluyendo el estado en el token
             },
             process.env.JWT_SECRET,
-            { expiresIn: '2h' }
+            { expiresIn: '4h' }
         );
 
         // Responder con el token y otros datos del usuario
@@ -96,20 +97,17 @@ const updateUser = async (req, res) => {
 
         // Actualizar los datos del usuario
         if (username) user.username = username;
-        if (password && password.trim() !== "") {
-            user.password = await bcrypt.hash(password, 10); // Rehash new password
-        }
+        if (password) user.password = await bcrypt.hash(password, 10); // Rehash new password
         if (rol) user.rol = rol;
         if (estado) user.estado = estado;
 
         await user.save();
         res.status(200).json({ message: 'Usuario actualizado con éxito', user });
     } catch (error) {
-        console.error(error); // Para ver el error en la consola
+        console.error(error);  // Para ver el error en la consola
         res.status(500).json({ message: 'Error al actualizar usuario', error: error.message });
     }
 };
-
 
 // Método para obtener todos los usuarios
 const getAllUsers = async (req, res) => {
@@ -136,4 +134,23 @@ const getUserById = async (req, res) => {
     }
 };
 
-module.exports = { register, login, deleteUser, updateUser, getAllUsers, getUserById };
+// Método para obtener los datos del usuario autenticado
+const getAuthenticatedUser = async (req, res) => {
+    try {
+        // La información del usuario ya está disponible en req.user gracias al middleware de autenticación
+        const user = req.user;
+
+        // Devolver la información del usuario (puedes incluir más datos si es necesario)
+        res.status(200).json({
+            id: user.id,
+            username: user.username,
+            rol: user.rol,
+            estado: user.estado,
+        });
+    } catch (error) {
+        console.error('Error al obtener los datos del usuario:', error);
+        res.status(500).json({ message: 'Error al obtener los datos del usuario', error });
+    }
+};
+
+module.exports = { register, login, deleteUser, updateUser, getAllUsers, getUserById, getAuthenticatedUser};

@@ -190,11 +190,10 @@ export class SimulacionesService {
         if (this.isRunning[simulationId]) return; // No iniciar si ya está en curso
         this.isRunning[simulationId] = true; // Cambia el estado a activo
         this.totalGenerados[simulationId] = 0; // Inicializar totalGenerados para esta simulación
+        this.paused[simulationId] = false;
 
         // Inicializar el array para almacenar las simulaciones generadas de este simulationId
-        if (!this.simulacionesGeneradasPorId[simulationId]) {
-            this.simulacionesGeneradasPorId[simulationId] = [];
-        }
+        this.simulacionesGeneradasPorId[simulationId] = [];
 
         // Obtener la simulación por ID y suscribirse para recibir los datos
         this.getSimulationById(simulationId).subscribe(

@@ -258,6 +258,8 @@ export class EditarSimulacionComponent implements OnInit {
 
     // Método para probar simulación
     testSimulation(): void {
+        this.generatedSimulation = [];  
+        this.toggleSimulation();
         const formValue = this.simulationForm.value;
 
         // Verificar si hay un sensorId válido antes de hacer la solicitud
@@ -335,6 +337,11 @@ export class EditarSimulacionComponent implements OnInit {
 
     // Si es necesario, puedes cargar los datos simulados aquí
     simularInstantaneamente(): void {
+        if (this.simulation.numElementosASimular === 0) {
+            // Enviar aviso al usuario
+            alert('No se puede simular instantaneamente porque el número de elementos es 0 (ilimitado).');
+            return;
+        }        
         this.testGenerado = false;
         this._simulationService.simularInstantaneamente(this.simulationId, (result) => {
             this.generatedSimulation = result;
