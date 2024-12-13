@@ -102,7 +102,7 @@ export class SimulacionesService {
                         if (range) {
                             const min = parseFloat(range[1]);
                             const max = parseFloat(range[2]);
-                            newJson[key] = this.getRandomFloat(min, max);
+                            newJson[key] = this.getRandomFloat(min, max).toFixed(2);
                         }
                     } else if (value.startsWith('^bool')) {
                         newJson[key] = Math.random() < 0.5; // true o false aleatorio
@@ -132,6 +132,12 @@ export class SimulacionesService {
                     } else if (value.startsWith('^positioncote')) {
                         newJson[key] = coord.height;
                     } else if (value.startsWith('^positionalias')) {
+                        newJson[key] = coord.alias;
+                    } else if (value.startsWith('^positiondeveui')) {
+                        newJson[key] = coord.dev_eui;
+                    } else if (value.startsWith('^positionjoineui')) {
+                        newJson[key] = coord.alias;
+                    } else if (value.startsWith('^positiondevaddr')) {
                         newJson[key] = coord.alias;
                     }
                 } else if (typeof value === 'object' && !Array.isArray(value)) {

@@ -26,6 +26,8 @@ export class SensoresComponent
     filteredSensors = []; 
     searchTerm: string = ''; // Término de búsqueda
     users: any[] = [];
+    showModal: boolean = false; // Controla la visibilidad del modal
+    sensorIdToDelete: number | null = null; // ID del usuario a eliminar
 
     constructor(private _sensoresService: SensoresService,
                 private _authService: AuthService,
@@ -56,16 +58,32 @@ export class SensoresComponent
       );
     }
 
-    deleteSensor(id) {
-      this._sensoresService.deleteSensor(id).subscribe(
-        (response) => {
-          console.log("Sensor " + id + " eliminadao");
-          location.reload();
-        },
-        (error) => {
-          console.error('Error al eliminar el sensor', error);
-        }
-      );
+    confirmDelete(sensorId: number): void {
+        event.stopPropagation(); // Detiene la propagación del clic
+        this.sensorIdToDelete = sensorId; // Almacena el ID del usuario
+        this.showModal = true; // Muestra el modal
+    }
+
+    deleteSensor(): void {
+        this._sensoresService.deleteSensor(this.sensorIdToDelete).subscribe(
+          (response) => {
+            console.log("Sensor " + this.sensorIdToDelete + " eliminadao");
+            this.sensors = this.sensors.filter((sensor) => sensor.id !== this.sensorIdToDelete);
+            this.filterSensors();
+            this.showModal = false; // Cierra el modal
+            this.sensorIdToDelete = null; // Resetea el ID
+          },
+          (error) => {
+            console.error('Error al eliminar el sensor', error);
+            this.showModal = false;
+            this.sensorIdToDelete = null;
+          }
+        );
+    }
+
+    cancelDelete(): void {
+        this.showModal = false; // Cierra el modal
+        this.sensorIdToDelete = null; // Resetea el ID
     }
 
     getUserName(userId: number): string {

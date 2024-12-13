@@ -30,7 +30,8 @@ const Connection = sequelize.define('Connection', {
 });
 
 // Relacionamos Conexion con Usuario
-Connection.belongsTo(User, { foreignKey: 'userId', as: 'user' });
+Connection.belongsTo(User, 
+    { foreignKey: 'userId', as: 'user' });
 
 module.exports = Connection;
 

@@ -68,7 +68,7 @@ export class CrearUsuarioComponent
         this._authService.signUp(this.signInForm.value).subscribe(
           () => {
             // Obtiene la URL de redirección o usa una por defecto
-            const redirectURL = this._activatedRoute.snapshot.queryParamMap.get('redirectURL') || '/signed-in-redirect';
+            const redirectURL = this._activatedRoute.snapshot.queryParamMap.get('redirectURL') || '/gestion_usuarios';
             this._router.navigateByUrl(redirectURL);
           },
           (error) => {

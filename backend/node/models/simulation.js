@@ -17,6 +17,7 @@ const Simulation = sequelize.define('Simulation', {
       model: Sensor,
       key: 'id',
     },
+    onDelete: 'SET NULL', // Si el sensor se elimina, el campo se establece en null
   },
   parameters: {
     type: DataTypes.JSON,
@@ -38,6 +39,7 @@ const Simulation = sequelize.define('Simulation', {
       model: Connection,
       key: 'id',
     },
+    onDelete: 'SET NULL', // Si la conexión se elimina, el campo se establece en null
   },
   // Nuevos campos agregados según el FormGroup de Angular
   minRegistrosPorInstante: {
@@ -72,7 +74,7 @@ const Simulation = sequelize.define('Simulation', {
 
 // Relaciones
 Simulation.belongsTo(User, { foreignKey: 'userId', as: 'user' });
-Simulation.belongsTo(Sensor, { foreignKey: 'sensorId' });
-Simulation.belongsTo(Connection, { foreignKey: 'connectionId' });
+Simulation.belongsTo(Sensor, { foreignKey: 'sensorId', onDelete: 'SET NULL' });
+Simulation.belongsTo(Connection, { foreignKey: 'connectionId', onDelete: 'SET NULL' });
 
 module.exports = Simulation;

@@ -30,6 +30,27 @@ const deleteSensor = async (req, res) => {
     }
 };
 
+// Método para actualizar un sensor
+const updateSensor = async (req, res) => {
+    const { id } = req.params;
+    const { name, coordinates } = req.body;
+
+    try {
+        const sensor = await Sensor.findByPk(id);
+        if (!sensor) return res.status(404).json({ message: 'Sensor no encontrado' });
+
+        // Actualizar los campos
+        sensor.name = name ?? sensor.name;
+        sensor.coordinates = coordinates ?? sensor.coordinates;
+
+        await sensor.save();
+
+        res.status(200).json({ message: 'Sensor actualizado con éxito', data: sensor });
+    } catch (error) {
+        res.status(500).json({ message: 'Error al actualizar sensor', error });
+    }
+};
+
 // Método para obtener todos los sensores
 const getAllSensors = async (req, res) => {
 
@@ -64,4 +85,4 @@ const getSensorById = async (req, res) => {
     }
 };
 
-module.exports = { newSensor, deleteSensor, getAllSensors, getSensorById };
+module.exports = { newSensor, deleteSensor, getAllSensors, getSensorById, updateSensor };

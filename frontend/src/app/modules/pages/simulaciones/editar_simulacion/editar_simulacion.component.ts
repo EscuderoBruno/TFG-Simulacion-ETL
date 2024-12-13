@@ -155,8 +155,7 @@ export class EditarSimulacionComponent implements OnInit {
                     simulation.date = formattedDate;
                     console.log('Datos de simulación recibidos:', simulation); // Imprime los datos antes de asignarlos al formulario
                     this.simulation = simulation;
-                    this.simulationForm.patchValue(simulation);
-                },
+                    this.simulationForm.patchValue(simulation);                },
                 (error) => {
                     console.error('Error al cargar la simulación', error);
                 }
@@ -204,52 +203,54 @@ export class EditarSimulacionComponent implements OnInit {
     }
 
     onSubmit(): void {
+        this.testSimulation()
         if (this.simulationForm.valid) {
-            if (this.testGenerado) {
-                const formValue = this.simulationForm.value;
-    
-                let fechaDate: Date;
-    
-                if (formValue.date === 'now') {
-                    fechaDate = new Date();
-                } else {
-                    fechaDate = this.getFechaAsDate(formValue.date);
-                }
-    
-                formValue.date = this.getFormattedDate(fechaDate);
-    
-                if (typeof formValue.parameters === 'string') {
-                    try {
-                        formValue.parameters = JSON.parse(formValue.parameters);
-                    } catch (error) {
-                        console.error("Error al convertir los parámetros a JSON", error);
-                        return;
-                    }
-                }
-    
-                // Deshabilitar el formulario mientras se realiza la actualización
-                this.simulationForm.disable();
-    
-                if (this.simulationId) {
-                    this._simulationService.updateSimulation({
-                        id: this.simulationId,
-                        ...formValue
-                    }).subscribe(
-                        () => {
-                            console.log('Simulación actualizada exitosamente');
-                            // Habilitar el formulario después de la actualización exitosa
-                            this.simulationForm.enable();
-                        },
-                        (error) => {
-                            console.error('Error durante la actualización de la simulación:', error);
-                            // Habilitar el formulario si hay un error
-                            this.simulationForm.enable();
-                        }
-                    );
-                }
+            const formValue = this.simulationForm.value;
+
+            let fechaDate: Date;
+
+            if (formValue.date === 'now') {
+                fechaDate = new Date();
             } else {
-                console.log("Genera antes la simulación");
-                this.showAlert = true;
+                fechaDate = this.getFechaAsDate(formValue.date);
+            }
+
+            formValue.date = this.getFormattedDate(fechaDate);
+
+            if (typeof formValue.parameters === 'string') {
+                try {
+                    formValue.parameters = JSON.parse(formValue.parameters);
+                } catch (error) {
+                    console.error("Error al convertir los parámetros a JSON", error);
+                    return;
+                }
+            }
+
+            // Actualizar el modelo `simulation` antes de enviarlo
+            this.simulation = {
+                ...this.simulation,
+                ...formValue
+            };
+
+            // Deshabilitar el formulario mientras se realiza la actualización
+            this.simulationForm.disable();
+
+            if (this.simulationId) {
+                this._simulationService.updateSimulation({
+                    id: this.simulationId,
+                    ...formValue
+                }).subscribe(
+                    () => {
+                        console.log('Simulación actualizada exitosamente');
+                        // Habilitar el formulario después de la actualización exitosa
+                        this.simulationForm.enable();
+                    },
+                    (error) => {
+                        console.error('Error durante la actualización de la simulación:', error);
+                        // Habilitar el formulario si hay un error
+                        this.simulationForm.enable();
+                    }
+                );
             }
         } else {
             console.log('Formulario no válido');
@@ -259,7 +260,6 @@ export class EditarSimulacionComponent implements OnInit {
     // Método para probar simulación
     testSimulation(): void {
         this.generatedSimulation = [];  
-        this.toggleSimulation();
         const formValue = this.simulationForm.value;
 
         // Verificar si hay un sensorId válido antes de hacer la solicitud
@@ -329,11 +329,30 @@ export class EditarSimulacionComponent implements OnInit {
         this.isExpanded[index] = !this.isExpanded[index];
     }
 
-    // Método para obtener un resumen del contenido de cada item
     getSummary(item: any): string {
-        // Aquí seleccionamos algunos campos clave para mostrar en el resumen
-        return `{campo2: ${item.campo2}, campo3: ${item.campo3}, campo4: ${item.campo4}, ...}`;
-    }
+        const keys = Object.keys(item);
+        let summary = '{';
+    
+        const maxFields = 3;  // Número máximo de campos que queremos mostrar
+    
+        for (let i = 0; i < Math.min(keys.length, maxFields); i++) {
+            const field = keys[i];
+            summary += `${field}: ${item[field]}`;
+            if (i < Math.min(keys.length, maxFields) - 1) {
+                summary += ', ';
+            }
+        }
+    
+        if (keys.length > maxFields) {
+            summary += ', ...';
+        }
+    
+        summary += '}';
+    
+        // Aseguramos que no haya saltos de línea ni espacios innecesarios
+        return summary.replace(/\s+/g, ' ').trim();
+    }    
+    
 
     // Si es necesario, puedes cargar los datos simulados aquí
     simularInstantaneamente(): void {
@@ -470,8 +489,10 @@ export class EditarSimulacionComponent implements OnInit {
     }
 
     get formattedSimulationJson(): any {
-        const jsonString = JSON.stringify(this.generatedTest, null, 2).trim();
-        return this.sanitizer.bypassSecurityTrustHtml('<pre>' + jsonString + '</pre>');
+        if (this.generatedTest != null) {
+            const jsonString = JSON.stringify(this.generatedTest, null, 2).trim();
+            return this.sanitizer.bypassSecurityTrustHtml('<pre>' + jsonString + '</pre>');
+        }
     }  
 
     copyToClipboard(): void {

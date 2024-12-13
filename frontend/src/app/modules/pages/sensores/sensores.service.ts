@@ -47,7 +47,7 @@ export class SensoresService {
     }
 
     // Método para obtener las coordenadas por ID
-    getCoordinatesById(sensorId: number, numArray: number): Observable<{ lat: number; long: number; height: number, alias: string }> {
+    getCoordinatesById(sensorId: number, numArray: number): Observable<{ lat: number; long: number; height: number, alias: string, dev_eui: string, join_eui: string, dev_addr: string, }> {
         return this.getSensorById(sensorId).pipe(
             map((sensor) => {
                 // Asumiendo que las coordenadas están en la primera posición del array
@@ -56,7 +56,10 @@ export class SensoresService {
                     lat: coord.lat,
                     long: coord.long,
                     height: coord.height,
-                    alias: coord.alias
+                    alias: coord.alias,
+                    dev_eui: coord.dev_eui,
+                    join_eui: coord.join_eui,
+                    dev_addr: coord.dev_addr,
                 };
             })
         );

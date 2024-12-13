@@ -43,6 +43,11 @@ export class AuthSignInComponent implements OnInit
 
     ngOnInit(): void
     {
+        // Si el usuario ya está autenticado, redirigir a /simulaciones
+        if (this._authService.isAuthenticated) {
+            this._router.navigateByUrl('/simulaciones');
+            return;
+        }
         // Create the form
         this.signInForm = this._formBuilder.group({
             username     : ['', Validators.required],

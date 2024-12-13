@@ -48,7 +48,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr *ngFor="let user of filteredUsers">
+                                <tr *ngFor="let user of filteredUsers" class="cursor-pointer" (click)="openEditUser(user.id)">
                                     <td class="px-6 py-4 whitespace-nowrap text-s font-medium text-gray-600">{{ user.id }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-s font-medium text-gray-600">{{ user.username }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-s">
@@ -69,17 +69,10 @@
                                         </span>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-s text-gray-600 space-x-2 flex justify-end">
-                                        <button mat-icon-button [matMenuTriggerFor]="menu">
-                                            <mat-icon>more_vert</mat-icon>
+                                        <button
+                                            mat-icon-button (click)="confirmDelete(user.id)">
+                                            <mat-icon class="text-2xl">delete</mat-icon>
                                         </button>
-                                        <mat-menu #menu="matMenu">
-                                            <button mat-menu-item (click)="openEditUser(user.id)">
-                                                Editar
-                                            </button>
-                                            <button mat-menu-item (click)="deleteUser(user.id)" class="text-red-500">
-                                                Eliminar
-                                            </button>
-                                        </mat-menu>
                                     </td>
                                 </tr>
                             </tbody>
@@ -87,6 +80,31 @@
                     </div>
                 </div>
             </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de confirmación -->
+<div
+    class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+    *ngIf="showModal"
+>
+    <div class="bg-white rounded-lg shadow-lg p-6 max-w-sm w-full">
+        <h2 class="text-lg font-semibold text-gray-800">Confirmar eliminación</h2>
+        <p class="mt-4 text-sm text-gray-600">
+            ¿Estás seguro de que deseas eliminar este usuario? Esta acción no se puede deshacer.
+        </p>
+        <div class="mt-6 flex justify-end space-x-4">
+            <button
+                class="px-4 py-2 text-base font-medium text-gray-600 hover:text-gray-800"
+                (click)="cancelDelete()">
+                Cancelar
+            </button>
+            <button
+                class="px-4 py-2 text-base font-medium text-white bg-red-500 hover:bg-red-600 rounded"
+                (click)="deleteUser()">
+                Eliminar
+            </button>
         </div>
     </div>
 </div>

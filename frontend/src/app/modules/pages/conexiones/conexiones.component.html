@@ -54,7 +54,7 @@
                             </thead>
                             <tbody>
                                 <!-- Iterar sobre las conexiones -->
-                                <tr *ngFor="let connection of filteredConnections">
+                                <tr *ngFor="let connection of filteredConnections" class="cursor-pointer" (click)="openEditConnection(connection.id)">
                                     <td class="px-6 py-4 whitespace-nowrap text-s font-medium text-gray-600">{{ getUserName(connection.userId) }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-s font-medium text-gray-600">{{ connection.id }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-s font-medium text-gray-600">{{ connection.name }}</td>
@@ -82,22 +82,10 @@
                                         </div>
                                     </td>                                      
                                     <td class="px-6 py-4 whitespace-nowrap text-s text-gray-600 space-x-2 flex justify-end">
-                                        <!-- Ícono de tres puntos para el menú desplegable -->
-                                        <button mat-icon-button [matMenuTriggerFor]="menu">
-                                            <mat-icon>more_vert</mat-icon>
+                                        <button
+                                            mat-icon-button (click)="confirmDelete(connection.id)">
+                                            <mat-icon class="text-2xl">delete</mat-icon>
                                         </button>
-                                        <!-- Menú desplegable -->
-                                        <mat-menu #menu="matMenu">
-                                            <!-- Botón de Editar -->
-                                            <button mat-menu-item (click)="openEditConnection(connection.id)">
-                                                Editar
-                                            </button>                                            
-
-                                            <!-- Botón de Eliminar -->
-                                            <button mat-menu-item (click)="deleteConnection(connection.id)" class="text-red-500">
-                                                Eliminar
-                                            </button>
-                                        </mat-menu> 
                                     </td>
                                 </tr>
                             </tbody>
@@ -106,7 +94,31 @@
                 </div>
             </div>            
         </div>
-
     </div>
-
 </div>
+
+<!-- Modal de confirmación -->
+<div
+    class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+    *ngIf="showModal"
+>
+    <div class="bg-white rounded-lg shadow-lg p-6 max-w-sm w-full">
+        <h2 class="text-lg font-semibold text-gray-800">Confirmar eliminación</h2>
+        <p class="mt-4 text-sm text-gray-600">
+            ¿Estás seguro de que deseas eliminar esta conexión? Esta acción no se puede deshacer.
+        </p>
+        <div class="mt-6 flex justify-end space-x-4">
+            <button
+                class="px-4 py-2 text-base font-medium text-gray-600 hover:text-gray-800"
+                (click)="cancelDelete()">
+                Cancelar
+            </button>
+            <button
+                class="px-4 py-2 text-base font-medium text-white bg-red-500 hover:bg-red-600 rounded"
+                (click)="deleteConnection()">
+                Eliminar
+            </button>
+        </div>
+    </div>
+</div>
+

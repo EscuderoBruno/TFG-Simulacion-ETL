@@ -18,9 +18,9 @@
                             <mat-label class="block mb-1">Tipo de conexión</mat-label>
                             <mat-form-field class="w-full">
                                 <mat-select formControlName="type" (selectionChange)="onTypeSelect()">
-                                    <mat-option value="0">MQTT</mat-option>
-                                    <mat-option value="1">API</mat-option>
-                                </mat-select>
+                                    <mat-option [value]="0" selected="connectionForm?.controls?.['type']?.value === 0">MQTT</mat-option>
+                                    <mat-option [value]="1" selected="connectionForm?.controls?.['type']?.value === 1">API</mat-option>
+                                </mat-select>                                
                             </mat-form-field>
                         </div>
                     </div>
@@ -29,7 +29,7 @@
                 <!-- Opciones de Conexión -->
                 <div formGroupName="options">
                     <!-- Si la conexión es MQTT -->
-                    <div *ngIf="connectionForm.controls['type'].value === '0'" class="flex gap-4">
+                    <div *ngIf="connectionForm.controls['type'].value === 0" class="flex gap-4">
                         <div class="w-1/2 flex flex-col">
                             <div class="flex flex-col">
                                 <mat-label class="block mb-1">URL <span style="color: lightslategray">(Puerto incluido)</span></mat-label>
@@ -68,7 +68,7 @@
                     </div>
 
                     <!-- Si la conexión es API -->
-                    <div *ngIf="connectionForm.controls['type'].value === '1'" class="flex gap-4">
+                    <div *ngIf="connectionForm.controls['type'].value === 1" class="flex gap-4">
                         <div class="w-1/2 flex flex-col">
                             <div class="flex flex-col">
                                 <mat-label class="block mb-1">URL</mat-label>
@@ -91,7 +91,7 @@
                 <div class="flex items-center justify-end border-t -mx-8 mt-4 px-8 py-5 bg-gray-50 dark:bg-gray-700 rounded-b-lg">
                     <button mat-button type="button" (click)="cancel()">Cancelar</button>
                     <button class="px-6 ml-3 text-white" mat-flat-button [color]="'primary'" type="submit">
-                        Guardar Cambios
+                        Guardar
                     </button>
                 </div>
             </form>

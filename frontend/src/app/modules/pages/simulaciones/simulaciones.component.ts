@@ -36,6 +36,8 @@ export class SimulacionesComponent implements OnInit, OnDestroy {
     isPaused: boolean = false; // Controlar si está pausada
     pageSize: number = 5;
     currentPage: number = 0;        
+    showModal: boolean = false; // Controla la visibilidad del modal
+    simulationIdToDelete: number | null = null; // ID del usuario a eliminar
 
     constructor(
         private _simulationsService: SimulacionesService,
@@ -189,7 +191,7 @@ export class SimulacionesComponent implements OnInit, OnDestroy {
     
     getConnectionType(connectionId: number): number {
         const connection = this.connections.find(conn => conn.id === connectionId);
-        return connection ? connection.type : 0; // Devuelve el tipo de conexión (0 para MQTT, 1 para API)
+        return connection ? connection.type : -1; // Devuelve el tipo de conexión (0 para MQTT, 1 para API)
       }      
 
     formatElapsedTime(seconds: number): string {
@@ -233,16 +235,31 @@ export class SimulacionesComponent implements OnInit, OnDestroy {
         return user ? user.username : 'Usuario no encontrado'; // Manejar el caso en que no se encuentre la localización
     }
 
-    deleteSimulation(id) {
-        this._simulationsService.deleteSimulation(id).subscribe(
+    confirmDelete(simulationId: number): void {
+        this.simulationIdToDelete = simulationId; // Almacena el ID del usuario
+        this.showModal = true; // Muestra el modal
+    }
+
+    deleteSimulation(): void {
+        this._simulationsService.deleteSimulation(this.simulationIdToDelete).subscribe(
             (response) => {
-                console.log("Simulación " + id + " eliminada");
-                location.reload();
+                console.log("Simulación " + this.simulationIdToDelete + " eliminada");
+                this.simulations = this.simulations.filter((simulation) => simulation.id !== this.simulationIdToDelete);
+                this.filterSimulations();
+                this.showModal = false; // Cierra el modal
+                this.simulationIdToDelete = null; // Resetea el ID
             },
             (error) => {
                 console.error('Error al eliminar la simulación', error);
+                this.showModal = false;
+                this.simulationIdToDelete = null;
             }
         );
+    }
+
+    cancelDelete(): void {
+        this.showModal = false; // Cierra el modal
+        this.simulationIdToDelete = null; // Resetea el ID
     }
 
     // Implementación de OnDestroy
@@ -309,5 +326,10 @@ export class SimulacionesComponent implements OnInit, OnDestroy {
         this.currentPage = 0;  // Resetear a la primera página después de filtrar
         this.updatePaginatedSimulations(); // Actualizar las simulaciones paginadas después de aplicar el filtro
     }    
+
+    onCellClick(event: MouseEvent) {
+        // Detener la propagación del clic
+        event.stopPropagation();
+    }      
     
 }

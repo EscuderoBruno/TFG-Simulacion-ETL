@@ -32,6 +32,29 @@ const deleteConnection = async (req, res) => {
     }
 };
 
+// Método para actualizar una conexión
+const updateConnection = async (req, res) => {
+    const { id } = req.params;
+    const { name, type, options } = req.body;
+
+    try {
+        // Buscar la conexión por ID
+        const connection = await Connection.findByPk(id);
+        if (!connection) return res.status(404).json({ message: 'Conexión no encontrada' });
+
+        // Actualizar los datos de la conexión
+        connection.name = name ?? connection.name;
+        connection.type = type ?? connection.type;
+        connection.options = options ?? connection.options;
+
+        await connection.save();
+
+        res.status(200).json({ message: 'Conexión actualizada con éxito', data: connection });
+    } catch (error) {
+        res.status(500).json({ message: 'Error al actualizar la conexión', error });
+    }
+};
+
 // Método para obtener todas las conexiones
 const getAllConnections = async (req, res) => {
     try {
@@ -70,5 +93,5 @@ const getConnectionById = async (req, res) => {
     }
 };
 
-module.exports = { newConnection, deleteConnection, getAllConnections, getConnectionById };
+module.exports = { newConnection, deleteConnection, getAllConnections, getConnectionById, updateConnection };
 

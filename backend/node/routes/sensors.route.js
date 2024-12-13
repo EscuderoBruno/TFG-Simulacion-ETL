@@ -1,6 +1,6 @@
 
 const express = require('express');
-const { newSensor, deleteSensor, getAllSensors, getSensorById } = require('../controllers/sensors.controller');
+const { newSensor, deleteSensor, getAllSensors, getSensorById, updateSensor } = require('../controllers/sensors.controller');
 const router = express.Router();
 const authenticate = require('../middlewares/auth.middleware');
 
@@ -12,5 +12,7 @@ router.delete('/delete/:id', authenticate, deleteSensor);
 router.get('/', authenticate, getAllSensors);
 // Ruta para obtener una sensor por id
 router.get('/:id', authenticate, getSensorById);
+// Ruta para editar un sensor por id
+router.put('/update/:id', authenticate, updateSensor);
 
 module.exports = router;

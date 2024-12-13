@@ -103,17 +103,18 @@
                             </thead>
                             <tbody>
                                 <!-- Iterar sobre las simulaciones -->
-                                <tr *ngFor="let simulation of paginatedSimulations">
+                                <tr *ngFor="let simulation of paginatedSimulations" class="cursor-pointer" (click)="openSimulation(simulation.id)">
                                     <td class="px-6 py-4 whitespace-nowrap text-s font-medium text-gray-600">{{ getUserName(simulation.userId) }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-s font-medium text-gray-600">{{ simulation.id }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-s font-medium text-gray-600 cursor-pointer underline" (click)="openSimulation(simulation.id)">
+                                    <td class="px-6 py-4 whitespace-nowrap text-s font-medium text-gray-600" (click)="openSimulation(simulation.id)">
                                     {{ simulation.name }}
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-s font-medium text-gray-600">{{ getSensorName(simulation.sensorId) }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-s font-medium text-gray-600 flex items-center">
                                         <!-- Condición para mostrar la imagen de MQTT o API -->
-                                        <img *ngIf="getConnectionType(simulation.connectionId) === 0" src="assets/images/varios/mqtt.png" alt="MQTT" class="w-5 h-5 object-contain mr-2" />
-                                        <img *ngIf="getConnectionType(simulation.connectionId) === 1" src="assets/images/varios/api.png" alt="API" class="w-5 h-5 object-contain mr-2" />
+                                        <img *ngIf="getConnectionType(simulation.connectionId) === -1" class="w-5 h-6 object-contain mr-2" />
+                                        <img *ngIf="getConnectionType(simulation.connectionId) === 0" src="assets/images/varios/mqtt.png" alt="MQTT" class="w-5 h-6 object-contain mr-2" />
+                                        <img *ngIf="getConnectionType(simulation.connectionId) === 1" src="assets/images/varios/api.png" alt="API" class="w-5 h-6 object-contain mr-2" />
                                         
                                         <!-- Nombre de la conexión -->
                                         {{ getConnectioName(simulation.connectionId) }}
@@ -121,7 +122,7 @@
                                     <td class="px-6 py-4 whitespace-nowrap text-s font-medium text-gray-600">{{ simulation.numElementosASimular === 0 ? '∞' : simulation.numElementosASimular }} </td>                                    
                                     <td class="px-6 py-4 whitespace-nowrap text-s font-medium text-gray-600">{{ simulation.minRegistrosPorInstante }}-{{ simulation.maxRegistrosPorInstante }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-s font-medium text-gray-600">{{ simulation.minIntervaloEntreRegistros }}-{{ simulation.maxIntervaloEntreRegistros }} s</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-s text-gray-600 space-x-2 flex justify-end">
+                                    <td class="px-6 py-4 whitespace-nowrap text-s text-gray-600 space-x-2 flex justify-end" (click)="onCellClick($event)">
                                         <!-- Botón de Ejecutar -->
                                         <button mat-icon-button (click)="simularInstantaneamente(simulation.id)">
                                             <mat-icon>rocket</mat-icon>
@@ -135,17 +136,13 @@
                                             <mat-icon>more_vert</mat-icon>
                                         </button>
                                         <!-- Menú desplegable -->
-                                        <mat-menu #menu="matMenu">
-                                            <!-- Botón de Editar -->
-                                            <button mat-menu-item (click)="openSimulation(simulation.id)">
-                                                Abrir
-                                            </button>    
+                                        <mat-menu #menu="matMenu">  
                                             <!-- Botón de Duplicar -->
                                             <button mat-menu-item (click)="duplicateSimulation(simulation)">
                                                 Duplicar
                                             </button>                                        
                                             <!-- Botón de Eliminar -->
-                                            <button mat-menu-item (click)="deleteSimulation(simulation.id)" class="text-red-500">
+                                            <button mat-menu-item (click)="confirmDelete(simulation.id)" class="text-red-500">
                                                 Eliminar
                                             </button>
                                         </mat-menu>
@@ -167,6 +164,31 @@
                     </div>
                 </div>
             </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de confirmación -->
+<div
+    class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+    *ngIf="showModal"
+>
+    <div class="bg-white rounded-lg shadow-lg p-6 max-w-sm w-full">
+        <h2 class="text-lg font-semibold text-gray-800">Confirmar eliminación</h2>
+        <p class="mt-4 text-sm text-gray-600">
+            ¿Estás seguro de que deseas eliminar esta simulación? Esta acción no se puede deshacer.
+        </p>
+        <div class="mt-6 flex justify-end space-x-4">
+            <button
+                class="px-4 py-2 text-base font-medium text-gray-600 hover:text-gray-800"
+                (click)="cancelDelete()">
+                Cancelar
+            </button>
+            <button
+                class="px-4 py-2 text-base font-medium text-white bg-red-500 hover:bg-red-600 rounded"
+                (click)="deleteSimulation()">
+                Eliminar
+            </button>
         </div>
     </div>
 </div>

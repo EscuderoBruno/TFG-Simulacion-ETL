@@ -23,6 +23,8 @@ export class ConexionesComponent {
     filteredConnections: any[] = []; // Lista filtrada
     users: any[] = [];
     searchText: string = ''; // Texto del buscador
+    showModal: boolean = false; // Controla la visibilidad del modal
+    connectionIdToDelete: number | null = null; // ID del usuario a eliminar
 
     constructor(
         private _conexionesService: ConexionesService,
@@ -51,17 +53,32 @@ export class ConexionesComponent {
         );
     }
 
-    deleteConnection(id: number): void {
-        this._conexionesService.deleteConnection(id).subscribe(
+    confirmDelete(userId: number): void {
+        event.stopPropagation(); // Detiene la propagación del clic
+        this.connectionIdToDelete = userId; // Almacena el ID del usuario
+        this.showModal = true; // Muestra el modal
+    }
+
+    deleteConnection(): void {
+        this._conexionesService.deleteConnection(this.connectionIdToDelete).subscribe(
             () => {
-                console.log(`Conexión ${id} eliminada con éxito`);
-                this.connections = this.connections.filter(conn => conn.id !== id);
+                console.log(`Conexión ${this.connectionIdToDelete} eliminada con éxito`);
+                this.connections = this.connections.filter(conn => conn.id !== this.connectionIdToDelete);
                 this.filterConnections(); // Actualizar filtro después de eliminar
+                this.showModal = false; // Cierra el modal
+                this.connectionIdToDelete = null; // Resetea el ID
             },
             (error) => {
                 console.error('Error al eliminar la conexión', error);
+                this.showModal = false;
+                this.connectionIdToDelete = null;
             }
         );
+    }
+
+    cancelDelete(): void {
+        this.showModal = false; // Cierra el modal
+        this.connectionIdToDelete = null; // Resetea el ID
     }
 
     openEditConnection(connectionId: number): void {

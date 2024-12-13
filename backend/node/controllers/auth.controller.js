@@ -1,5 +1,7 @@
 const bcrypt = require('bcrypt');
 const User = require('../models/User');
+const Sensor = require('../models/sensor');
+const Connection = require('../models/connection');
 const jwt = require('jsonwebtoken');
 
 // Método para crear usuario (registro)
@@ -78,6 +80,9 @@ const deleteUser = async (req, res) => {
     try {
         const user = await User.findByPk(id);
         if (!user) return res.status(404).json({ message: 'Usuario no encontrado' });
+
+        await Sensor.destroy({ where: { userId: id } });
+        await Connection.destroy({ where: { userId: id } });
 
         await user.destroy();
         res.status(200).json({ message: 'Usuario eliminado con éxito' });
