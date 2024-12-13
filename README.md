@@ -1,4 +1,4 @@
-# TFG-Simulacion-ETLF
+# TFG-Simulacion-ETL
 
 Este trabajo se sitúa en el marco del proyecto Smart University de la Universidad de Alicante, cuyo objetivo es mejorar la calidad de vida en los campus universitarios mediante tecnologías avanzadas como el Internet de las Cosas (IoT) y el concepto de Smart Cities. En este contexto, se emplean sensores para recoger datos de la temperatura, calidad del aire y concentración de CO2, con el fin de optimizar la gestión de los recursos en los campus.
 
