@@ -4,4 +4,5 @@ Este trabajo se sitúa en el marco del proyecto Smart University de la Universid
 
 Dentro de este contexto, se ha creado una herramienta que simula los datos generados por estos sensores. La herramienta produce datos artificiales en tiempo real, como temperatura, humedad y niveles de CO2, que podrán ser enviados a Kunna, la plataforma centralizada para la visualización y análisis de datos. Esta herramienta se integrará en el ecosistema de Kunna bajo el nombre de Kunna Genesis, permitiendo la simulación de datos en situaciones hipotéticas y facilitando las pruebas y validaciones sin depender exclusivamente de datos reales.
 
-https://youtu.be/qVWxAgBl3EU
+
+[![Alt text]([https://img.youtube.com/vi/3RFAX3CbSGA/0.jpg)](https://www.youtube.com/watch?v=3RFAX3CbSGA](https://www.youtube.com/watch?v=qVWxAgBl3EU&ab_channel=BrunoGarc%C3%ADaEscudero))
