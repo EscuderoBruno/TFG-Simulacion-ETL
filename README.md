@@ -47,7 +47,7 @@ La herramienta desarrollada, denominada **Kunna Genesis**, permite simular datos
 
 1. **Desarrollo Frontend:** Creación de una SPA responsiva con Angular y Tailwind CSS.
 2. **Integración IoT:** Uso del protocolo MQTT para transmisión eficiente de datos.
-3. **Simulación de Datos:** Diseño de un sistema robusto para generar datos artificiales realistas.
+3. **Simulación de Datos:** Diseño de un sistema robusto para generar datos artificiales.
 4. **Gestión de Proyectos:** Organización eficiente y entrega en tiempo gracias a herramientas como Trello y Clockify.
 
 ---
