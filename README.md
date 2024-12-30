@@ -15,35 +15,38 @@ La herramienta desarrollada, denominada **Kunna Genesis**, permite simular datos
 ## 🛠️ Tecnologías y Herramientas Utilizadas
 
 ### Frontend
-- **Angular**: Desarrollo de una SPA (Single Page Application) robusta y dinámica.
-- **Tailwind CSS**: Estilización rápida y eficiente para interfaces responsivas y modernas.
+- **Angular:** Desarrollo de una SPA (Single Page Application) robusta y dinámica.
+- **Tailwind CSS:** Estilización moderna y responsiva.
 
 ### Backend e Integración
-- **MQTT**: Protocolo ligero para el envío de datos en tiempo real entre la herramienta y Kunna.
-- **Node.js**: Generación de datos artificiales simulados.
+- **Node.js:** Generación de datos simulados y lógica del servidor.
+- **Express.js:** Creación de rutas y API REST.
+- **MySQL:** Gestión de datos de usuarios y simulaciones.
+- **MQTT:** Protocolo ligero para el envío de datos en tiempo real.
 
 ### Otras Herramientas
-- **Git y GitHub**: Control de versiones y colaboración.
-- **Trello**: Gestión de tareas y proyectos, permitiendo un seguimiento detallado del progreso y las actividades relacionadas.
-- **Clockify**: Herramienta para el seguimiento y gestión del tiempo dedicado al proyecto, optimizando la productividad y los plazos de entrega.
+- **Git y GitHub:** Control de versiones y colaboración.
+- **Trello:** Gestión de tareas y seguimiento del proyecto.
+- **Clockify:** Gestión del tiempo para optimizar productividad y plazos.
 
 ---
 
-## 📋 Funcionalidades Implementadas
+## 📋 Funcionalidades Principales
 
-- **Simulación en Tiempo Real**: Generación de datos artificiales como temperatura, humedad y niveles de CO2.
-- **Envío de Datos vía MQTT**: Comunicación eficiente con la plataforma Kunna para pruebas y validaciones.
-- **Interfaz de Usuario Intuitiva**: Configuración personalizada de parámetros de simulación mediante una aplicación web.
-- **Escenarios Hipotéticos**: Simulación de condiciones extremas o específicas para evaluar la respuesta de Kunna.
+1. **Generación de Datos Simulados:** Crea simulaciones en tiempo real o ejecútalas instantáneamente.
+2. **Configuración Flexible:** Define parámetros como ubicaciones, intervalos y condiciones específicas.
+3. **Envío mediante MQTT:** Comunicación eficiente y directa con la plataforma Kunna.
+4. **Interfaz Interactiva:** Gestión de simulaciones, usuarios y sensores desde una SPA intuitiva.
+5. **Gestión Avanzada:** Control de simulaciones según el rol del usuario (administrador o básico).
 
 ---
 
-## 🎯 ¿Qué Aprendí?
+## 🎯 Aprendizajes y Logros
 
-1. **Desarrollo Frontend Avanzado**: Creación de una SPA responsiva utilizando Angular y Tailwind CSS.
-2. **Integración de IoT**: Implementación del protocolo MQTT para la transmisión eficiente de datos.
-3. **Simulación de Datos**: Diseño de una herramienta capaz de generar datos artificiales representativos de escenarios reales.
-4. **Gestión de Proyectos**: Organización y documentación efectiva para cumplir objetivos técnicos y funcionales.
+1. **Desarrollo Frontend:** Creación de una SPA responsiva con Angular y Tailwind CSS.
+2. **Integración IoT:** Uso del protocolo MQTT para transmisión eficiente de datos.
+3. **Simulación de Datos:** Diseño de un sistema robusto para generar datos artificiales realistas.
+4. **Gestión de Proyectos:** Organización eficiente y entrega en tiempo gracias a herramientas como Trello y Clockify.
 
 ---
 
