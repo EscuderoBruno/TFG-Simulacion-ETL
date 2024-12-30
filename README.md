@@ -14,6 +14,16 @@ La herramienta desarrollada, denominada **Kunna Genesis**, permite simular datos
 
 ---
 
+## 📋 Funcionalidades Principales
+
+1. **Generación de Datos Simulados:** Crea simulaciones en tiempo real o ejecútalas instantáneamente.
+2. **Configuración Flexible:** Define parámetros como ubicaciones, intervalos y condiciones específicas.
+3. **Envío mediante MQTT:** Comunicación eficiente y directa con la plataforma Kunna.
+4. **Interfaz Interactiva:** Gestión de simulaciones, usuarios y sensores desde una SPA intuitiva.
+5. **Gestión Avanzada:** Control de simulaciones según el rol del usuario (administrador o básico).
+
+---
+
 ## 🛠️ Tecnologías y Herramientas Utilizadas
 
 ### Frontend
@@ -30,16 +40,6 @@ La herramienta desarrollada, denominada **Kunna Genesis**, permite simular datos
 - **Git y GitHub:** Control de versiones y colaboración.
 - **Trello:** Gestión de tareas y seguimiento del proyecto.
 - **Clockify:** Gestión del tiempo para optimizar productividad y plazos.
-
----
-
-## 📋 Funcionalidades Principales
-
-1. **Generación de Datos Simulados:** Crea simulaciones en tiempo real o ejecútalas instantáneamente.
-2. **Configuración Flexible:** Define parámetros como ubicaciones, intervalos y condiciones específicas.
-3. **Envío mediante MQTT:** Comunicación eficiente y directa con la plataforma Kunna.
-4. **Interfaz Interactiva:** Gestión de simulaciones, usuarios y sensores desde una SPA intuitiva.
-5. **Gestión Avanzada:** Control de simulaciones según el rol del usuario (administrador o básico).
 
 ---
 
