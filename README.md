@@ -2,6 +2,8 @@
 
 Este trabajo se sitúa en el marco del proyecto **Smart University** de la **Universidad de Alicante**, cuyo objetivo es mejorar la calidad de vida en los campus universitarios mediante tecnologías avanzadas como el Internet de las Cosas (IoT) y el concepto de Smart Cities.
 
+---
+
 ## 🌟 Propósito del Proyecto
 
 La herramienta desarrollada, denominada **Kunna Genesis**, permite simular datos generados por sensores IoT en tiempo real, incluyendo métricas como **temperatura**, **humedad** y **niveles de CO2**. Estos datos artificiales son enviados a la plataforma **Kunna**, el núcleo centralizado para la visualización y análisis de datos, ofreciendo:
