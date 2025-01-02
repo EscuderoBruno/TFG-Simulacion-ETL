@@ -58,4 +58,12 @@ Haz clic en la imagen para ver el video de presentación:
 
 [![TFG - Simulación de ETL](https://img.youtube.com/vi/qVWxAgBl3EU/0.jpg)](https://www.youtube.com/watch?v=qVWxAgBl3EU)
 
+## 📧 Contacto
+
+**Desarrollador:**
+- Bruno García Escudero - bruno2412001@gmail.com
+
+**Product owner:**
+- Jose Vicente Berná Martinez - jvberna@gcloud.ua.es
+
 
