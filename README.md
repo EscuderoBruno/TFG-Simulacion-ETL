@@ -1,6 +1,6 @@
 # TFG-Simulacion-ETL
 
-Este trabajo se sitúa en el marco del proyecto **Smart University** de la **Universidad de Alicante**, cuyo objetivo es mejorar la calidad de vida en los campus universitarios mediante tecnologías avanzadas como el Internet de las Cosas (IoT) y el concepto de Smart Cities.
+El proyecto se sitúa en el marco del proyecto **Smart University** de la **Universidad de Alicante**, cuyo objetivo es mejorar la calidad de vida en los campus universitarios mediante tecnologías avanzadas como el Internet de las Cosas (IoT) y el concepto de Smart Cities. Constituye el trabajo final de grado en Ingeniería Multimedia de la UA.
 
 ---
 
