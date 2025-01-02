@@ -27,7 +27,7 @@ La herramienta desarrollada, denominada **Kunna Genesis**, permite simular datos
 ## 🛠️ Tecnologías y Herramientas Utilizadas
 
 ### Frontend
-- **Angular:** Desarrollo de una SPA (Single Page Application) robusta y dinámica.
+- **Angular:** Desarrollo de una SPA (Single Page Application) robusta y dinámica con la ayuda de la plantilla [**Fuse**](https://angular-material.fusetheme.com/sign-in?redirectURL=%2Fdashboards%2Fproject).
 - **Tailwind CSS:** Estilización moderna y responsiva.
 
 ### Backend e Integración
@@ -53,8 +53,7 @@ La herramienta desarrollada, denominada **Kunna Genesis**, permite simular datos
 ---
 
 ## 📽️ Demo
-
-¡Descubre cómo funciona **Kunna Genesis**!  
+ 
 Haz clic en la imagen para ver el video de presentación:  
 
 [![TFG - Simulación de ETL](https://img.youtube.com/vi/qVWxAgBl3EU/0.jpg)](https://www.youtube.com/watch?v=qVWxAgBl3EU)
