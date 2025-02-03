@@ -63,7 +63,7 @@ Haz clic en la imagen para ver el video de presentación:
 **Desarrollador:**
 - Bruno García Escudero - bruno2412001@gmail.com
 
-**Product owner:**
+**Tutor/Product owner:**
 - Jose Vicente Berná Martinez - jvberna@gcloud.ua.es
 
 
