@@ -22,15 +22,16 @@ La herramienta desarrollada, denominada **Kunna Genesis**, permite simular datos
 4. **Interfaz Interactiva:** Gestión de simulaciones, usuarios y sensores desde una SPA intuitiva.
 5. **Gestión Avanzada:** Control de simulaciones según el rol del usuario (administrador o básico).
 
-<div style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 15px;">
-  <img src="https://github.com/user-attachments/assets/ec9ce9ed-a783-48d9-8b43-42fc79beefd8" alt="interfaz" width="44%" style="border:1px solid #ccc;" />
-  <img src="https://github.com/user-attachments/assets/b755d51e-2e6d-45b9-a7ac-e0dd26899705" alt="interfaz" width="44%" style="border:1px solid #ccc;" />
-</div>
-
-<div style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 15px;">
-  <img src="https://github.com/user-attachments/assets/d9f01468-4b6a-4b5e-858d-b541fe5f6b43" alt="interfaz" width="44%" style="border:1px solid #ccc;" />
-  <img src="https://github.com/user-attachments/assets/d2134b3c-a040-4ad0-b43f-e6cfb2ee934f" alt="interfaz" width="44%" style="border:1px solid #ccc;" />
-</div>
+<table>
+  <tr>
+    <td><img src="https://github.com/user-attachments/assets/ec9ce9ed-a783-48d9-8b43-42fc79beefd8" alt="interfaz" width="500" style="border:1px solid #ccc;"/></td>
+    <td><img src="https://github.com/user-attachments/assets/b755d51e-2e6d-45b9-a7ac-e0dd26899705" alt="interfaz" width="500" style="border:1px solid #ccc;"/></td>
+  </tr>
+  <tr>
+    <td><img src="https://github.com/user-attachments/assets/d9f01468-4b6a-4b5e-858d-b541fe5f6b43" alt="interfaz" width="500" style="border:1px solid #ccc;"/></td>
+    <td><img src="https://github.com/user-attachments/assets/d2134b3c-a040-4ad0-b43f-e6cfb2ee934f" alt="interfaz" width="500" style="border:1px solid #ccc;"/></td>
+  </tr>
+</table>
 
 ---
 
