@@ -12,16 +12,6 @@ La herramienta desarrollada, denominada **Kunna Genesis**, permite simular datos
 - **Optimización de recursos**: Mejora la planificación y gestión de los campus universitarios.
 - **Escalabilidad**: Permite evaluar el rendimiento y robustez de la plataforma Kunna en situaciones simuladas.
 
----
-
-## 📋 Funcionalidades Principales
-
-1. **Generación de Datos Simulados:** Crea simulaciones en tiempo real o ejecútalas instantáneamente.
-2. **Configuración Flexible:** Define parámetros como ubicaciones, intervalos y condiciones específicas.
-3. **Envío mediante MQTT:** Comunicación eficiente y directa con la plataforma Kunna.
-4. **Interfaz Interactiva:** Gestión de simulaciones, usuarios y sensores desde una SPA intuitiva.
-5. **Gestión Avanzada:** Control de simulaciones según el rol del usuario (administrador o básico).
-
 <table>
   <tr>
     <td><img src="https://github.com/user-attachments/assets/ec9ce9ed-a783-48d9-8b43-42fc79beefd8" alt="interfaz" width="500" style="border:1px solid #ccc;"/></td>
@@ -32,6 +22,16 @@ La herramienta desarrollada, denominada **Kunna Genesis**, permite simular datos
     <td><img src="https://github.com/user-attachments/assets/d2134b3c-a040-4ad0-b43f-e6cfb2ee934f" alt="interfaz" width="500" style="border:1px solid #ccc;"/></td>
   </tr>
 </table>
+
+---
+
+## 📋 Funcionalidades Principales
+
+1. **Generación de Datos Simulados:** Crea simulaciones en tiempo real o ejecútalas instantáneamente.
+2. **Configuración Flexible:** Define parámetros como ubicaciones, intervalos y condiciones específicas.
+3. **Envío mediante MQTT:** Comunicación eficiente y directa con la plataforma Kunna.
+4. **Interfaz Interactiva:** Gestión de simulaciones, usuarios y sensores desde una SPA intuitiva.
+5. **Gestión Avanzada:** Control de simulaciones según el rol del usuario (administrador o básico).
 
 ---
 
